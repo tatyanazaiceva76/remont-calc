@@ -36,7 +36,7 @@ function dimsForArea(area: number): { length: number; width: number } {
 }
 
 // === КАТЕГОРИЯ 1: По площади комнаты (самые частотные запросы) ===
-const AREAS = [6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 24, 25, 30, 35, 40];
+const AREAS = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 22, 24, 25, 28, 30, 35, 40, 45, 50];
 
 const areaScenarios: Scenario[] = AREAS.map((area) => {
   const { length, width } = dimsForArea(area);
@@ -194,8 +194,8 @@ const featureScenarios: Scenario[] = [
   }
 ];
 
-// === КАТЕГОРИЯ 5: Комбинации (площадь + тип рулона) ===
-const COMBO_AREAS = [12, 18, 20];
+// === КАТЕГОРИЯ 5: Комбинации (площадь + тип рулона / высота) ===
+const COMBO_AREAS = [9, 12, 15, 18, 20, 25];
 const comboScenarios: Scenario[] = COMBO_AREAS.flatMap((area) => {
   const { length, width } = dimsForArea(area);
   return [
@@ -216,12 +216,86 @@ const comboScenarios: Scenario[] = COMBO_AREAS.flatMap((area) => {
   ];
 });
 
+// === КАТЕГОРИЯ 6: По высоте потолка (хрущёвка / сталинка / новостройка) ===
+const HEIGHTS: Array<{ slug: string; h: number; title: string; explainer: string }> = [
+  {
+    slug: 's-vysotoy-potolka-2-5-m',
+    h: 2.5,
+    title: 'Расчёт обоев с высотой потолка 2,5 м',
+    explainer: 'Высота 2,5 м типична для хрущёвок. Из стандартного рулона 10,05 м получается 4 полосы — это самый экономичный сценарий.'
+  },
+  {
+    slug: 's-vysotoy-potolka-2-7-m',
+    h: 2.7,
+    title: 'Расчёт обоев с высотой потолка 2,7 м',
+    explainer: 'Высота 2,7 м — стандарт большинства типовых квартир. Из рулона 10,05 м помещается 3 полосы с минимальными отходами.'
+  },
+  {
+    slug: 's-vysotoy-potolka-3-m',
+    h: 3.0,
+    title: 'Расчёт обоев с высотой потолка 3 м',
+    explainer: 'Высота 3 м встречается в новостройках комфорт- и бизнес-класса. Из рулона 10,05 м также 3 полосы, но с заметным остатком.'
+  },
+  {
+    slug: 's-vysotoy-potolka-3-3-m',
+    h: 3.3,
+    title: 'Расчёт обоев с высотой потолка 3,3 м',
+    explainer: '3,3 м — сталинка или премиум-новостройка. Из рулона 10,05 м только 2 полосы, расход обоев существенно выше.'
+  }
+];
+
+const heightScenarios: Scenario[] = HEIGHTS.map((h) => ({
+  slug: h.slug,
+  category: 'combo' as const,
+  h1: h.title.replace('Расчёт ', ''),
+  title: `${h.title} — калькулятор онлайн`,
+  description: `Расчёт обоев для комнаты с высотой потолка ${h.h} м. Учитываем количество полос в рулоне.`,
+  prefill: { length: 5, width: 4, height: h.h, doors: 1, windows: 1 },
+  introBlocks: [
+    h.explainer,
+    `Калькулятор автоматически рассчитает, сколько полос помещается в одном рулоне при высоте ${h.h} м, и подберёт нужное количество рулонов для вашей комнаты.`,
+    `Подсказка: если высота больше 3 м — выгоднее использовать обои с длиной рулона 15 или 25 м, чтобы не было больших отходов.`
+  ]
+}));
+
+// === КАТЕГОРИЯ 7: Акцентная стена ===
+const accentScenarios: Scenario[] = [
+  {
+    slug: 'na-1-stenu',
+    category: 'feature',
+    h1: 'Расчёт обоев на 1 акцентную стену',
+    title: 'Сколько обоев нужно на акцентную стену — калькулятор',
+    description: 'Расчёт обоев когда оклеивается только одна стена. Часто используется при дизайнерском подходе.',
+    prefill: { length: 5, width: 0.001, height: 2.7, doors: 0, windows: 0 },
+    introBlocks: [
+      'Когда оклеивается только одна стена (акцентная), периметр получается в 4-5 раз меньше — расход обоев минимальный.',
+      'В калькуляторе укажите длину этой стены в поле «Длина комнаты», а ширину поставьте очень маленькую (например 0,01 м) — это даст почти нулевой вклад второй стены.',
+      'Совет: для акцентных стен выбирают обои с крупным рисунком или фотообои. Поскольку расход небольшой, можно позволить себе дорогой материал.'
+    ]
+  },
+  {
+    slug: 'na-3-steny',
+    category: 'feature',
+    h1: 'Расчёт обоев на 3 стены',
+    title: 'Сколько обоев на 3 стены комнаты — калькулятор',
+    description: 'Расчёт обоев когда 4-я стена оклеивается другим материалом или красится.',
+    prefill: { length: 5, width: 4, height: 2.7, doors: 1, windows: 1 },
+    introBlocks: [
+      'Если одну из стен решено оклеить другими обоями или покрасить — расчёт ведут на оставшиеся 3 стены.',
+      'Самый простой способ — посчитать как для целой комнаты, потом из результата вычесть рулоны на одну стену. Калькулятор покажет полный расчёт — корректируйте вручную в большую сторону для запаса.',
+      'Дизайнерский приём: 3 стены одним цветом + 1 акцентная с орнаментом. Это даёт ощущение объёма без визуального шума.'
+    ]
+  }
+];
+
 export const scenarios: Scenario[] = [
   ...areaScenarios,
   ...roomScenarios,
   ...rollScenarios,
   ...featureScenarios,
-  ...comboScenarios
+  ...accentScenarios,
+  ...comboScenarios,
+  ...heightScenarios
 ];
 
 // Группировка для футера с внутренней перелинковкой
@@ -229,6 +303,6 @@ export const scenariosByCategory = {
   area: areaScenarios,
   'room-type': roomScenarios,
   'roll-type': rollScenarios,
-  feature: featureScenarios,
-  combo: comboScenarios
+  feature: [...featureScenarios, ...accentScenarios],
+  combo: [...comboScenarios, ...heightScenarios]
 };

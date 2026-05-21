@@ -1,0 +1,70 @@
+---
+import Base from '~/layouts/Base.astro';
+import PaintCalc from '~/components/PaintCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import RelatedPaint from '~/components/RelatedPaint.astro';
+import { paintScenarios } from '~/data/paint-scenarios';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return paintScenarios.map((s) => ({ params: { slug: s.slug }, props: { scenario: s } }));
+}
+const { scenario } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт краски', item: `https://${SITE_CONFIG.domain}/raschet-kraski/` },
+    { '@type': 'ListItem', position: 3, name: scenario.h1, item: url }
+  ]
+};
+const howTo = {
+  '@context': 'https://schema.org', '@type': 'HowTo', name: scenario.h1, description: scenario.description,
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Измерьте комнату', text: 'Длина, ширина и высота потолка.' },
+    { '@type': 'HowToStep', position: 2, name: 'Выберите поверхность', text: 'Стены, потолок или всё вместе.' },
+    { '@type': 'HowToStep', position: 3, name: 'Слои и расход', text: 'Укажите слои и расход (на этикетке банки).' },
+    { '@type': 'HowToStep', position: 4, name: 'Результат', text: 'Калькулятор покажет нужный объём краски и фасовку.' }
+  ]
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo] };
+---
+<Base title={scenario.title} description={scenario.description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs">
+    <a href="/">Главная</a><span>›</span>
+    <a href="/raschet-kraski/">Расчёт краски</a><span>›</span>
+    <span>{scenario.h1}</span>
+  </nav>
+  <h1>{scenario.h1}</h1>
+  {scenario.introBlocks[0] && <p>{scenario.introBlocks[0]}</p>}
+
+  <PaintCalc prefill={scenario.prefill} lock={scenario.lock} />
+  <Rsya slot="top" />
+
+  {scenario.introBlocks.slice(1).map((b) => <p>{b}</p>)}
+
+  <h2>Как работает калькулятор</h2>
+  <p>
+    Площадь окрашивания × количество слоёв ÷ расход краски = нужный объём. К результату добавляется запас 10% — на колеровку, исправления и неравномерный слой.
+  </p>
+
+  <Rsya slot="middle" />
+
+  <h2>Что важно учесть</h2>
+  <ul>
+    <li><strong>Поверхность.</strong> Шпаклёвка и бетон впитывают больше — увеличьте расход в 1,3-1,5 раза, или грунтуйте.</li>
+    <li><strong>Колеровка.</strong> Краску одного цвета колеруйте сразу всем объёмом — иначе оттенок будет отличаться.</li>
+    <li><strong>Температура.</strong> При +5°C расход растёт на 15-20% — краска ложится плотнее.</li>
+    <li><strong>Запас.</strong> 10% — минимум. Если делаете сложные узоры — берите 15-20%.</li>
+  </ul>
+
+  <Rsya slot="bottom" />
+
+  <RelatedPaint current={scenario.slug} scenarios={paintScenarios} limit={10} />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 8px; }
+</style>

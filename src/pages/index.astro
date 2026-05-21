@@ -2,25 +2,36 @@
 import Base from '~/layouts/Base.astro';
 import { SITE_CONFIG } from '~/config';
 import { scenarios } from '~/data/wallpaper-scenarios';
+import { laminateScenarios } from '~/data/laminate-scenarios';
+import { paintScenarios } from '~/data/paint-scenarios';
 
 const title = `${SITE_CONFIG.siteName} — онлайн-калькуляторы материалов`;
 const description = SITE_CONFIG.siteDescription;
 const url = new URL('/', Astro.site).href;
 
 const popular = [
-  'na-komnatu-12-kv-m',
-  'na-komnatu-18-kv-m',
-  'na-spalnyu',
-  'na-kuhnyu',
-  'metrovyh-oboev',
-  's-podgonkoy-risunka'
-].map((slug) => scenarios.find((s) => s.slug === slug)).filter(Boolean);
+  { href: '/raschet-oboev/na-komnatu-18-kv-m/', title: 'Обои на комнату 18 м²' },
+  { href: '/raschet-oboev/na-spalnyu/', title: 'Обои на спальню' },
+  { href: '/raschet-laminata/na-komnatu-20-kv-m/', title: 'Ламинат на комнату 20 м²' },
+  { href: '/raschet-laminata/diagonalnaya-ukladka/', title: 'Ламинат диагонально' },
+  { href: '/raschet-kraski/na-komnatu-15-kv-m/', title: 'Краска на комнату 15 м²' },
+  { href: '/raschet-kraski/na-potolok/', title: 'Краска на потолок' }
+];
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_CONFIG.siteName,
+  url: `https://${SITE_CONFIG.domain}/`,
+  inLanguage: 'ru-RU',
+  description: SITE_CONFIG.siteDescription
+};
 ---
-<Base title={title} description={description} canonical={url}>
+<Base title={title} description={description} canonical={url} schema={websiteSchema}>
   <h1>Онлайн-калькуляторы для ремонта</h1>
   <p>
-    Точные расчёты строительных материалов: сколько обоев, ламината, краски или плитки нужно для вашего ремонта.
-    Без регистрации, мгновенный результат.
+    Точные расчёты строительных материалов: обои, ламинат, краска.
+    Без регистрации, мгновенный результат, реальные формулы.
   </p>
 
   <section>
@@ -28,20 +39,22 @@ const popular = [
     <div class="cards">
       <a href="/raschet-oboev/" class="card">
         <h3>Расчёт обоев</h3>
-        <p>{scenarios.length} готовых сценариев + универсальный калькулятор. Учитывает рапорт, проёмы и тип рулона.</p>
+        <p>{scenarios.length} готовых сценариев. Учитывает рапорт, ширину рулона, проёмы.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-laminata/" class="card">
+        <h3>Расчёт ламината</h3>
+        <p>{laminateScenarios.length} сценариев. Прямая, диагональная укладка и ёлочка.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-kraski/" class="card">
+        <h3>Расчёт краски</h3>
+        <p>{paintScenarios.length} сценариев. Литры, фасовка банок, стоимость.</p>
         <span class="card-link">Открыть →</span>
       </a>
       <div class="card card-disabled">
-        <h3>Расчёт ламината</h3>
-        <p>Скоро. Подсчёт упаковок с учётом раскладки и подрезки.</p>
-      </div>
-      <div class="card card-disabled">
-        <h3>Расчёт краски</h3>
-        <p>Скоро. С учётом количества слоёв и впитываемости основания.</p>
-      </div>
-      <div class="card card-disabled">
         <h3>Расчёт плитки</h3>
-        <p>Скоро. Раскладка прямая и по диагонали, подрезка по углам.</p>
+        <p>Скоро. Прямая и диагональная раскладка, подрезка по углам.</p>
       </div>
     </div>
   </section>
@@ -49,10 +62,18 @@ const popular = [
   <section>
     <h2>Популярные расчёты</h2>
     <ul class="popular">
-      {popular.map((s) => (
-        <li><a href={`/raschet-oboev/${s!.slug}/`}>{s!.h1}</a></li>
-      ))}
+      {popular.map((p) => <li><a href={p.href}>{p.title}</a></li>)}
     </ul>
+  </section>
+
+  <section>
+    <h2>Зачем использовать калькулятор</h2>
+    <p>
+      Опытные строители советуют: купить с запасом — это нормально, а вот докупать в процессе ремонта почти всегда означает оттенок из другой партии и заметные стыки. С другой стороны, лишние 5-10 рулонов обоев — это ощутимые деньги, которые потом долго будут лежать без дела.
+    </p>
+    <p>
+      Все калькуляторы на сайте используют реальные формулы (а не упрощённое «площадь × 1,5»), учитывают рапорт, проёмы, тип укладки и стандарты фасовок. Результат — точное количество материала, которое реально нужно купить.
+    </p>
   </section>
 </Base>
 

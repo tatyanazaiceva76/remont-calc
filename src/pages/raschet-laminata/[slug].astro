@@ -1,0 +1,78 @@
+---
+import Base from '~/layouts/Base.astro';
+import LaminateCalc from '~/components/LaminateCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import RelatedLaminate from '~/components/RelatedLaminate.astro';
+import { laminateScenarios } from '~/data/laminate-scenarios';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return laminateScenarios.map((s) => ({ params: { slug: s.slug }, props: { scenario: s } }));
+}
+const { scenario } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт ламината', item: `https://${SITE_CONFIG.domain}/raschet-laminata/` },
+    { '@type': 'ListItem', position: 3, name: scenario.h1, item: url }
+  ]
+};
+const howTo = {
+  '@context': 'https://schema.org',
+  '@type': 'HowTo',
+  name: scenario.h1,
+  description: scenario.description,
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Измерьте пол', text: 'Замерьте длину и ширину комнаты.' },
+    { '@type': 'HowToStep', position: 2, name: 'Параметры панели', text: 'Укажите размеры панели и количество в упаковке (на коробке).' },
+    { '@type': 'HowToStep', position: 3, name: 'Выберите укладку', text: 'Прямая, диагональная или ёлочка — это влияет на запас.' },
+    { '@type': 'HowToStep', position: 4, name: 'Результат', text: 'Калькулятор покажет точное количество упаковок и площадь.' }
+  ]
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo] };
+---
+<Base title={scenario.title} description={scenario.description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs">
+    <a href="/">Главная</a><span>›</span>
+    <a href="/raschet-laminata/">Расчёт ламината</a><span>›</span>
+    <span>{scenario.h1}</span>
+  </nav>
+
+  <h1>{scenario.h1}</h1>
+  {scenario.introBlocks[0] && <p>{scenario.introBlocks[0]}</p>}
+
+  <LaminateCalc prefill={scenario.prefill} lock={scenario.lock} />
+
+  <Rsya slot="top" />
+
+  {scenario.introBlocks.slice(1).map((b) => <p>{b}</p>)}
+
+  <h2>Как работает калькулятор</h2>
+  <p>
+    Формула простая: площадь пола делим на площадь одной упаковки и умножаем на коэффициент запаса (7%, 15% или 20% в зависимости от типа укладки). Результат округляем вверх.
+  </p>
+
+  <Rsya slot="middle" />
+
+  <h2>Что важно учесть</h2>
+  <ul>
+    <li><strong>Партия.</strong> Все упаковки должны быть из одной партии — номер на коробке.</li>
+    <li><strong>Подложка.</strong> Считается отдельно — по площади пола, в рулонах или матах.</li>
+    <li><strong>Плинтуса.</strong> Длина = периметр комнаты минус дверные проёмы.</li>
+    <li><strong>Класс износа.</strong> Для жилых комнат 31-32, для прихожих/кухни 33+, для коммерции 34.</li>
+  </ul>
+
+  <Rsya slot="bottom" />
+
+  <RelatedLaminate current={scenario.slug} scenarios={laminateScenarios} limit={10} />
+</Base>
+
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 8px; }
+</style>

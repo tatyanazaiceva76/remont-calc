@@ -1,0 +1,162 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    panelLength?: number;
+    panelWidth?: number;
+    panelsPerPack?: number;
+    layout?: 'straight' | 'diagonal' | 'herringbone';
+    pricePerPack?: number;
+  };
+  lock?: Array<'panelLength' | 'panelWidth' | 'panelsPerPack' | 'layout'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 5,
+  width: prefill.width ?? 4,
+  panelLength: prefill.panelLength ?? 1.38,
+  panelWidth: prefill.panelWidth ?? 0.193,
+  panelsPerPack: prefill.panelsPerPack ?? 8,
+  layout: prefill.layout ?? 'straight',
+  pricePerPack: prefill.pricePerPack ?? 0
+};
+---
+<div class="calc" id="lam-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label>
+      <span>Длина комнаты, м</span>
+      <input type="number" name="length" min="0.5" max="50" step="0.1" value={defaults.length} />
+    </label>
+    <label>
+      <span>Ширина комнаты, м</span>
+      <input type="number" name="width" min="0.5" max="50" step="0.1" value={defaults.width} />
+    </label>
+
+    {!lock.includes('panelLength') && (
+      <label>
+        <span>Длина панели, м</span>
+        <input type="number" name="panelLength" min="0.3" max="3" step="0.001" value={defaults.panelLength} />
+      </label>
+    )}
+    {!lock.includes('panelWidth') && (
+      <label>
+        <span>Ширина панели, м</span>
+        <input type="number" name="panelWidth" min="0.05" max="0.5" step="0.001" value={defaults.panelWidth} />
+      </label>
+    )}
+    {!lock.includes('panelsPerPack') && (
+      <label>
+        <span>Панелей в упаковке, шт</span>
+        <input type="number" name="panelsPerPack" min="1" max="20" step="1" value={defaults.panelsPerPack} />
+      </label>
+    )}
+    {!lock.includes('layout') && (
+      <label>
+        <span>Тип укладки</span>
+        <select name="layout">
+          <option value="straight" selected={defaults.layout === 'straight'}>Прямая (запас 7%)</option>
+          <option value="diagonal" selected={defaults.layout === 'diagonal'}>Диагональная (запас 15%)</option>
+          <option value="herringbone" selected={defaults.layout === 'herringbone'}>Ёлочка (запас 20%)</option>
+        </select>
+      </label>
+    )}
+    <label class="full">
+      <span>Цена за 1 упаковку, ₽ <span class="hint">(необязательно)</span></span>
+      <input type="number" name="pricePerPack" min="0" max="100000" step="100" value={defaults.pricePerPack} placeholder="например, 1800" />
+    </label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Площадь пола</span><strong data-out="area">—</strong></div>
+      <div class="row"><span>Площадь 1 упаковки</span><strong data-out="packArea">—</strong></div>
+      <div class="row"><span>Запас на подрезку</span><strong data-out="reserve">—</strong></div>
+      <div class="row big"><span>Упаковок нужно</span><strong data-out="packs">—</strong></div>
+      <div class="row big"><span>Всего м²</span><strong data-out="totalArea">—</strong></div>
+      <div class="row big cost" data-cost-row hidden>
+        <span>Стоимость материала</span>
+        <strong data-out="cost">—</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('lam-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+
+    function num(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) {
+        const d = JSON.parse(root.getAttribute('data-defaults') || '{}');
+        return Number(d[name]) || 0;
+      }
+      return parseFloat(el.value) || 0;
+    }
+    function str(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) {
+        const d = JSON.parse(root.getAttribute('data-defaults') || '{}');
+        return String(d[name] || '');
+      }
+      return el.value;
+    }
+
+    function calc() {
+      const L = num('length');
+      const W = num('width');
+      const pL = num('panelLength');
+      const pW = num('panelWidth');
+      const pcs = num('panelsPerPack');
+      const layout = str('layout');
+
+      const area = L * W;
+      const packArea = pL * pW * pcs;
+      const reservePct = layout === 'herringbone' ? 0.20 : layout === 'diagonal' ? 0.15 : 0.07;
+      const need = area * (1 + reservePct);
+      const packs = packArea > 0 ? Math.ceil(need / packArea) : 0;
+      const totalArea = packs * packArea;
+
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('area').textContent = fmt(area, ' м²');
+      out('packArea').textContent = fmt(packArea, ' м²');
+      out('reserve').textContent = Math.round(reservePct * 100) + '%';
+      out('packs').textContent = String(packs) + ' уп';
+      out('totalArea').textContent = fmt(totalArea, ' м²');
+
+      const price = num('pricePerPack');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0) {
+        const total = packs * price;
+        out('cost').textContent = total.toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) {
+        costRow.setAttribute('hidden', '');
+      }
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>

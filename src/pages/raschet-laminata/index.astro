@@ -1,0 +1,63 @@
+---
+import Base from '~/layouts/Base.astro';
+import LaminateCalc from '~/components/LaminateCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import { laminateByCategory } from '~/data/laminate-scenarios';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Калькулятор ламината онлайн — расчёт упаковок и стоимости';
+const description = 'Точный онлайн-калькулятор расчёта ламината. Учитываем тип укладки, размер панели и запас на подрезку.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт ламината', item: url }
+  ]
+};
+const cats: Record<string, string> = {
+  area: 'По площади комнаты',
+  'room-type': 'По типу комнаты',
+  layout: 'По типу укладки',
+  'panel-type': 'По размеру панели',
+  combo: 'Комбинированные расчёты'
+};
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Расчёт ламината</span></nav>
+  <h1>Калькулятор ламината онлайн</h1>
+  <p>Введите площадь комнаты и параметры панели — калькулятор покажет точное количество упаковок с запасом на подрезку.</p>
+
+  <LaminateCalc />
+  <Rsya slot="top" />
+
+  <h2>Как пользоваться</h2>
+  <ol>
+    <li>Замерьте длину и ширину комнаты в метрах.</li>
+    <li>Введите размеры панели — обычно указаны на коробке (стандарт 1380 × 193 мм).</li>
+    <li>Укажите количество панелей в упаковке (обычно 8 или 9).</li>
+    <li>Выберите тип укладки: прямая (запас 7%), диагональная (15%) или ёлочка (20%).</li>
+    <li>Опционально — впишите цену за упаковку для расчёта общей стоимости.</li>
+  </ol>
+
+  <h2>Готовые расчёты</h2>
+  {Object.entries(laminateByCategory).map(([cat, list]) => (
+    <section>
+      <h3>{cats[cat]}</h3>
+      <ul class="links">
+        {list.map((s) => <li><a href={`/raschet-laminata/${s.slug}/`}>{s.h1}</a></li>)}
+      </ul>
+    </section>
+  ))}
+
+  <Rsya slot="bottom" />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  ol { padding-left: 20px; } ol li { margin-bottom: 6px; }
+  .links { list-style: none; padding: 0; margin: 12px 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .links a { display: block; padding: 6px 10px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; font-size: 14px; }
+  .links a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) { .links { grid-template-columns: 1fr; } }
+</style>

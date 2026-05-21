@@ -1,5 +1,7 @@
 import type { APIRoute } from 'astro';
 import { scenarios } from '~/data/wallpaper-scenarios';
+import { laminateScenarios } from '~/data/laminate-scenarios';
+import { paintScenarios } from '~/data/paint-scenarios';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -9,8 +11,20 @@ export const GET: APIRoute = ({ site }) => {
   const urls: Array<{ loc: string; priority: number; changefreq: string }> = [
     { loc: `${base}/`, priority: 1.0, changefreq: 'monthly' },
     { loc: `${base}/raschet-oboev/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/raschet-laminata/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/raschet-kraski/`, priority: 0.9, changefreq: 'weekly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
+      priority: 0.8,
+      changefreq: 'monthly'
+    })),
+    ...laminateScenarios.map((s) => ({
+      loc: `${base}/raschet-laminata/${s.slug}/`,
+      priority: 0.8,
+      changefreq: 'monthly'
+    })),
+    ...paintScenarios.map((s) => ({
+      loc: `${base}/raschet-kraski/${s.slug}/`,
       priority: 0.8,
       changefreq: 'monthly'
     }))

@@ -1,0 +1,202 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    surface?: 'walls' | 'ceiling' | 'walls-ceiling';
+    layers?: number;
+    coverage?: number; // м² на литр
+    doors?: number;
+    windows?: number;
+    pricePerLitre?: number;
+  };
+  lock?: Array<'surface' | 'layers' | 'coverage'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 5,
+  width: prefill.width ?? 4,
+  height: prefill.height ?? 2.7,
+  surface: prefill.surface ?? 'walls',
+  layers: prefill.layers ?? 2,
+  coverage: prefill.coverage ?? 12,
+  doors: prefill.doors ?? 1,
+  windows: prefill.windows ?? 1,
+  pricePerLitre: prefill.pricePerLitre ?? 0
+};
+---
+<div class="calc" id="paint-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label>
+      <span>Длина комнаты, м</span>
+      <input type="number" name="length" min="0.5" max="50" step="0.1" value={defaults.length} />
+    </label>
+    <label>
+      <span>Ширина комнаты, м</span>
+      <input type="number" name="width" min="0.5" max="50" step="0.1" value={defaults.width} />
+    </label>
+    <label>
+      <span>Высота потолка, м</span>
+      <input type="number" name="height" min="2.0" max="6.0" step="0.05" value={defaults.height} />
+    </label>
+
+    {!lock.includes('surface') && (
+      <label>
+        <span>Что красим</span>
+        <select name="surface">
+          <option value="walls" selected={defaults.surface === 'walls'}>Только стены</option>
+          <option value="ceiling" selected={defaults.surface === 'ceiling'}>Только потолок</option>
+          <option value="walls-ceiling" selected={defaults.surface === 'walls-ceiling'}>Стены и потолок</option>
+        </select>
+      </label>
+    )}
+
+    {!lock.includes('layers') && (
+      <label>
+        <span>Количество слоёв</span>
+        <input type="number" name="layers" min="1" max="5" step="1" value={defaults.layers} />
+      </label>
+    )}
+
+    {!lock.includes('coverage') && (
+      <label>
+        <span>Расход, м² на литр</span>
+        <input type="number" name="coverage" min="3" max="20" step="0.5" value={defaults.coverage} />
+      </label>
+    )}
+
+    <label>
+      <span>Количество дверей</span>
+      <input type="number" name="doors" min="0" max="10" step="1" value={defaults.doors} />
+    </label>
+    <label>
+      <span>Количество окон</span>
+      <input type="number" name="windows" min="0" max="10" step="1" value={defaults.windows} />
+    </label>
+    <label class="full">
+      <span>Цена за 1 литр, ₽ <span class="hint">(необязательно)</span></span>
+      <input type="number" name="pricePerLitre" min="0" max="100000" step="50" value={defaults.pricePerLitre} placeholder="например, 500" />
+    </label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Площадь окрашивания</span><strong data-out="paintArea">—</strong></div>
+      <div class="row"><span>С учётом слоёв</span><strong data-out="totalArea">—</strong></div>
+      <div class="row big"><span>Литров нужно</span><strong data-out="litres">—</strong></div>
+      <div class="row big"><span>С запасом 10%</span><strong data-out="litresReserve">—</strong></div>
+      <div class="row"><span>Рекомендуемая фасовка</span><strong data-out="packaging">—</strong></div>
+      <div class="row big cost" data-cost-row hidden>
+        <span>Стоимость материала</span>
+        <strong data-out="cost">—</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('paint-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+
+    const DOOR_W = 0.9, DOOR_H = 2.0, WIN_W = 1.5, WIN_H = 1.4;
+    // Стандартные фасовки лакокрасочных материалов (л)
+    const SIZES = [0.9, 2.5, 5, 9, 10, 18];
+
+    function num(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) { const d = JSON.parse(root.getAttribute('data-defaults') || '{}'); return Number(d[name]) || 0; }
+      return parseFloat(el.value) || 0;
+    }
+    function str(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) { const d = JSON.parse(root.getAttribute('data-defaults') || '{}'); return String(d[name] || ''); }
+      return el.value;
+    }
+
+    function pickPackaging(litres) {
+      // Подбираем минимальный набор стандартных фасовок, покрывающий нужный объём
+      const target = Math.ceil(litres * 10) / 10;
+      let best = null;
+      for (const big of [...SIZES].reverse()) {
+        const bigCount = Math.floor(target / big);
+        const rest = target - bigCount * big;
+        let extra = 0, extraSize = 0;
+        for (const small of SIZES) {
+          if (small >= rest) { extra = 1; extraSize = small; break; }
+        }
+        const totalLitres = bigCount * big + extra * extraSize;
+        const totalCans = bigCount + extra;
+        if (totalLitres >= target && totalLitres < (best?.totalLitres ?? Infinity)) {
+          best = { bigCount, big, extra, extraSize, totalLitres, totalCans };
+        }
+      }
+      if (!best) return '—';
+      const parts = [];
+      if (best.bigCount > 0) parts.push(`${best.bigCount} × ${best.big} л`);
+      if (best.extra > 0) parts.push(`${best.extra} × ${best.extraSize} л`);
+      return parts.join(' + ') + ` (всего ${best.totalLitres.toFixed(1).replace(/\.0$/,'')} л)`;
+    }
+
+    function calc() {
+      const L = num('length'), W = num('width'), H = num('height');
+      const surface = str('surface');
+      const layers = num('layers');
+      const coverage = num('coverage');
+      const doors = num('doors'), windows = num('windows');
+
+      const perimeter = 2 * (L + W);
+      const wallsArea = Math.max(0, perimeter * H - (doors * DOOR_W * DOOR_H + windows * WIN_W * WIN_H));
+      const ceilingArea = L * W;
+
+      let paintArea = 0;
+      if (surface === 'walls') paintArea = wallsArea;
+      else if (surface === 'ceiling') paintArea = ceilingArea;
+      else paintArea = wallsArea + ceilingArea;
+
+      const totalArea = paintArea * layers;
+      const litres = coverage > 0 ? totalArea / coverage : 0;
+      const litresReserve = litres * 1.10;
+
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('paintArea').textContent = fmt(paintArea, ' м²');
+      out('totalArea').textContent = fmt(totalArea, ' м²');
+      out('litres').textContent = fmt(litres, ' л');
+      out('litresReserve').textContent = fmt(litresReserve, ' л');
+      out('packaging').textContent = litresReserve > 0 ? pickPackaging(litresReserve) : '—';
+
+      const price = num('pricePerLitre');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && litresReserve > 0) {
+        const total = Math.ceil(litresReserve * price);
+        out('cost').textContent = total.toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) {
+        costRow.setAttribute('hidden', '');
+      }
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>

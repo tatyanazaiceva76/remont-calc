@@ -1,0 +1,7 @@
+/* TEAM */
+Site: онлайн-калькуляторы для ремонта
+Stack: Astro, vanilla JS, статика
+Hosting: Cloudflare Pages
+
+/* THANKS */
+Materials data sources: справочники по стройматериалам, ГОСТы на обои/ламинат/краску
