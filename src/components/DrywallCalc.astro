@@ -1,0 +1,187 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    surface?: 'walls' | 'ceiling' | 'walls-ceiling';
+    sheetLength?: number; // мм
+    sheetWidth?: number;  // мм
+    layers?: number;
+    profileStep?: number; // см
+    pricePerSheet?: number;
+    doors?: number;
+    windows?: number;
+  };
+  lock?: Array<'surface' | 'sheetLength' | 'sheetWidth' | 'layers'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 5,
+  width: prefill.width ?? 4,
+  height: prefill.height ?? 2.7,
+  surface: prefill.surface ?? 'walls',
+  sheetLength: prefill.sheetLength ?? 2500,
+  sheetWidth: prefill.sheetWidth ?? 1200,
+  layers: prefill.layers ?? 1,
+  profileStep: prefill.profileStep ?? 60,
+  doors: prefill.doors ?? 1,
+  windows: prefill.windows ?? 1,
+  pricePerSheet: prefill.pricePerSheet ?? 0
+};
+---
+<div class="calc" id="dw-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label><span>Длина комнаты, м</span><input type="number" name="length" min="0.5" max="50" step="0.1" value={defaults.length} /></label>
+    <label><span>Ширина комнаты, м</span><input type="number" name="width" min="0.5" max="50" step="0.1" value={defaults.width} /></label>
+    <label><span>Высота потолка, м</span><input type="number" name="height" min="2.0" max="6.0" step="0.05" value={defaults.height} /></label>
+
+    {!lock.includes('surface') && (
+      <label>
+        <span>Что обшиваем</span>
+        <select name="surface">
+          <option value="walls" selected={defaults.surface === 'walls'}>Стены</option>
+          <option value="ceiling" selected={defaults.surface === 'ceiling'}>Потолок</option>
+          <option value="walls-ceiling" selected={defaults.surface === 'walls-ceiling'}>Стены + потолок</option>
+        </select>
+      </label>
+    )}
+    {!lock.includes('sheetLength') && (
+      <label>
+        <span>Длина листа, мм</span>
+        <select name="sheetLength">
+          <option value="2500" selected={defaults.sheetLength === 2500}>2500 (стандарт)</option>
+          <option value="3000" selected={defaults.sheetLength === 3000}>3000</option>
+          <option value="2000" selected={defaults.sheetLength === 2000}>2000 (компакт)</option>
+        </select>
+      </label>
+    )}
+    {!lock.includes('sheetWidth') && (
+      <label>
+        <span>Ширина листа, мм</span>
+        <select name="sheetWidth">
+          <option value="1200" selected={defaults.sheetWidth === 1200}>1200 (стандарт)</option>
+          <option value="600" selected={defaults.sheetWidth === 600}>600 (мини)</option>
+        </select>
+      </label>
+    )}
+    {!lock.includes('layers') && (
+      <label>
+        <span>Слои обшивки</span>
+        <select name="layers">
+          <option value="1" selected={defaults.layers === 1}>1 слой</option>
+          <option value="2" selected={defaults.layers === 2}>2 слоя (огнестойкость)</option>
+        </select>
+      </label>
+    )}
+    <label><span>Шаг профиля CD, см</span><input type="number" name="profileStep" min="40" max="80" step="5" value={defaults.profileStep} /></label>
+    <label><span>Количество дверей</span><input type="number" name="doors" min="0" max="10" step="1" value={defaults.doors} /></label>
+    <label><span>Количество окон</span><input type="number" name="windows" min="0" max="10" step="1" value={defaults.windows} /></label>
+    <label class="full"><span>Цена за лист, ₽ <span class="hint">(необязательно)</span></span><input type="number" name="pricePerSheet" min="0" max="100000" step="50" value={defaults.pricePerSheet} placeholder="например, 450" /></label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Площадь обшивки</span><strong data-out="area">—</strong></div>
+      <div class="row"><span>Площадь 1 листа</span><strong data-out="sheetArea">—</strong></div>
+      <div class="row big"><span>Листов ГКЛ</span><strong data-out="sheets">—</strong></div>
+      <div class="row"><span>Профиль направляющий (UD)</span><strong data-out="udProfile">—</strong></div>
+      <div class="row"><span>Профиль стоечный (CD)</span><strong data-out="cdProfile">—</strong></div>
+      <div class="row"><span>Прямые подвесы</span><strong data-out="hangers">—</strong></div>
+      <div class="row"><span>Саморезы по металлу</span><strong data-out="screws">—</strong></div>
+      <div class="row big cost" data-cost-row hidden><span>Стоимость листов</span><strong data-out="cost">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('dw-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+    const DOOR_W = 0.9, DOOR_H = 2.0, WIN_W = 1.5, WIN_H = 1.4;
+    function num(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return Number(d[n])||0;}return parseFloat(el.value)||0;}
+    function str(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return String(d[n]||'');}return el.value;}
+    function calc() {
+      const L = num('length'), W = num('width'), H = num('height');
+      const surface = str('surface');
+      const sL = num('sheetLength') / 1000, sW = num('sheetWidth') / 1000;
+      const layers = num('layers');
+      const step = num('profileStep') / 100;
+      const doors = num('doors'), windows = num('windows');
+
+      const perimeter = 2 * (L + W);
+      const wallArea = Math.max(0, perimeter * H - (doors * DOOR_W * DOOR_H + windows * WIN_W * WIN_H));
+      const ceilingArea = L * W;
+      let area = 0;
+      if (surface === 'walls') area = wallArea;
+      else if (surface === 'ceiling') area = ceilingArea;
+      else area = wallArea + ceilingArea;
+
+      const totalArea = area * layers;
+      const sheetArea = sL * sW;
+      const sheets = sheetArea > 0 ? Math.ceil(totalArea / sheetArea * 1.1) : 0;
+
+      // Профиль направляющий (UD) — по периметру горизонтально и вертикально, +10% запас
+      // Грубая оценка: периметр × 2 (верх+низ) для стен, периметр для потолка
+      let udLength = 0;
+      if (surface === 'walls' || surface === 'walls-ceiling') udLength += perimeter * 2;
+      if (surface === 'ceiling' || surface === 'walls-ceiling') udLength += perimeter;
+      udLength *= 1.1;
+
+      // Профиль стоечный CD — каждые `step` метров
+      let cdLength = 0;
+      if (surface === 'walls' || surface === 'walls-ceiling') {
+        const verticals = Math.ceil(perimeter / step) + 4; // +угловые
+        cdLength += verticals * H;
+      }
+      if (surface === 'ceiling' || surface === 'walls-ceiling') {
+        const lines = Math.ceil(L / step);
+        cdLength += lines * W;
+      }
+      cdLength *= 1.1;
+
+      // Подвесы — каждые 0,6 м вдоль CD профилей
+      const hangers = Math.ceil(cdLength / 0.6);
+
+      // Саморезы — около 25 шт на м² ГКЛ (плюс крепления профиля)
+      const screws = Math.ceil(totalArea * 25 + cdLength * 6);
+
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('area').textContent = fmt(area, ' м²');
+      out('sheetArea').textContent = fmt(sheetArea, ' м²');
+      out('sheets').textContent = String(sheets) + ' шт';
+      out('udProfile').textContent = fmt(udLength, ' м (≈' + Math.ceil(udLength / 3) + ' шт по 3 м)');
+      out('cdProfile').textContent = fmt(cdLength, ' м (≈' + Math.ceil(cdLength / 3) + ' шт по 3 м)');
+      out('hangers').textContent = String(hangers) + ' шт';
+      out('screws').textContent = String(screws) + ' шт';
+      const price = num('pricePerSheet');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && sheets > 0) {
+        out('cost').textContent = (sheets * price).toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) costRow.setAttribute('hidden', '');
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>

@@ -5,6 +5,9 @@ import { paintScenarios } from '~/data/paint-scenarios';
 import { tileScenarios } from '~/data/tile-scenarios';
 import { plasterScenarios } from '~/data/plaster-scenarios';
 import { linoleumScenarios } from '~/data/linoleum-scenarios';
+import { drywallScenarios } from '~/data/drywall-scenarios';
+import { insulationScenarios } from '~/data/insulation-scenarios';
+import { concreteScenarios } from '~/data/concrete-scenarios';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -19,6 +22,9 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/raschet-plitki/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/raschet-shtukaturki/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/raschet-linoleuma/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/raschet-gipsokartona/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/raschet-uteplitelya/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/raschet-betona/`, priority: 0.9, changefreq: 'weekly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,
@@ -46,6 +52,21 @@ export const GET: APIRoute = ({ site }) => {
     })),
     ...linoleumScenarios.map((s) => ({
       loc: `${base}/raschet-linoleuma/${s.slug}/`,
+      priority: 0.8,
+      changefreq: 'monthly'
+    })),
+    ...drywallScenarios.map((s) => ({
+      loc: `${base}/raschet-gipsokartona/${s.slug}/`,
+      priority: 0.8,
+      changefreq: 'monthly'
+    })),
+    ...insulationScenarios.map((s) => ({
+      loc: `${base}/raschet-uteplitelya/${s.slug}/`,
+      priority: 0.8,
+      changefreq: 'monthly'
+    })),
+    ...concreteScenarios.map((s) => ({
+      loc: `${base}/raschet-betona/${s.slug}/`,
       priority: 0.8,
       changefreq: 'monthly'
     }))

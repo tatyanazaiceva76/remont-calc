@@ -7,6 +7,9 @@ import { paintScenarios } from '~/data/paint-scenarios';
 import { tileScenarios } from '~/data/tile-scenarios';
 import { plasterScenarios } from '~/data/plaster-scenarios';
 import { linoleumScenarios } from '~/data/linoleum-scenarios';
+import { drywallScenarios } from '~/data/drywall-scenarios';
+import { insulationScenarios } from '~/data/insulation-scenarios';
+import { concreteScenarios } from '~/data/concrete-scenarios';
 
 const title = `${SITE_CONFIG.siteName} — онлайн-калькуляторы материалов`;
 const description = SITE_CONFIG.siteDescription;
@@ -70,6 +73,21 @@ const websiteSchema = {
       <a href="/raschet-linoleuma/" class="card">
         <h3>Расчёт линолеума</h3>
         <p>{linoleumScenarios.length} сценариев. Подбор ширины рулона без швов.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-gipsokartona/" class="card">
+        <h3>Расчёт гипсокартона</h3>
+        <p>{drywallScenarios.length} сценариев. Листы, профиль, подвесы, саморезы.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-uteplitelya/" class="card">
+        <h3>Расчёт утеплителя</h3>
+        <p>{insulationScenarios.length} сценариев. Минвата, пеноплекс, пенопласт.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-betona/" class="card">
+        <h3>Расчёт бетона</h3>
+        <p>{concreteScenarios.length} сценариев. Фундамент, плита, стяжка, дорожки. Состав + цена.</p>
         <span class="card-link">Открыть →</span>
       </a>
     </div>

@@ -13,6 +13,9 @@ import { paintScenarios } from '../src/data/paint-scenarios';
 import { tileScenarios } from '../src/data/tile-scenarios';
 import { plasterScenarios } from '../src/data/plaster-scenarios';
 import { linoleumScenarios } from '../src/data/linoleum-scenarios';
+import { drywallScenarios } from '../src/data/drywall-scenarios';
+import { insulationScenarios } from '../src/data/insulation-scenarios';
+import { concreteScenarios } from '../src/data/concrete-scenarios';
 
 const KEY = process.env.INDEXNOW_KEY;
 const DOMAIN = 'kalkremont.ru';
@@ -32,12 +35,18 @@ function allUrls(): string[] {
     `${base}/raschet-plitki/`,
     `${base}/raschet-shtukaturki/`,
     `${base}/raschet-linoleuma/`,
+    `${base}/raschet-gipsokartona/`,
+    `${base}/raschet-uteplitelya/`,
+    `${base}/raschet-betona/`,
     ...wallpaperScenarios.map((s) => `${base}/raschet-oboev/${s.slug}/`),
     ...laminateScenarios.map((s) => `${base}/raschet-laminata/${s.slug}/`),
     ...paintScenarios.map((s) => `${base}/raschet-kraski/${s.slug}/`),
     ...tileScenarios.map((s) => `${base}/raschet-plitki/${s.slug}/`),
     ...plasterScenarios.map((s) => `${base}/raschet-shtukaturki/${s.slug}/`),
-    ...linoleumScenarios.map((s) => `${base}/raschet-linoleuma/${s.slug}/`)
+    ...linoleumScenarios.map((s) => `${base}/raschet-linoleuma/${s.slug}/`),
+    ...drywallScenarios.map((s) => `${base}/raschet-gipsokartona/${s.slug}/`),
+    ...insulationScenarios.map((s) => `${base}/raschet-uteplitelya/${s.slug}/`),
+    ...concreteScenarios.map((s) => `${base}/raschet-betona/${s.slug}/`)
   ];
   return urls;
 }

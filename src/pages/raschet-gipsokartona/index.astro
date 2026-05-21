@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+import DrywallCalc from '~/components/DrywallCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import { drywallByCategory } from '~/data/drywall-scenarios';
+import { drywallFAQs } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Калькулятор гипсокартона онлайн — листы, профиль, саморезы';
+const description = 'Точный калькулятор ГКЛ: рассчитываем листы, профиль UD/CD, подвесы, саморезы для стен и потолка.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт гипсокартона', item: url }
+  ]
+};
+const cats: Record<string, string> = {
+  area: 'По площади комнаты',
+  surface: 'По поверхности',
+  'sheet-size': 'По размеру листа',
+  feature: 'По особенностям'
+};
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Расчёт гипсокартона</span></nav>
+  <h1>Калькулятор гипсокартона онлайн</h1>
+  <p>Считаем не только листы ГКЛ, но и весь комплект каркаса: профиль UD и CD, прямые подвесы, саморезы.</p>
+
+  <DrywallCalc />
+  <Rsya slot="top" />
+
+  <h2>Готовые расчёты</h2>
+  {Object.entries(drywallByCategory).map(([cat, list]) => (
+    <section>
+      <h3>{cats[cat]}</h3>
+      <ul class="links">
+        {list.map((s) => <li><a href={`/raschet-gipsokartona/${s.slug}/`}>{s.h1}</a></li>)}
+      </ul>
+    </section>
+  ))}
+
+  <Faq items={drywallFAQs} />
+  <Rsya slot="bottom" />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .links { list-style: none; padding: 0; margin: 12px 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .links a { display: block; padding: 6px 10px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; font-size: 14px; }
+  .links a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) { .links { grid-template-columns: 1fr; } }
+</style>

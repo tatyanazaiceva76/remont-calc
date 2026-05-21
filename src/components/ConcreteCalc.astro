@@ -1,0 +1,117 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    grade?: 'M150' | 'M200' | 'M250' | 'M300' | 'M400';
+    pricePerCubM?: number;
+  };
+  lock?: Array<'grade'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 10,
+  width: prefill.width ?? 8,
+  height: prefill.height ?? 0.3,
+  grade: prefill.grade ?? 'M300',
+  pricePerCubM: prefill.pricePerCubM ?? 0
+};
+---
+<div class="calc" id="cnc-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label><span>Длина, м</span><input type="number" name="length" min="0.1" max="100" step="0.1" value={defaults.length} /></label>
+    <label><span>Ширина, м</span><input type="number" name="width" min="0.1" max="100" step="0.1" value={defaults.width} /></label>
+    <label><span>Высота/толщина, м</span><input type="number" name="height" min="0.05" max="10" step="0.01" value={defaults.height} /></label>
+
+    {!lock.includes('grade') && (
+      <label>
+        <span>Марка бетона</span>
+        <select name="grade">
+          <option value="M150" selected={defaults.grade === 'M150'}>М150 (стяжка, дорожки)</option>
+          <option value="M200" selected={defaults.grade === 'M200'}>М200 (фундамент частного дома)</option>
+          <option value="M250" selected={defaults.grade === 'M250'}>М250 (фундамент 2-3 эт.)</option>
+          <option value="M300" selected={defaults.grade === 'M300'}>М300 (стены, перекрытия)</option>
+          <option value="M400" selected={defaults.grade === 'M400'}>М400 (нагруженные конструкции)</option>
+        </select>
+      </label>
+    )}
+    <label class="full"><span>Цена за 1 м³, ₽ <span class="hint">(необязательно)</span></span><input type="number" name="pricePerCubM" min="0" max="100000" step="100" value={defaults.pricePerCubM} placeholder="например, 4500" /></label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row big"><span>Объём бетона</span><strong data-out="volume">—</strong></div>
+      <div class="row big"><span>С запасом 10%</span><strong data-out="volumeReserve">—</strong></div>
+      <div class="row"><span>Цемент</span><strong data-out="cement">—</strong></div>
+      <div class="row"><span>Песок</span><strong data-out="sand">—</strong></div>
+      <div class="row"><span>Щебень</span><strong data-out="gravel">—</strong></div>
+      <div class="row"><span>Вода</span><strong data-out="water">—</strong></div>
+      <div class="row big cost" data-cost-row hidden><span>Стоимость готового бетона</span><strong data-out="cost">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('cnc-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+    function num(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return Number(d[n])||0;}return parseFloat(el.value)||0;}
+    function str(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return String(d[n]||'');}return el.value;}
+    // Расход материалов на 1 м³ бетона по маркам (кг и литры)
+    const recipes = {
+      M150: {cement: 220, sand: 700, gravel: 1250, water: 175},
+      M200: {cement: 280, sand: 650, gravel: 1200, water: 175},
+      M250: {cement: 310, sand: 630, gravel: 1180, water: 180},
+      M300: {cement: 340, sand: 600, gravel: 1170, water: 185},
+      M400: {cement: 410, sand: 530, gravel: 1140, water: 190}
+    };
+    function calc() {
+      const L = num('length'), W = num('width'), H = num('height');
+      const grade = str('grade');
+      const volume = L * W * H;
+      const volumeReserve = volume * 1.1;
+      const r = recipes[grade] || recipes.M300;
+      const cement = r.cement * volumeReserve;
+      const sand = r.sand * volumeReserve;
+      const gravel = r.gravel * volumeReserve;
+      const water = r.water * volumeReserve;
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('volume').textContent = fmt(volume, ' м³');
+      out('volumeReserve').textContent = fmt(volumeReserve, ' м³');
+      out('cement').textContent = fmt(cement / 50, ' мешков по 50 кг (' + Math.round(cement) + ' кг)');
+      out('sand').textContent = fmt(sand / 1000, ' тонн');
+      out('gravel').textContent = fmt(gravel / 1000, ' тонн');
+      out('water').textContent = fmt(water, ' л');
+      const price = num('pricePerCubM');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && volumeReserve > 0) {
+        out('cost').textContent = Math.ceil(volumeReserve * price).toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) costRow.setAttribute('hidden', '');
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 720px) { .calc-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>
