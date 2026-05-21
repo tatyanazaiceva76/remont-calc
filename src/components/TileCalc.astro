@@ -1,0 +1,163 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    tileLength?: number; // см
+    tileWidth?: number;  // см
+    layout?: 'straight' | 'diagonal' | 'brick';
+    groutWidth?: number; // мм (ширина шва)
+    pricePerSqm?: number;
+  };
+  lock?: Array<'tileLength' | 'tileWidth' | 'layout' | 'groutWidth'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 3,
+  width: prefill.width ?? 2.5,
+  tileLength: prefill.tileLength ?? 30,
+  tileWidth: prefill.tileWidth ?? 30,
+  layout: prefill.layout ?? 'straight',
+  groutWidth: prefill.groutWidth ?? 2,
+  pricePerSqm: prefill.pricePerSqm ?? 0
+};
+---
+<div class="calc" id="tile-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label>
+      <span>Длина зоны, м</span>
+      <input type="number" name="length" min="0.3" max="50" step="0.05" value={defaults.length} />
+    </label>
+    <label>
+      <span>Ширина зоны, м</span>
+      <input type="number" name="width" min="0.3" max="50" step="0.05" value={defaults.width} />
+    </label>
+
+    {!lock.includes('tileLength') && (
+      <label>
+        <span>Длина плитки, см</span>
+        <input type="number" name="tileLength" min="2" max="200" step="0.5" value={defaults.tileLength} />
+      </label>
+    )}
+    {!lock.includes('tileWidth') && (
+      <label>
+        <span>Ширина плитки, см</span>
+        <input type="number" name="tileWidth" min="2" max="200" step="0.5" value={defaults.tileWidth} />
+      </label>
+    )}
+
+    {!lock.includes('layout') && (
+      <label>
+        <span>Тип укладки</span>
+        <select name="layout">
+          <option value="straight" selected={defaults.layout === 'straight'}>Прямая (запас 5%)</option>
+          <option value="brick" selected={defaults.layout === 'brick'}>Со смещением (запас 8%)</option>
+          <option value="diagonal" selected={defaults.layout === 'diagonal'}>Диагональная (запас 15%)</option>
+        </select>
+      </label>
+    )}
+
+    {!lock.includes('groutWidth') && (
+      <label>
+        <span>Ширина шва, мм</span>
+        <input type="number" name="groutWidth" min="0" max="20" step="0.5" value={defaults.groutWidth} />
+      </label>
+    )}
+
+    <label class="full">
+      <span>Цена за 1 м², ₽ <span class="hint">(необязательно)</span></span>
+      <input type="number" name="pricePerSqm" min="0" max="100000" step="50" value={defaults.pricePerSqm} placeholder="например, 900" />
+    </label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Площадь укладки</span><strong data-out="area">—</strong></div>
+      <div class="row"><span>Размер 1 плитки</span><strong data-out="tileSize">—</strong></div>
+      <div class="row"><span>Плиток на 1 м²</span><strong data-out="perSqm">—</strong></div>
+      <div class="row"><span>Запас на подрезку</span><strong data-out="reserve">—</strong></div>
+      <div class="row big"><span>Плиток нужно</span><strong data-out="tiles">—</strong></div>
+      <div class="row big"><span>С учётом запаса, м²</span><strong data-out="totalSqm">—</strong></div>
+      <div class="row big cost" data-cost-row hidden>
+        <span>Стоимость материала</span>
+        <strong data-out="cost">—</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('tile-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+
+    function num(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) { const d = JSON.parse(root.getAttribute('data-defaults') || '{}'); return Number(d[name]) || 0; }
+      return parseFloat(el.value) || 0;
+    }
+    function str(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) { const d = JSON.parse(root.getAttribute('data-defaults') || '{}'); return String(d[name] || ''); }
+      return el.value;
+    }
+
+    function calc() {
+      const L = num('length'), W = num('width');
+      const tL_cm = num('tileLength'), tW_cm = num('tileWidth');
+      const layout = str('layout');
+      const grout_mm = num('groutWidth');
+
+      // С учётом шва площадь "ячейки" больше площади плитки
+      const tL = (tL_cm + grout_mm / 10) / 100; // м
+      const tW = (tW_cm + grout_mm / 10) / 100; // м
+
+      const area = L * W;
+      const tileArea = tL * tW;
+      const perSqm = tileArea > 0 ? 1 / tileArea : 0;
+
+      const reservePct = layout === 'diagonal' ? 0.15 : layout === 'brick' ? 0.08 : 0.05;
+      const needArea = area * (1 + reservePct);
+      const tiles = tileArea > 0 ? Math.ceil(needArea / tileArea) : 0;
+      const totalSqm = tiles * tileArea;
+
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('area').textContent = fmt(area, ' м²');
+      out('tileSize').textContent = `${tL_cm} × ${tW_cm} см`;
+      out('perSqm').textContent = perSqm > 0 ? fmt(perSqm, ' шт') : '—';
+      out('reserve').textContent = Math.round(reservePct * 100) + '%';
+      out('tiles').textContent = String(tiles) + ' шт';
+      out('totalSqm').textContent = fmt(totalSqm, ' м²');
+
+      const price = num('pricePerSqm');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && totalSqm > 0) {
+        const total = Math.ceil(totalSqm * price);
+        out('cost').textContent = total.toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) costRow.setAttribute('hidden', '');
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>

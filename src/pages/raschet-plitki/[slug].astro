@@ -1,0 +1,72 @@
+---
+import Base from '~/layouts/Base.astro';
+import TileCalc from '~/components/TileCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import RelatedTile from '~/components/RelatedTile.astro';
+import { tileScenarios } from '~/data/tile-scenarios';
+import { tileFAQs } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return tileScenarios.map((s) => ({ params: { slug: s.slug }, props: { scenario: s } }));
+}
+const { scenario } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт плитки', item: `https://${SITE_CONFIG.domain}/raschet-plitki/` },
+    { '@type': 'ListItem', position: 3, name: scenario.h1, item: url }
+  ]
+};
+const howTo = {
+  '@context': 'https://schema.org', '@type': 'HowTo', name: scenario.h1, description: scenario.description,
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Измерьте площадь', text: 'Длина и ширина зоны облицовки.' },
+    { '@type': 'HowToStep', position: 2, name: 'Размер плитки', text: 'Длина и ширина плитки в см (с этикетки).' },
+    { '@type': 'HowToStep', position: 3, name: 'Тип укладки', text: 'Прямая, со смещением или диагональная.' },
+    { '@type': 'HowToStep', position: 4, name: 'Результат', text: 'Калькулятор покажет точное количество плиток с запасом.' }
+  ]
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo] };
+---
+<Base title={scenario.title} description={scenario.description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs">
+    <a href="/">Главная</a><span>›</span>
+    <a href="/raschet-plitki/">Расчёт плитки</a><span>›</span>
+    <span>{scenario.h1}</span>
+  </nav>
+  <h1>{scenario.h1}</h1>
+  {scenario.introBlocks[0] && <p>{scenario.introBlocks[0]}</p>}
+
+  <TileCalc prefill={scenario.prefill} lock={scenario.lock} />
+  <Rsya slot="top" />
+
+  {scenario.introBlocks.slice(1).map((b) => <p>{b}</p>)}
+
+  <h2>Как работает калькулятор</h2>
+  <p>
+    Калькулятор считает площадь облицовки, делит на площадь одной плитки (с учётом ширины шва) и умножает на коэффициент запаса в зависимости от типа укладки. Результат округляется вверх до целого числа плиток.
+  </p>
+
+  <Rsya slot="middle" />
+
+  <h2>Что важно учесть</h2>
+  <ul>
+    <li><strong>Партия.</strong> Только из одной партии — номер должен совпадать на всех коробках.</li>
+    <li><strong>Шов.</strong> Влияет на количество: при шве 2 мм плиток нужно меньше, чем при шве 0 мм.</li>
+    <li><strong>Раскладка.</strong> Заранее нарисуйте схему — особенно для крупного формата и диагональной укладки.</li>
+    <li><strong>Запас «на ремонт».</strong> Купите дополнительно 2-3 плитки и сохраните — серии быстро снимаются с производства.</li>
+  </ul>
+
+  <Faq items={tileFAQs} />
+  <Rsya slot="bottom" />
+  <RelatedTile current={scenario.slug} scenarios={tileScenarios} limit={10} />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 8px; }
+</style>

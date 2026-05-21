@@ -2,7 +2,9 @@
 import Base from '~/layouts/Base.astro';
 import WallpaperCalc from '~/components/WallpaperCalc.astro';
 import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
 import { scenariosByCategory } from '~/data/wallpaper-scenarios';
+import { wallpaperFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
 
 const title = 'Калькулятор обоев онлайн — расчёт количества рулонов';
@@ -66,6 +68,7 @@ const categoryTitles = {
     </section>
   ))}
 
+  <Faq items={wallpaperFAQs} />
   <Rsya slot="bottom" />
 </Base>
 

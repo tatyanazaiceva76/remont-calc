@@ -4,6 +4,7 @@ import { SITE_CONFIG } from '~/config';
 import { scenarios } from '~/data/wallpaper-scenarios';
 import { laminateScenarios } from '~/data/laminate-scenarios';
 import { paintScenarios } from '~/data/paint-scenarios';
+import { tileScenarios } from '~/data/tile-scenarios';
 
 const title = `${SITE_CONFIG.siteName} — онлайн-калькуляторы материалов`;
 const description = SITE_CONFIG.siteDescription;
@@ -15,7 +16,9 @@ const popular = [
   { href: '/raschet-laminata/na-komnatu-20-kv-m/', title: 'Ламинат на комнату 20 м²' },
   { href: '/raschet-laminata/diagonalnaya-ukladka/', title: 'Ламинат диагонально' },
   { href: '/raschet-kraski/na-komnatu-15-kv-m/', title: 'Краска на комнату 15 м²' },
-  { href: '/raschet-kraski/na-potolok/', title: 'Краска на потолок' }
+  { href: '/raschet-kraski/na-potolok/', title: 'Краска на потолок' },
+  { href: '/raschet-plitki/na-vannuyu/', title: 'Плитка на ванную' },
+  { href: '/raschet-plitki/30x30/', title: 'Плитка 30 × 30 см' }
 ];
 
 const websiteSchema = {
@@ -52,10 +55,11 @@ const websiteSchema = {
         <p>{paintScenarios.length} сценариев. Литры, фасовка банок, стоимость.</p>
         <span class="card-link">Открыть →</span>
       </a>
-      <div class="card card-disabled">
+      <a href="/raschet-plitki/" class="card">
         <h3>Расчёт плитки</h3>
-        <p>Скоро. Прямая и диагональная раскладка, подрезка по углам.</p>
-      </div>
+        <p>{tileScenarios.length} сценариев. Все форматы, прямая и диагональная укладка.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
     </div>
   </section>
 

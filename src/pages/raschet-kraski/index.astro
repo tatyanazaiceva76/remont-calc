@@ -2,7 +2,9 @@
 import Base from '~/layouts/Base.astro';
 import PaintCalc from '~/components/PaintCalc.astro';
 import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
 import { paintByCategory } from '~/data/paint-scenarios';
+import { paintFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
 
 const title = 'Калькулятор краски онлайн — расчёт литров и фасовки';
@@ -50,6 +52,7 @@ const cats: Record<string, string> = {
     </section>
   ))}
 
+  <Faq items={paintFAQs} />
   <Rsya slot="bottom" />
 </Base>
 <style>
