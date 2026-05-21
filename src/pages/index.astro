@@ -1,0 +1,99 @@
+---
+import Base from '~/layouts/Base.astro';
+import { SITE_CONFIG } from '~/config';
+import { scenarios } from '~/data/wallpaper-scenarios';
+
+const title = `${SITE_CONFIG.siteName} — онлайн-калькуляторы материалов`;
+const description = SITE_CONFIG.siteDescription;
+const url = new URL('/', Astro.site).href;
+
+const popular = [
+  'na-komnatu-12-kv-m',
+  'na-komnatu-18-kv-m',
+  'na-spalnyu',
+  'na-kuhnyu',
+  'metrovyh-oboev',
+  's-podgonkoy-risunka'
+].map((slug) => scenarios.find((s) => s.slug === slug)).filter(Boolean);
+---
+<Base title={title} description={description} canonical={url}>
+  <h1>Онлайн-калькуляторы для ремонта</h1>
+  <p>
+    Точные расчёты строительных материалов: сколько обоев, ламината, краски или плитки нужно для вашего ремонта.
+    Без регистрации, мгновенный результат.
+  </p>
+
+  <section>
+    <h2>Калькуляторы</h2>
+    <div class="cards">
+      <a href="/raschet-oboev/" class="card">
+        <h3>Расчёт обоев</h3>
+        <p>{scenarios.length} готовых сценариев + универсальный калькулятор. Учитывает рапорт, проёмы и тип рулона.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <div class="card card-disabled">
+        <h3>Расчёт ламината</h3>
+        <p>Скоро. Подсчёт упаковок с учётом раскладки и подрезки.</p>
+      </div>
+      <div class="card card-disabled">
+        <h3>Расчёт краски</h3>
+        <p>Скоро. С учётом количества слоёв и впитываемости основания.</p>
+      </div>
+      <div class="card card-disabled">
+        <h3>Расчёт плитки</h3>
+        <p>Скоро. Раскладка прямая и по диагонали, подрезка по углам.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Популярные расчёты</h2>
+    <ul class="popular">
+      {popular.map((s) => (
+        <li><a href={`/raschet-oboev/${s!.slug}/`}>{s!.h1}</a></li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .card {
+    display: block;
+    padding: 18px 20px;
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    color: #1a1a1a;
+  }
+  .card:hover { background: #eef3fb; text-decoration: none; border-color: #0a5cce; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { font-size: 14px; color: #555; margin: 0 0 10px; }
+  .card-link { color: #0a5cce; font-size: 14px; font-weight: 500; }
+  .card-disabled { opacity: 0.55; cursor: default; }
+  .card-disabled:hover { background: #f7f8fa; border-color: #e6e8eb; }
+  .popular {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+  }
+  .popular a {
+    display: block;
+    padding: 8px 12px;
+    background: #f7f8fa;
+    border-radius: 6px;
+    border: 1px solid #e6e8eb;
+    font-size: 14px;
+  }
+  .popular a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) {
+    .cards, .popular { grid-template-columns: 1fr; }
+  }
+</style>

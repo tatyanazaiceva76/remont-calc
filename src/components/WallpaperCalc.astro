@@ -1,0 +1,254 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    rollWidth?: number;
+    rollLength?: number;
+    rapport?: number;
+    doors?: number;
+    windows?: number;
+  };
+  // Скрыть отдельные поля для сценарных страниц (если значение фиксировано)
+  lock?: Array<'rollWidth' | 'rollLength' | 'rapport'>;
+}
+
+const { prefill = {}, lock = [] } = Astro.props;
+
+const defaults = {
+  length: prefill.length ?? 5,
+  width: prefill.width ?? 4,
+  height: prefill.height ?? 2.7,
+  rollWidth: prefill.rollWidth ?? 1.06,
+  rollLength: prefill.rollLength ?? 10.05,
+  rapport: prefill.rapport ?? 0,
+  doors: prefill.doors ?? 1,
+  windows: prefill.windows ?? 1
+};
+---
+<div class="calc" id="wp-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label>
+      <span>Длина комнаты, м</span>
+      <input type="number" name="length" min="0.5" max="50" step="0.1" value={defaults.length} />
+    </label>
+    <label>
+      <span>Ширина комнаты, м</span>
+      <input type="number" name="width" min="0.5" max="50" step="0.1" value={defaults.width} />
+    </label>
+    <label>
+      <span>Высота потолка, м</span>
+      <input type="number" name="height" min="2.0" max="6.0" step="0.05" value={defaults.height} />
+    </label>
+
+    {!lock.includes('rollWidth') && (
+      <label>
+        <span>Ширина рулона, м</span>
+        <select name="rollWidth">
+          <option value="0.53" selected={defaults.rollWidth === 0.53}>0,53 м (узкие)</option>
+          <option value="1.06" selected={defaults.rollWidth === 1.06}>1,06 м (метровые)</option>
+          <option value="0.7" selected={defaults.rollWidth === 0.7}>0,7 м</option>
+        </select>
+      </label>
+    )}
+
+    {!lock.includes('rollLength') && (
+      <label>
+        <span>Длина рулона, м</span>
+        <select name="rollLength">
+          <option value="10.05" selected={defaults.rollLength === 10.05}>10,05 м (стандарт)</option>
+          <option value="15" selected={defaults.rollLength === 15}>15 м</option>
+          <option value="25" selected={defaults.rollLength === 25}>25 м</option>
+        </select>
+      </label>
+    )}
+
+    {!lock.includes('rapport') && (
+      <label>
+        <span>Рапорт (повтор рисунка), см</span>
+        <input type="number" name="rapport" min="0" max="100" step="1" value={defaults.rapport} />
+      </label>
+    )}
+
+    <label>
+      <span>Количество дверей</span>
+      <input type="number" name="doors" min="0" max="10" step="1" value={defaults.doors} />
+    </label>
+    <label>
+      <span>Количество окон</span>
+      <input type="number" name="windows" min="0" max="10" step="1" value={defaults.windows} />
+    </label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row">
+        <span>Периметр стен</span>
+        <strong data-out="perimeter">—</strong>
+      </div>
+      <div class="row">
+        <span>Площадь стен (за вычетом проёмов)</span>
+        <strong data-out="area">—</strong>
+      </div>
+      <div class="row">
+        <span>Полос на стены</span>
+        <strong data-out="strips">—</strong>
+      </div>
+      <div class="row">
+        <span>Полос из 1 рулона</span>
+        <strong data-out="stripsPerRoll">—</strong>
+      </div>
+      <div class="row big">
+        <span>Нужно рулонов</span>
+        <strong data-out="rolls">—</strong>
+      </div>
+      <div class="row big">
+        <span>С запасом 10%</span>
+        <strong data-out="rollsWithReserve">—</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('wp-calc');
+    if (!root) return;
+
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+
+    const DOOR_W = 0.9;
+    const DOOR_H = 2.0;
+    const WIN_W = 1.5;
+    const WIN_H = 1.4;
+    const TRIM = 0.1; // 10 см на подрезку
+
+    function num(name) {
+      const el = root.querySelector(`[name="${name}"]`);
+      if (!el) {
+        const defaults = JSON.parse(root.getAttribute('data-defaults') || '{}');
+        return Number(defaults[name]) || 0;
+      }
+      return parseFloat(el.value) || 0;
+    }
+
+    function calc() {
+      const L = num('length');
+      const W = num('width');
+      const H = num('height');
+      const rW = num('rollWidth');
+      const rL = num('rollLength');
+      const rapportCm = num('rapport');
+      const doors = num('doors');
+      const windows = num('windows');
+
+      const perimeter = 2 * (L + W);
+      const wallArea = perimeter * H;
+      const openingsArea = doors * DOOR_W * DOOR_H + windows * WIN_W * WIN_H;
+      const netArea = Math.max(0, wallArea - openingsArea);
+
+      // Полная высота полосы с учётом подрезки и рапорта
+      const rapport = rapportCm / 100;
+      let stripLen = H + TRIM;
+      if (rapport > 0) {
+        // округляем длину полосы вверх до целого числа рапортов
+        stripLen = Math.ceil(stripLen / rapport) * rapport;
+      }
+
+      // Количество полос на периметр (за вычетом дверных проёмов по ширине)
+      const doorsW = doors * DOOR_W;
+      const effectivePerimeter = Math.max(0, perimeter - doorsW);
+      const strips = Math.ceil(effectivePerimeter / rW);
+
+      const stripsPerRoll = Math.max(1, Math.floor(rL / stripLen));
+      const rolls = Math.ceil(strips / stripsPerRoll);
+      const rollsWithReserve = Math.ceil(rolls * 1.1);
+
+      const fmt = (n, suffix) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (suffix || '');
+      out('perimeter').textContent = fmt(perimeter, ' м');
+      out('area').textContent = fmt(netArea, ' м²');
+      out('strips').textContent = String(strips);
+      out('stripsPerRoll').textContent = String(stripsPerRoll);
+      out('rolls').textContent = String(rolls) + ' шт';
+      out('rollsWithReserve').textContent = String(rollsWithReserve) + ' шт';
+    }
+
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc {
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+  }
+  .calc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 16px;
+  }
+  .calc-grid label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 14px;
+    color: #444;
+  }
+  .calc-grid input,
+  .calc-grid select {
+    padding: 8px 10px;
+    border: 1px solid #c8ccd0;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fff;
+    width: 100%;
+  }
+  .calc-grid input:focus,
+  .calc-grid select:focus {
+    outline: 2px solid #0a5cce;
+    border-color: #0a5cce;
+  }
+  .calc-result {
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 6px;
+    padding: 14px 16px;
+    border: 1px solid #e6e8eb;
+  }
+  .rows {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 14px;
+    color: #555;
+    padding: 4px 0;
+  }
+  .row strong {
+    color: #1a1a1a;
+    font-weight: 600;
+  }
+  .row.big {
+    font-size: 16px;
+    border-top: 1px dashed #d8dade;
+    padding-top: 10px;
+    margin-top: 4px;
+  }
+  .row.big strong {
+    color: #0a5cce;
+    font-size: 18px;
+  }
+  @media (max-width: 540px) {
+    .calc-grid { grid-template-columns: 1fr; }
+  }
+</style>

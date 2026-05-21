@@ -1,0 +1,36 @@
+---
+import { SITE_CONFIG } from '~/config';
+interface Props {
+  slot: 'top' | 'middle' | 'bottom';
+}
+const { slot } = Astro.props;
+const rsya = SITE_CONFIG.rsya;
+const blockId =
+  slot === 'top' ? rsya.blockIdTop :
+  slot === 'middle' ? rsya.blockIdMiddle :
+  rsya.blockIdBottom;
+const containerId = `yandex_rtb_${slot}`;
+const renderTo = `yandex_rtb_${slot}`;
+---
+{rsya.enabled && blockId && (
+  <div class="rsya-block">
+    <div id={containerId}></div>
+    <script is:inline define:vars={{ blockId, renderTo }}>
+      window.yaContextCb = window.yaContextCb || [];
+      window.yaContextCb.push(() => {
+        // @ts-ignore
+        window.Ya.Context.AdvManager.render({
+          blockId: blockId,
+          renderTo: renderTo,
+          async: true
+        });
+      });
+    </script>
+  </div>
+)}
+<style>
+  .rsya-block {
+    margin: 24px 0;
+    min-height: 90px;
+  }
+</style>
