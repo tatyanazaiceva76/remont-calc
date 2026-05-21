@@ -2,7 +2,7 @@
 // Подменить значения перед деплоем.
 
 export const SITE_CONFIG = {
-  domain: 'kalkremont.ru',
+  domain: 'www.kalkremont.ru',
   siteName: 'Калькулятор ремонта',
   siteDescription: 'Бесплатные онлайн-калькуляторы для ремонта: расчёт обоев, ламината, краски, плитки и других материалов.',
 

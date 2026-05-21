@@ -5,6 +5,8 @@ import { scenarios } from '~/data/wallpaper-scenarios';
 import { laminateScenarios } from '~/data/laminate-scenarios';
 import { paintScenarios } from '~/data/paint-scenarios';
 import { tileScenarios } from '~/data/tile-scenarios';
+import { plasterScenarios } from '~/data/plaster-scenarios';
+import { linoleumScenarios } from '~/data/linoleum-scenarios';
 
 const title = `${SITE_CONFIG.siteName} — онлайн-калькуляторы материалов`;
 const description = SITE_CONFIG.siteDescription;
@@ -58,6 +60,16 @@ const websiteSchema = {
       <a href="/raschet-plitki/" class="card">
         <h3>Расчёт плитки</h3>
         <p>{tileScenarios.length} сценариев. Все форматы, прямая и диагональная укладка.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-shtukaturki/" class="card">
+        <h3>Расчёт штукатурки</h3>
+        <p>{plasterScenarios.length} сценариев. Гипсовая, цементная, декоративная.</p>
+        <span class="card-link">Открыть →</span>
+      </a>
+      <a href="/raschet-linoleuma/" class="card">
+        <h3>Расчёт линолеума</h3>
+        <p>{linoleumScenarios.length} сценариев. Подбор ширины рулона без швов.</p>
         <span class="card-link">Открыть →</span>
       </a>
     </div>

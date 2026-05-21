@@ -1,0 +1,70 @@
+---
+import Base from '~/layouts/Base.astro';
+import PlasterCalc from '~/components/PlasterCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import RelatedPlaster from '~/components/RelatedPlaster.astro';
+import { plasterScenarios } from '~/data/plaster-scenarios';
+import { plasterFAQs } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return plasterScenarios.map((s) => ({ params: { slug: s.slug }, props: { scenario: s } }));
+}
+const { scenario } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт штукатурки', item: `https://${SITE_CONFIG.domain}/raschet-shtukaturki/` },
+    { '@type': 'ListItem', position: 3, name: scenario.h1, item: url }
+  ]
+};
+const howTo = {
+  '@context': 'https://schema.org', '@type': 'HowTo', name: scenario.h1, description: scenario.description,
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Измерьте комнату', text: 'Длина, ширина и высота потолка в метрах.' },
+    { '@type': 'HowToStep', position: 2, name: 'Толщина слоя', text: 'От 1 до 3 см в зависимости от неровностей стен.' },
+    { '@type': 'HowToStep', position: 3, name: 'Тип смеси', text: 'Гипсовая для жилых, цементная для фасадов и влажных помещений.' },
+    { '@type': 'HowToStep', position: 4, name: 'Результат', text: 'Калькулятор покажет количество мешков с запасом.' }
+  ]
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo] };
+---
+<Base title={scenario.title} description={scenario.description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs">
+    <a href="/">Главная</a><span>›</span>
+    <a href="/raschet-shtukaturki/">Расчёт штукатурки</a><span>›</span>
+    <span>{scenario.h1}</span>
+  </nav>
+  <h1>{scenario.h1}</h1>
+  {scenario.introBlocks[0] && <p>{scenario.introBlocks[0]}</p>}
+
+  <PlasterCalc prefill={scenario.prefill} lock={scenario.lock} />
+  <Rsya slot="top" />
+
+  {scenario.introBlocks.slice(1).map((b) => <p>{b}</p>)}
+
+  <h2>Как работает калькулятор</h2>
+  <p>Площадь стен (за вычетом проёмов) × толщину слоя × расход = вес сухой смеси. Делим на вес мешка и округляем вверх. Запас 10% автоматически.</p>
+
+  <Rsya slot="middle" />
+
+  <h2>Что важно учесть</h2>
+  <ul>
+    <li><strong>Грунтовка обязательна.</strong> Без неё штукатурка может отслоиться. Особенно на бетоне нужен «Бетоноконтакт».</li>
+    <li><strong>Маяки.</strong> При толщине больше 1,5 см используйте маяки — это даёт идеально ровную поверхность.</li>
+    <li><strong>Время высыхания.</strong> Гипсовая — 5-7 дней до финишных работ. ЦПС — до 28 дней до полной прочности.</li>
+    <li><strong>Температура.</strong> При +5...+25°C. На морозе схватывание нарушается, в жару — слишком быстрая усадка.</li>
+  </ul>
+
+  <Faq items={plasterFAQs} />
+  <Rsya slot="bottom" />
+  <RelatedPlaster current={scenario.slug} scenarios={plasterScenarios} limit={10} />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 8px; }
+</style>

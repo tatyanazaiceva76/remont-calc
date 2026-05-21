@@ -1,0 +1,21 @@
+---
+import type { PlasterScenario } from '~/data/plaster-scenarios';
+interface Props { current: string; scenarios: PlasterScenario[]; limit?: number; }
+const { current, scenarios, limit = 8 } = Astro.props;
+const others = scenarios.filter((s) => s.slug !== current).slice(0, limit);
+---
+{others.length > 0 && (
+  <section class="related">
+    <h2>Похожие расчёты</h2>
+    <ul class="related-list">
+      {others.map((s) => <li><a href={`/raschet-shtukaturki/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+)}
+<style>
+  .related { margin: 40px 0 0; }
+  .related-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+  .related-list a { display: block; padding: 8px 12px; background: #f7f8fa; border-radius: 6px; border: 1px solid #e6e8eb; font-size: 14px; }
+  .related-list a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) { .related-list { grid-template-columns: 1fr; } }
+</style>

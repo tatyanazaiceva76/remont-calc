@@ -1,0 +1,132 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    height?: number;
+    thickness?: number; // см
+    consumption?: number; // кг на м² при 1 см
+    bagWeight?: number; // кг
+    doors?: number;
+    windows?: number;
+    pricePerBag?: number;
+  };
+  lock?: Array<'thickness' | 'consumption' | 'bagWeight'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 5,
+  width: prefill.width ?? 4,
+  height: prefill.height ?? 2.7,
+  thickness: prefill.thickness ?? 1.5,
+  consumption: prefill.consumption ?? 9,
+  bagWeight: prefill.bagWeight ?? 30,
+  doors: prefill.doors ?? 1,
+  windows: prefill.windows ?? 1,
+  pricePerBag: prefill.pricePerBag ?? 0
+};
+---
+<div class="calc" id="plaster-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label><span>Длина комнаты, м</span><input type="number" name="length" min="0.5" max="50" step="0.1" value={defaults.length} /></label>
+    <label><span>Ширина комнаты, м</span><input type="number" name="width" min="0.5" max="50" step="0.1" value={defaults.width} /></label>
+    <label><span>Высота потолка, м</span><input type="number" name="height" min="2.0" max="6.0" step="0.05" value={defaults.height} /></label>
+
+    {!lock.includes('thickness') && (
+      <label><span>Толщина слоя, см</span><input type="number" name="thickness" min="0.2" max="10" step="0.1" value={defaults.thickness} /></label>
+    )}
+    {!lock.includes('consumption') && (
+      <label>
+        <span>Расход смеси, кг/м²/см</span>
+        <select name="consumption">
+          <option value="9" selected={defaults.consumption === 9}>Гипсовая (~9)</option>
+          <option value="12" selected={defaults.consumption === 12}>Известково-гипсовая (~12)</option>
+          <option value="16" selected={defaults.consumption === 16}>Цементно-песчаная (~16)</option>
+          <option value="17" selected={defaults.consumption === 17}>Известково-цементная (~17)</option>
+          <option value="8" selected={defaults.consumption === 8}>Декоративная (~8)</option>
+        </select>
+      </label>
+    )}
+    {!lock.includes('bagWeight') && (
+      <label>
+        <span>Вес мешка, кг</span>
+        <select name="bagWeight">
+          <option value="25" selected={defaults.bagWeight === 25}>25 кг</option>
+          <option value="30" selected={defaults.bagWeight === 30}>30 кг</option>
+          <option value="50" selected={defaults.bagWeight === 50}>50 кг</option>
+        </select>
+      </label>
+    )}
+    <label><span>Количество дверей</span><input type="number" name="doors" min="0" max="10" step="1" value={defaults.doors} /></label>
+    <label><span>Количество окон</span><input type="number" name="windows" min="0" max="10" step="1" value={defaults.windows} /></label>
+    <label class="full"><span>Цена за 1 мешок, ₽ <span class="hint">(необязательно)</span></span><input type="number" name="pricePerBag" min="0" max="100000" step="50" value={defaults.pricePerBag} placeholder="например, 450" /></label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Площадь оштукатуривания</span><strong data-out="area">—</strong></div>
+      <div class="row"><span>Объём смеси</span><strong data-out="volume">—</strong></div>
+      <div class="row big"><span>Сухой смеси нужно</span><strong data-out="kg">—</strong></div>
+      <div class="row big"><span>Мешков</span><strong data-out="bags">—</strong></div>
+      <div class="row"><span>С запасом 10%</span><strong data-out="bagsReserve">—</strong></div>
+      <div class="row big cost" data-cost-row hidden><span>Стоимость материала</span><strong data-out="cost">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('plaster-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+    const DOOR_W = 0.9, DOOR_H = 2.0, WIN_W = 1.5, WIN_H = 1.4;
+    function num(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return Number(d[n])||0;}return parseFloat(el.value)||0;}
+    function calc() {
+      const L = num('length'), W = num('width'), H = num('height');
+      const t = num('thickness');
+      const c = num('consumption');
+      const bw = num('bagWeight');
+      const doors = num('doors'), windows = num('windows');
+      const perimeter = 2 * (L + W);
+      const openings = doors * DOOR_W * DOOR_H + windows * WIN_W * WIN_H;
+      const area = Math.max(0, perimeter * H - openings);
+      const volume = area * (t / 100); // м³
+      const kg = area * t * c; // площадь × см × кг/м²/см
+      const bags = bw > 0 ? Math.ceil(kg / bw) : 0;
+      const bagsReserve = Math.ceil(bags * 1.10);
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('area').textContent = fmt(area, ' м²');
+      out('volume').textContent = fmt(volume, ' м³');
+      out('kg').textContent = fmt(kg, ' кг');
+      out('bags').textContent = String(bags) + ' шт';
+      out('bagsReserve').textContent = String(bagsReserve) + ' шт';
+      const price = num('pricePerBag');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && bagsReserve > 0) {
+        out('cost').textContent = (bagsReserve * price).toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) costRow.setAttribute('hidden', '');
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>

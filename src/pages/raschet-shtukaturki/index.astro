@@ -1,0 +1,64 @@
+---
+import Base from '~/layouts/Base.astro';
+import PlasterCalc from '~/components/PlasterCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import { plasterByCategory } from '~/data/plaster-scenarios';
+import { plasterFAQs } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Калькулятор штукатурки онлайн — расчёт мешков и стоимости';
+const description = 'Точный онлайн-калькулятор расчёта штукатурки. Гипсовая, цементная, известковая, декоративная. С учётом толщины слоя и проёмов.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт штукатурки', item: url }
+  ]
+};
+const cats: Record<string, string> = {
+  area: 'По площади комнаты',
+  'mix-type': 'По типу смеси',
+  thickness: 'По толщине слоя'
+};
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Расчёт штукатурки</span></nav>
+  <h1>Калькулятор штукатурки онлайн</h1>
+  <p>Введите площадь, толщину слоя и тип смеси — калькулятор покажет точное количество мешков с запасом.</p>
+
+  <PlasterCalc />
+  <Rsya slot="top" />
+
+  <h2>Как пользоваться</h2>
+  <ol>
+    <li>Замерьте длину, ширину и высоту комнаты.</li>
+    <li>Укажите количество дверей и окон (стандарт: дверь 0,9 × 2,0 м, окно 1,5 × 1,4 м).</li>
+    <li>Толщина слоя: 1 см для ровных стен, 2 см для маяков, 3 см для очень неровных.</li>
+    <li>Тип смеси: гипсовая для сухих помещений, цементно-песчаная для фасадов и ванной.</li>
+    <li>Вес мешка — обычно 25, 30 или 50 кг.</li>
+  </ol>
+
+  <h2>Готовые расчёты</h2>
+  {Object.entries(plasterByCategory).map(([cat, list]) => (
+    <section>
+      <h3>{cats[cat]}</h3>
+      <ul class="links">
+        {list.map((s) => <li><a href={`/raschet-shtukaturki/${s.slug}/`}>{s.h1}</a></li>)}
+      </ul>
+    </section>
+  ))}
+
+  <Faq items={plasterFAQs} />
+  <Rsya slot="bottom" />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  ol { padding-left: 20px; } ol li { margin-bottom: 6px; }
+  .links { list-style: none; padding: 0; margin: 12px 0 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .links a { display: block; padding: 6px 10px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; font-size: 14px; }
+  .links a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) { .links { grid-template-columns: 1fr; } }
+</style>
