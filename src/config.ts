@@ -8,7 +8,7 @@ export const SITE_CONFIG = {
 
   // Получить ID после регистрации сайта в Яндекс.Метрике
   // https://metrika.yandex.ru/
-  metrikaId: '' as string,
+  metrikaId: '109345156' as string,
 
   // Получить блоки в кабинете РСЯ после прохождения модерации
   // https://partner2.yandex.ru/

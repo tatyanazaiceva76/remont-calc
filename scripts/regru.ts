@@ -34,7 +34,7 @@ interface CheckResult {
   currency?: string;
 }
 
-async function call(method: string, body: Record<string, unknown>) {
+async function callOnce(method: string, body: Record<string, unknown>, useProxy: boolean) {
   const form = [
     `username=${encodeURIComponent(USER!)}`,
     `password=${encodeURIComponent(PASS!)}`,
@@ -44,14 +44,14 @@ async function call(method: string, body: Record<string, unknown>) {
   ].join('&');
 
   const curlArgs = [
-    'curl', '--silent', '--show-error', '--max-time', '30',
+    'curl', '--silent', '--show-error', '--max-time', '15',
     '-X', 'POST',
     '-H', 'Content-Type: application/x-www-form-urlencoded',
     '--data', form,
     `${API}/${method}`
   ];
 
-  if (PROXY) {
+  if (useProxy && PROXY) {
     curlArgs.splice(1, 0,
       '--socks5', `${PROXY.host}:${PROXY.port}`,
       '--proxy-user', `${PROXY.user}:${PROXY.pass}`,
@@ -60,21 +60,35 @@ async function call(method: string, body: Record<string, unknown>) {
   }
 
   const proc = Bun.spawnSync(curlArgs);
-  const stdout = proc.stdout.toString();
-  const stderr = proc.stderr.toString();
+  return { exit: proc.exitCode ?? -1, stdout: proc.stdout.toString(), stderr: proc.stderr.toString() };
+}
 
-  if (proc.exitCode !== 0) {
-    throw new Error(`curl exit ${proc.exitCode}: ${stderr}`);
+async function call(method: string, body: Record<string, unknown>) {
+  // Сначала через прокси (если задан), при сетевой ошибке — fallback на прямой
+  const attempts: Array<{ via: string; useProxy: boolean }> = PROXY
+    ? [{ via: `proxy ${PROXY.host}`, useProxy: true }, { via: 'direct', useProxy: false }]
+    : [{ via: 'direct', useProxy: false }];
+
+  let last: { exit: number; stdout: string; stderr: string } | null = null;
+  for (const a of attempts) {
+    const r = await callOnce(method, body, a.useProxy);
+    last = r;
+    // Сетевая ошибка curl — пробуем следующий способ
+    if (r.exit !== 0) continue;
+
+    let json;
+    try { json = JSON.parse(r.stdout); }
+    catch (e) {
+      throw new Error(`bad json from reg.ru: ${r.stdout.slice(0, 200)}`);
+    }
+    if (json.result === 'error') {
+      // RATE_EXCEEDED — на стороне сервера, фолбэк не поможет
+      throw new Error(`reg.ru error: ${json.error_code} — ${json.error_text} (via ${a.via})`);
+    }
+    return json;
   }
 
-  let json;
-  try { json = JSON.parse(stdout); }
-  catch (e) { throw new Error(`bad json from reg.ru: ${stdout.slice(0, 200)}`); }
-
-  if (json.result === 'error') {
-    throw new Error(`reg.ru error: ${json.error_code} — ${json.error_text}`);
-  }
-  return json;
+  throw new Error(`network: curl exit ${last?.exit}: ${last?.stderr?.trim() || 'unknown'}`);
 }
 
 async function check(dnames: string[]) {
