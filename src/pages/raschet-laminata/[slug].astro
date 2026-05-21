@@ -4,7 +4,12 @@ import LaminateCalc from '~/components/LaminateCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import RelatedLaminate from '~/components/RelatedLaminate.astro';
+import CrossCalcLinks from '~/components/CrossCalcLinks.astro';
 import { laminateScenarios } from '~/data/laminate-scenarios';
+import { scenarios as wallpaperScenarios } from '~/data/wallpaper-scenarios';
+import { paintScenarios } from '~/data/paint-scenarios';
+import { tileScenarios } from '~/data/tile-scenarios';
+import { getCrossLinks } from '~/data/cross-links';
 import { laminateFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
 
@@ -36,6 +41,12 @@ const howTo = {
   ]
 };
 const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo] };
+const crossLinks = getCrossLinks('laminate', scenario.slug, {
+  wallpaper: wallpaperScenarios,
+  laminate: laminateScenarios,
+  paint: paintScenarios,
+  tile: tileScenarios
+});
 ---
 <Base title={scenario.title} description={scenario.description} canonical={url} schema={schema}>
   <nav class="breadcrumbs">
@@ -69,6 +80,7 @@ const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo
   </ul>
 
   <Faq items={laminateFAQs} />
+  <CrossCalcLinks links={crossLinks} />
   <Rsya slot="bottom" />
 
   <RelatedLaminate current={scenario.slug} scenarios={laminateScenarios} limit={10} />

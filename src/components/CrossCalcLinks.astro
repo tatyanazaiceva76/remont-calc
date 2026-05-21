@@ -1,0 +1,39 @@
+---
+import type { CrossLink } from '~/data/cross-links';
+interface Props { links: CrossLink[]; }
+const { links } = Astro.props;
+---
+{links.length > 0 && (
+  <section class="cross">
+    <h2>Тот же ремонт — другие материалы</h2>
+    <p class="hint">
+      Делаете комплексный расчёт? Посчитайте расход других материалов для этой же комнаты:
+    </p>
+    <ul class="cross-list">
+      {links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+    </ul>
+  </section>
+)}
+<style>
+  .cross { margin: 36px 0 0; }
+  .hint { color: #555; font-size: 14px; }
+  .cross-list {
+    list-style: none; padding: 0; margin: 12px 0 0;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;
+  }
+  .cross-list a {
+    display: block;
+    padding: 10px 14px;
+    background: linear-gradient(180deg, #eef3fb 0%, #e2ebf7 100%);
+    border: 1px solid #c4d4ee;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #0a4ba8;
+    text-align: center;
+  }
+  .cross-list a:hover { background: #dde7f6; text-decoration: none; border-color: #0a5cce; }
+  @media (max-width: 540px) {
+    .cross-list { grid-template-columns: 1fr; }
+  }
+</style>
