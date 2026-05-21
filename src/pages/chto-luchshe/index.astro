@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+import Rsya from '~/components/Rsya.astro';
+import { comparisons } from '~/data/comparison-pages';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Что лучше — сравнения материалов для ремонта';
+const description = 'Сравнения материалов для ремонта квартиры: ламинат vs линолеум, обои vs покраска, минвата vs пеноплекс и другие.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Что лучше', item: url }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Что лучше</span></nav>
+  <h1>Что лучше — сравнения материалов</h1>
+  <p>Когда выбираете между двумя материалами, посмотрите наше сравнение. Таблица параметров, плюсы и минусы каждого, прямой совет для разных ситуаций.</p>
+
+  <Rsya slot="top" />
+
+  <ul class="cmp-list">
+    {comparisons.map((c) => (
+      <li>
+        <a href={`/chto-luchshe/${c.slug}/`}>
+          <h2>{c.h1}</h2>
+          <p>{c.intro.slice(0, 200)}...</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <Rsya slot="bottom" />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .cmp-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .cmp-list a {
+    display: block;
+    padding: 18px 20px;
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    color: #1a1a1a;
+    text-decoration: none;
+  }
+  .cmp-list a:hover { background: #eef3fb; border-color: #0a5cce; }
+  .cmp-list h2 { font-size: 17px; margin: 0 0 8px; color: #0a5cce; }
+  .cmp-list p { font-size: 14px; color: #555; margin: 0; line-height: 1.5; }
+  @media (max-width: 540px) { .cmp-list { grid-template-columns: 1fr; } }
+</style>

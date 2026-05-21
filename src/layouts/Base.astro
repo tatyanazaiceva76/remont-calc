@@ -60,6 +60,7 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
           <a href="/raschet-uteplitelya/">Утеплитель</a>
           <a href="/raschet-betona/">Бетон</a>
           <a href="/sovety/">Советы</a>
+          <a href="/chto-luchshe/">Что лучше</a>
           <a href="/stoimost-remonta/" class="nav-highlight">Стоимость ремонта 💰</a>
         </nav>
       </div>
@@ -71,6 +72,11 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
 
     <footer class="site-footer">
       <div class="container">
+        <nav class="footer-nav">
+          <a href="/o-sayte/">О проекте</a>
+          <a href="/politika/">Политика конфиденциальности</a>
+          <a href="/sitemap.xml">Sitemap</a>
+        </nav>
         <p>© {new Date().getFullYear()} {SITE_CONFIG.siteName}. Калькуляторы носят справочный характер.</p>
       </div>
     </footer>
@@ -127,6 +133,8 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
         color: #666;
         margin-top: 48px;
       }
+      .footer-nav { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
+      .footer-nav a { color: #666; }
     </style>
   </body>
 </html>
