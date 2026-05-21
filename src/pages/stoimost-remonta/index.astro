@@ -1,0 +1,165 @@
+---
+import Base from '~/layouts/Base.astro';
+import RepairCostCalc from '~/components/RepairCostCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import type { FAQ } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Стоимость ремонта квартиры — калькулятор цен 2026';
+const description = 'Узнайте стоимость ремонта квартиры под ключ. Калькулятор учитывает площадь, тип ремонта (косметический, капитальный, евро) и регион.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Стоимость ремонта', item: url }
+  ]
+};
+
+const faqs: FAQ[] = [
+  { q: 'Сколько стоит ремонт квартиры 50 м² в Москве?', a: 'В Москве 2026 года стоимость ремонта квартиры 50 м² «под ключ» составляет: косметический — 350-450 тыс. руб., капитальный — 750-900 тыс. руб., евроремонт — 1,2-1,5 млн руб., дизайнерский — от 2 млн руб. Сюда входят и работы, и материалы среднего ценового сегмента.' },
+  { q: 'Что входит в косметический ремонт?', a: 'Косметический ремонт включает: покраску потолка, поклейку обоев, замену плинтусов, покраску стен в санузле, мелкий ремонт оконных откосов. Без замены пола, сантехники, электрики. Подходит когда нужно «освежить» квартиру за 1-2 месяца.' },
+  { q: 'Чем отличается капитальный ремонт от евроремонта?', a: 'Капитальный — замена пола, сантехники, электрики, отделочные работы. Сохраняется планировка. Евроремонт — это капитальный + демонтаж старой отделки до бетона, выравнивание стен/пола, иногда перепланировка. Евро в 1,5-2 раза дороже капитального.' },
+  { q: 'Сколько по времени делается ремонт?', a: 'Косметический — 2-4 недели на квартиру до 60 м². Капитальный — 2-3 месяца. Евроремонт — 3-5 месяцев. Дизайнерский — 4-8 месяцев. Сроки зависят от количества рабочих, согласованности материалов, простоев на сушку.' },
+  { q: 'Как сэкономить на ремонте?', a: '1) Сравните 3-5 предложений мастеров — разница до 40%. 2) Покупайте материалы сами, не давайте мастерам. 3) Делайте ремонт зонами, не всей квартирой сразу. 4) Выбирайте материалы среднего сегмента — переплата за бренды редко оправдана. 5) Не делайте «евро» там где хватает «капитального».' },
+  { q: 'Можно ли получить точную смету бесплатно?', a: 'Да. На сайтах поиска мастеров (Profi.ru, YouDo, Авито Услуги) можно описать задачу и получить 5-10 откликов с ценами за 1-2 дня. Часто мастера составляют смету бесплатно при выезде на квартиру.' }
+];
+
+const howTo = {
+  '@context': 'https://schema.org', '@type': 'HowTo',
+  name: 'Как рассчитать стоимость ремонта квартиры',
+  step: [
+    { '@type': 'HowToStep', position: 1, name: 'Замерьте площадь', text: 'Уточните общую площадь квартиры по документам или замером.' },
+    { '@type': 'HowToStep', position: 2, name: 'Определите тип ремонта', text: 'Косметический, капитальный, евро или дизайнерский — выберите по бюджету.' },
+    { '@type': 'HowToStep', position: 3, name: 'Учтите регион', text: 'Цены в Москве выше чем в регионах в 1,5-2 раза.' },
+    { '@type': 'HowToStep', position: 4, name: 'Сравните предложения', text: 'Получите 3-5 смет от разных мастеров — разница может составлять 30-40%.' }
+  ]
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((it) => ({
+    '@type': 'Question', name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: it.a }
+  }))
+};
+
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo, faqSchema] };
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Стоимость ремонта</span></nav>
+
+  <h1>Стоимость ремонта квартиры</h1>
+  <p class="lead">
+    Узнайте сколько стоит ремонт вашей квартиры. Калькулятор учитывает площадь, тип ремонта и регион. Цены актуальны на 2026 год по данным крупнейших сервисов поиска мастеров.
+  </p>
+
+  <RepairCostCalc />
+
+  <Rsya slot="top" />
+
+  <h2>Из чего складывается стоимость ремонта</h2>
+  <p>
+    Полная стоимость «под ключ» = <strong>работы</strong> + <strong>материалы</strong> + <strong>сопутствующие расходы</strong> (доставка, вывоз мусора, аренда оборудования).
+  </p>
+  <p>
+    Соотношение работ к материалам зависит от типа ремонта:
+  </p>
+  <ul>
+    <li><strong>Косметический:</strong> 50/50. Большая часть материалов — обои, краска, плинтус.</li>
+    <li><strong>Капитальный:</strong> 55/45 в пользу работ. Сложные работы — заливка стяжки, штукатурка стен, монтаж сантехники.</li>
+    <li><strong>Евроремонт:</strong> 55/45 в пользу работ. Но материалы дороже из-за более высокого сегмента.</li>
+    <li><strong>Дизайнерский:</strong> 50/50. Дорогие материалы + дорогие работы. Премиум-сегмент.</li>
+  </ul>
+
+  <h2>Цены на типы ремонта в 2026 году</h2>
+  <table class="prices-table">
+    <thead>
+      <tr><th>Тип</th><th>Москва, ₽/м²</th><th>СПб, ₽/м²</th><th>Регионы, ₽/м²</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Косметический</td><td>7 500</td><td>7 000</td><td>5 500</td></tr>
+      <tr><td>Капитальный</td><td>15 500</td><td>14 000</td><td>11 000</td></tr>
+      <tr><td>Евроремонт</td><td>26 000</td><td>24 000</td><td>19 000</td></tr>
+      <tr><td>Дизайнерский</td><td>от 42 000</td><td>от 38 000</td><td>от 31 000</td></tr>
+    </tbody>
+  </table>
+  <p class="hint">Указана общая стоимость работ + материалов «под ключ» за 1 м² квартиры. Данные обновлены в 2026 году.</p>
+
+  <Rsya slot="middle" />
+
+  <h2>Как выбрать мастера и не переплатить</h2>
+  <ol>
+    <li><strong>Запросите минимум 3 сметы</strong> — разница цен между мастерами часто 30-40%. Самый дорогой не всегда лучше, самый дешёвый часто оборачивается переделками.</li>
+    <li><strong>Проверяйте опыт.</strong> Запросите фото предыдущих работ. На Profi.ru есть отзывы и рейтинг — смотрите на свежие.</li>
+    <li><strong>Чётко прописывайте материалы в смете.</strong> Не «ламинат» — а «ламинат Kronotex 33 класс, 12 мм». Иначе мастер сэкономит и не заметите.</li>
+    <li><strong>Не платите больше 30% аванса.</strong> Остальное — по этапам: после стяжки, после черновой отделки, после финиша.</li>
+    <li><strong>Договор в письменном виде.</strong> Даже с частным мастером — расписка с паспортными данными, описанием работ и сроком.</li>
+  </ol>
+
+  <Faq items={faqs} />
+
+  <Rsya slot="bottom" />
+
+  <section class="related">
+    <h2>Калькуляторы материалов</h2>
+    <p>Точный расчёт нужных материалов для вашего ремонта:</p>
+    <ul class="related-list">
+      <li><a href="/raschet-oboev/">Обои</a></li>
+      <li><a href="/raschet-laminata/">Ламинат</a></li>
+      <li><a href="/raschet-kraski/">Краска</a></li>
+      <li><a href="/raschet-plitki/">Плитка</a></li>
+      <li><a href="/raschet-shtukaturki/">Штукатурка</a></li>
+      <li><a href="/raschet-linoleuma/">Линолеум</a></li>
+      <li><a href="/raschet-gipsokartona/">Гипсокартон</a></li>
+      <li><a href="/raschet-uteplitelya/">Утеплитель</a></li>
+      <li><a href="/raschet-betona/">Бетон</a></li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  ul, ol { padding-left: 20px; } ul li, ol li { margin-bottom: 8px; }
+  .prices-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 15px;
+  }
+  .prices-table th, .prices-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e6e8eb;
+  }
+  .prices-table thead th {
+    background: #f7f8fa;
+    font-weight: 600;
+  }
+  .prices-table tbody tr:hover { background: #fafbfc; }
+  .hint { color: #888; font-size: 13px; font-style: italic; }
+  .related { margin: 40px 0 0; }
+  .related-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px 16px;
+  }
+  .related-list a {
+    display: block;
+    padding: 8px 12px;
+    background: #f7f8fa;
+    border-radius: 6px;
+    border: 1px solid #e6e8eb;
+    font-size: 14px;
+  }
+  .related-list a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) {
+    .related-list { grid-template-columns: 1fr; }
+  }
+</style>

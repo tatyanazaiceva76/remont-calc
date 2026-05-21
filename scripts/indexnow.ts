@@ -18,7 +18,7 @@ import { insulationScenarios } from '../src/data/insulation-scenarios';
 import { concreteScenarios } from '../src/data/concrete-scenarios';
 
 const KEY = process.env.INDEXNOW_KEY;
-const DOMAIN = 'kalkremont.ru';
+const DOMAIN = 'www.kalkremont.ru';
 
 if (!KEY) {
   console.error('❌ INDEXNOW_KEY не задан в .env.local');
@@ -38,6 +38,7 @@ function allUrls(): string[] {
     `${base}/raschet-gipsokartona/`,
     `${base}/raschet-uteplitelya/`,
     `${base}/raschet-betona/`,
+    `${base}/stoimost-remonta/`,
     ...wallpaperScenarios.map((s) => `${base}/raschet-oboev/${s.slug}/`),
     ...laminateScenarios.map((s) => `${base}/raschet-laminata/${s.slug}/`),
     ...paintScenarios.map((s) => `${base}/raschet-kraski/${s.slug}/`),

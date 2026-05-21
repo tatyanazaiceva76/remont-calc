@@ -25,6 +25,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/raschet-gipsokartona/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/raschet-uteplitelya/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/raschet-betona/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/stoimost-remonta/`, priority: 1.0, changefreq: 'weekly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,

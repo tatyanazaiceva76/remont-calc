@@ -1,0 +1,156 @@
+---
+interface Props {
+  prefill?: {
+    area?: number;
+    type?: 'cosmetic' | 'capital' | 'euro' | 'designer';
+    region?: 'msk' | 'spb' | 'mil' | 'reg';
+    rooms?: number;
+  };
+}
+const { prefill = {} } = Astro.props;
+const defaults = {
+  area: prefill.area ?? 50,
+  type: prefill.type ?? 'capital',
+  region: prefill.region ?? 'msk',
+  rooms: prefill.rooms ?? 2
+};
+---
+<div class="calc" id="rcc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label><span>Площадь квартиры, м²</span><input type="number" name="area" min="10" max="500" step="1" value={defaults.area} /></label>
+    <label>
+      <span>Количество комнат</span>
+      <select name="rooms">
+        <option value="1" selected={defaults.rooms === 1}>1 (студия / 1-комн.)</option>
+        <option value="2" selected={defaults.rooms === 2}>2</option>
+        <option value="3" selected={defaults.rooms === 3}>3</option>
+        <option value="4" selected={defaults.rooms === 4}>4+</option>
+      </select>
+    </label>
+    <label>
+      <span>Тип ремонта</span>
+      <select name="type">
+        <option value="cosmetic" selected={defaults.type === 'cosmetic'}>Косметический (обои, краска, плинтус)</option>
+        <option value="capital" selected={defaults.type === 'capital'}>Капитальный (с заменой пола и сантехники)</option>
+        <option value="euro" selected={defaults.type === 'euro'}>Евроремонт (демонтаж, новые материалы)</option>
+        <option value="designer" selected={defaults.type === 'designer'}>Дизайнерский (по проекту)</option>
+      </select>
+    </label>
+    <label>
+      <span>Регион</span>
+      <select name="region">
+        <option value="msk" selected={defaults.region === 'msk'}>Москва и МО</option>
+        <option value="spb" selected={defaults.region === 'spb'}>Санкт-Петербург и ЛО</option>
+        <option value="mil" selected={defaults.region === 'mil'}>Города-миллионники</option>
+        <option value="reg" selected={defaults.region === 'reg'}>Другие регионы</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Цена работ за 1 м²</span><strong data-out="pricePerSqm">—</strong></div>
+      <div class="row"><span>Цена материалов за 1 м²</span><strong data-out="matPerSqm">—</strong></div>
+      <div class="row"><span>Стоимость работ</span><strong data-out="workTotal">—</strong></div>
+      <div class="row"><span>Стоимость материалов</span><strong data-out="matTotal">—</strong></div>
+      <div class="row big"><span>Итого «под ключ»</span><strong data-out="total">—</strong></div>
+      <div class="row"><span>Срок выполнения</span><strong data-out="duration">—</strong></div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <h3>Хотите точную смету?</h3>
+    <p>Опытные мастера составят бесплатную смету по вашей квартире. Сравните 3-5 предложений и выберите лучшее.</p>
+    <div class="cta-buttons">
+      <a href="https://profi.ru/repair/" target="_blank" rel="nofollow sponsored noopener" class="cta-btn cta-primary">
+        Найти мастера на Profi.ru →
+      </a>
+      <a href="https://youdo.com/repair/" target="_blank" rel="nofollow sponsored noopener" class="cta-btn cta-secondary">
+        Подать заявку на YouDo →
+      </a>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('rcc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+    function num(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return Number(d[n])||0;}return parseFloat(el.value)||0;}
+    function str(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return String(d[n]||'');}return el.value;}
+    // Цены работ + материалов за м² по типам и регионам (актуально на 2025-2026)
+    const prices = {
+      cosmetic:  { work: { msk: 4500, spb: 4000, mil: 3000, reg: 2500 }, mat: 3000, days: 0.6 },
+      capital:   { work: { msk: 9000, spb: 7500, mil: 6000, reg: 4500 }, mat: 6500, days: 1.2 },
+      euro:      { work: { msk: 14000, spb: 12000, mil: 9000, reg: 7000 }, mat: 12000, days: 1.8 },
+      designer:  { work: { msk: 22000, spb: 18000, mil: 14000, reg: 11000 }, mat: 20000, days: 2.5 }
+    };
+    function calc() {
+      const area = num('area');
+      const type = str('type');
+      const region = str('region');
+      const rooms = num('rooms');
+      const p = prices[type] || prices.capital;
+      const workPerSqm = p.work[region] || p.work.msk;
+      const matPerSqm = p.mat;
+      const workTotal = area * workPerSqm;
+      const matTotal = area * matPerSqm;
+      const total = workTotal + matTotal;
+      // Срок: ~ area × days / 30 (мес), скорректировано по комнатам
+      const days = Math.ceil(area * p.days + rooms * 7);
+      const fmt = (n) => n.toLocaleString('ru-RU');
+      out('pricePerSqm').textContent = fmt(workPerSqm) + ' ₽';
+      out('matPerSqm').textContent = fmt(matPerSqm) + ' ₽';
+      out('workTotal').textContent = fmt(workTotal) + ' ₽';
+      out('matTotal').textContent = fmt(matTotal) + ' ₽';
+      out('total').textContent = fmt(total) + ' ₽';
+      out('duration').textContent = days < 30 ? `~${days} дней` : `~${Math.ceil(days/30)} мес. (${days} дней)`;
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 18px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 22px; }
+  .cta-box {
+    margin-top: 24px;
+    background: linear-gradient(135deg, #0a5cce 0%, #1976d2 100%);
+    color: #fff;
+    border-radius: 10px;
+    padding: 24px;
+  }
+  .cta-box h3 { color: #fff; margin: 0 0 8px; font-size: 20px; }
+  .cta-box p { color: #d4e3f8; margin: 0 0 16px; font-size: 15px; }
+  .cta-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+  .cta-btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: transform 0.1s;
+  }
+  .cta-btn:hover { text-decoration: none; transform: translateY(-1px); }
+  .cta-primary { background: #ffc107; color: #2d1f00; }
+  .cta-primary:hover { background: #ffd54f; }
+  .cta-secondary { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+  .cta-secondary:hover { background: rgba(255,255,255,0.25); }
+  @media (max-width: 540px) {
+    .calc-grid { grid-template-columns: 1fr; }
+    .cta-buttons { flex-direction: column; }
+    .cta-btn { text-align: center; }
+  }
+</style>

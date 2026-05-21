@@ -42,8 +42,14 @@ const websiteSchema = {
     Без регистрации, мгновенный результат, реальные формулы.
   </p>
 
+  <section class="hero-cta">
+    <h2 class="hero-title">💰 Сколько стоит ремонт квартиры?</h2>
+    <p>Узнайте полную стоимость вашего ремонта «под ключ» с учётом площади, типа работ и региона. Сравните цены мастеров.</p>
+    <a href="/stoimost-remonta/" class="hero-btn">Узнать стоимость →</a>
+  </section>
+
   <section>
-    <h2>Калькуляторы</h2>
+    <h2>Калькуляторы материалов</h2>
     <div class="cards">
       <a href="/raschet-oboev/" class="card">
         <h3>Расчёт обоев</h3>
@@ -112,6 +118,25 @@ const websiteSchema = {
 </Base>
 
 <style>
+  .hero-cta {
+    background: linear-gradient(135deg, #0a5cce 0%, #1565c0 100%);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 10px;
+    margin: 16px 0 24px;
+  }
+  .hero-cta h2.hero-title { color: #fff; margin-top: 0; }
+  .hero-cta p { color: #d4e3f8; margin-bottom: 16px; }
+  .hero-btn {
+    display: inline-block;
+    padding: 12px 26px;
+    background: #ffc107;
+    color: #2d1f00;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 16px;
+  }
+  .hero-btn:hover { background: #ffd54f; text-decoration: none; }
   .cards {
     display: grid;
     grid-template-columns: 1fr 1fr;
