@@ -1,0 +1,133 @@
+---
+// Партнёрские ссылки на стройретейлеры под результатом калькулятора.
+// На старте — без affiliate ID (просто красивые ссылки на каталоги).
+// Когда зарегаемся в Admitad/CityAds — подменим href на партнёрские.
+//
+// Чтобы добавить affiliate ID:
+// 1. Зарегаться в Admitad / CityAds
+// 2. Найти оффер по нужному ретейлеру, получить ссылку с твоим subID
+// 3. Подменить значения в links[] ниже
+
+interface Props {
+  /** Тип материала: wallpaper | laminate | paint | tile | plaster | linoleum */
+  material: 'wallpaper' | 'laminate' | 'paint' | 'tile' | 'plaster' | 'linoleum';
+}
+const { material } = Astro.props;
+
+// Названия для UX
+const labels: Record<Props['material'], { name: string; gen: string }> = {
+  wallpaper: { name: 'Обои', gen: 'обои' },
+  laminate: { name: 'Ламинат', gen: 'ламинат' },
+  paint: { name: 'Краска', gen: 'краску' },
+  tile: { name: 'Плитка', gen: 'плитку' },
+  plaster: { name: 'Штукатурка', gen: 'штукатурку' },
+  linoleum: { name: 'Линолеум', gen: 'линолеум' }
+};
+
+// Каталог-ссылки. ВРЕМЕННО без affiliate. Заменить на партнёрские когда будет ID.
+const catalogs: Record<Props['material'], Array<{ shop: string; href: string }>> = {
+  wallpaper: [
+    { shop: 'ВсеИнструменты', href: 'https://www.vseinstrumenti.ru/category/oboi-6014/' },
+    { shop: 'Леруа Мерлен', href: 'https://leroymerlin.ru/catalogue/oboi/' },
+    { shop: 'Петрович', href: 'https://petrovich.ru/catalog/oboi/' }
+  ],
+  laminate: [
+    { shop: 'ВсеИнструменты', href: 'https://www.vseinstrumenti.ru/category/laminat-13031/' },
+    { shop: 'Леруа Мерлен', href: 'https://leroymerlin.ru/catalogue/laminat/' },
+    { shop: 'Петрович', href: 'https://petrovich.ru/catalog/laminat/' }
+  ],
+  paint: [
+    { shop: 'ВсеИнструменты', href: 'https://www.vseinstrumenti.ru/category/kraski-13075/' },
+    { shop: 'Леруа Мерлен', href: 'https://leroymerlin.ru/catalogue/kraski/' },
+    { shop: 'Петрович', href: 'https://petrovich.ru/catalog/kraski-emali-laki/' }
+  ],
+  tile: [
+    { shop: 'ВсеИнструменты', href: 'https://www.vseinstrumenti.ru/category/keramicheskaya-plitka-12923/' },
+    { shop: 'Леруа Мерлен', href: 'https://leroymerlin.ru/catalogue/keramicheskaya-plitka/' },
+    { shop: 'Петрович', href: 'https://petrovich.ru/catalog/plitka/' }
+  ],
+  plaster: [
+    { shop: 'ВсеИнструменты', href: 'https://www.vseinstrumenti.ru/category/shtukaturki-12895/' },
+    { shop: 'Леруа Мерлен', href: 'https://leroymerlin.ru/catalogue/shtukaturka/' },
+    { shop: 'Петрович', href: 'https://petrovich.ru/catalog/suhie-smesi/' }
+  ],
+  linoleum: [
+    { shop: 'ВсеИнструменты', href: 'https://www.vseinstrumenti.ru/category/linoleum-12990/' },
+    { shop: 'Леруа Мерлен', href: 'https://leroymerlin.ru/catalogue/linoleum/' },
+    { shop: 'Петрович', href: 'https://petrovich.ru/catalog/napolnye-pokrytiya/linoleum/' }
+  ]
+};
+
+const label = labels[material];
+const links = catalogs[material];
+---
+<section class="aff">
+  <h3>Где купить {label.gen}</h3>
+  <p class="aff-hint">Сравните цены в популярных магазинах стройматериалов:</p>
+  <div class="aff-grid">
+    {links.map((l) => (
+      <a href={l.href} target="_blank" rel="nofollow sponsored noopener" class="aff-card" data-shop={l.shop}>
+        <span class="aff-name">{l.shop}</span>
+        <span class="aff-arrow">→</span>
+      </a>
+    ))}
+  </div>
+  <p class="aff-disclaimer">Цены и наличие — на стороне магазина. Открываются в новой вкладке.</p>
+</section>
+
+<style>
+  .aff {
+    margin: 32px 0 0;
+    background: linear-gradient(135deg, #fff8e1 0%, #fef3c8 100%);
+    border: 1px solid #f3d99a;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .aff h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #6e4f0c;
+  }
+  .aff-hint {
+    color: #856607;
+    font-size: 14px;
+    margin: 0 0 14px;
+  }
+  .aff-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+  .aff-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid #ecc878;
+    border-radius: 6px;
+    color: #6e4f0c;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .aff-card:hover {
+    background: #fffcf3;
+    border-color: #d09b1a;
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+  .aff-arrow {
+    color: #d09b1a;
+    font-size: 18px;
+  }
+  .aff-disclaimer {
+    font-size: 12px;
+    color: #aa8838;
+    margin: 12px 0 0;
+  }
+  @media (max-width: 540px) {
+    .aff-grid { grid-template-columns: 1fr; }
+  }
+</style>

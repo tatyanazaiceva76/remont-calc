@@ -23,6 +23,7 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="canonical" href={canonicalUrl} />
+    <meta name="yandex-verification" content="460ea36bfc80a84e" />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

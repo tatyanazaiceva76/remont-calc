@@ -3,6 +3,7 @@ import Base from '~/layouts/Base.astro';
 import WallpaperCalc from '~/components/WallpaperCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
+import AffiliateLinks from '~/components/AffiliateLinks.astro';
 import RelatedScenarios from '~/components/RelatedScenarios.astro';
 import CrossCalcLinks from '~/components/CrossCalcLinks.astro';
 import { scenarios } from '~/data/wallpaper-scenarios';
@@ -93,6 +94,7 @@ const crossLinks = getCrossLinks('wallpaper', scenario.slug, {
     <li><strong>Проёмы.</strong> Учитываются стандартные размеры: дверь 0,9 × 2,0 м, окно 1,5 × 1,4 м. Если у вас нестандартные — поправьте количество.</li>
   </ul>
 
+  <AffiliateLinks material="wallpaper" />
   <Faq items={wallpaperFAQs} />
   <CrossCalcLinks links={crossLinks} />
   <Rsya slot="bottom" />

@@ -5,7 +5,7 @@
 const YANDEX_OAUTH_TOKEN = process.env.YANDEX_OAUTH_TOKEN;
 const YANDEX_WEBMASTER_USER_ID = process.env.YANDEX_WEBMASTER_USER_ID;
 const HOST_ID = process.env.YANDEX_WEBMASTER_HOST_ID || 'https:kalkremont.ru:443';
-const DOMAIN = 'kalkremont.ru';
+const DOMAIN = 'www.kalkremont.ru';
 const UIN = process.env.YANDEX_WEBMASTER_VERIFICATION_UIN || '';
 
 if (!YANDEX_OAUTH_TOKEN || !YANDEX_WEBMASTER_USER_ID) {
@@ -68,18 +68,25 @@ async function main() {
     })
   );
 
+  const _baseUrl = `https://${DOMAIN}`;
+
   // 5. Запросить переобход ключевых URL
+  const base = `https://${DOMAIN}`;
   const importantUrls = [
-    `https://${DOMAIN}/`,
-    `https://${DOMAIN}/raschet-oboev/`,
-    `https://${DOMAIN}/raschet-laminata/`,
-    `https://${DOMAIN}/raschet-kraski/`,
-    `https://${DOMAIN}/raschet-plitki/`,
-    `https://${DOMAIN}/raschet-oboev/na-komnatu-18-kv-m/`,
-    `https://${DOMAIN}/raschet-oboev/na-spalnyu/`,
-    `https://${DOMAIN}/raschet-laminata/na-komnatu-20-kv-m/`,
-    `https://${DOMAIN}/raschet-kraski/na-komnatu-15-kv-m/`,
-    `https://${DOMAIN}/raschet-plitki/na-vannuyu/`
+    `${base}/`,
+    `${base}/raschet-oboev/`,
+    `${base}/raschet-laminata/`,
+    `${base}/raschet-kraski/`,
+    `${base}/raschet-plitki/`,
+    `${base}/raschet-shtukaturki/`,
+    `${base}/raschet-linoleuma/`,
+    `${base}/raschet-oboev/na-komnatu-18-kv-m/`,
+    `${base}/raschet-oboev/na-spalnyu/`,
+    `${base}/raschet-laminata/na-komnatu-20-kv-m/`,
+    `${base}/raschet-kraski/na-komnatu-15-kv-m/`,
+    `${base}/raschet-plitki/na-vannuyu/`,
+    `${base}/raschet-shtukaturki/na-komnatu-20-kv-m/`,
+    `${base}/raschet-linoleuma/na-komnatu-15-kv-m/`
   ];
 
   for (const url of importantUrls) {
