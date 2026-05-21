@@ -4,6 +4,7 @@ import RepairCostCalc from '~/components/RepairCostCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import type { FAQ } from '~/data/faqs';
+import { regionScenarios } from '~/data/repair-regions';
 import { SITE_CONFIG } from '~/config';
 
 const title = 'Стоимость ремонта квартиры — калькулятор цен 2026';
@@ -100,6 +101,16 @@ const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo
 
   <Faq items={faqs} />
 
+  <section class="cities">
+    <h2>Стоимость ремонта по городам России</h2>
+    <p>Точные цены в вашем регионе:</p>
+    <ul class="cities-list">
+      {regionScenarios.map((s) => (
+        <li><a href={`/stoimost-remonta/${s.slug}/`}>Ремонт {s.cityGen}</a></li>
+      ))}
+    </ul>
+  </section>
+
   <Rsya slot="bottom" />
 
   <section class="related">
@@ -159,7 +170,26 @@ const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo
     font-size: 14px;
   }
   .related-list a:hover { background: #eef3fb; text-decoration: none; }
+  .cities { margin: 32px 0; }
+  .cities-list {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px 14px;
+  }
+  .cities-list a {
+    display: block;
+    padding: 7px 12px;
+    background: #fff8e1;
+    border-radius: 4px;
+    border: 1px solid #f3d99a;
+    color: #6e4f0c;
+    font-size: 14px;
+  }
+  .cities-list a:hover { background: #fef3c8; text-decoration: none; }
   @media (max-width: 540px) {
-    .related-list { grid-template-columns: 1fr; }
+    .related-list, .cities-list { grid-template-columns: 1fr; }
   }
 </style>

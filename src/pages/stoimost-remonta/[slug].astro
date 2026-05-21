@@ -1,0 +1,151 @@
+---
+import Base from '~/layouts/Base.astro';
+import RepairCostCalc from '~/components/RepairCostCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import type { FAQ } from '~/data/faqs';
+import { regionScenarios } from '~/data/repair-regions';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return regionScenarios.map((s) => ({ params: { slug: s.slug }, props: { region: s } }));
+}
+const { region } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = `Стоимость ремонта квартиры ${region.cityGen} — цены 2026`;
+const description = `Узнайте сколько стоит ремонт квартиры ${region.cityGen}. Калькулятор учитывает площадь, тип ремонта и местные цены ${region.cityGen}.`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Стоимость ремонта', item: `https://${SITE_CONFIG.domain}/stoimost-remonta/` },
+    { '@type': 'ListItem', position: 3, name: region.city, item: url }
+  ]
+};
+
+// Цены для региона (берём те же что в калькуляторе)
+const cityPrices = {
+  msk: { cosm: 7500, capital: 15500, euro: 26000, design: 42000 },
+  spb: { cosm: 7000, capital: 14000, euro: 24000, design: 38000 },
+  mil: { cosm: 5500, capital: 11500, euro: 19500, design: 32500 },
+  reg: { cosm: 5500, capital: 11000, euro: 19000, design: 31000 }
+};
+const p = cityPrices[region.region];
+
+const faqs: FAQ[] = [
+  { q: `Сколько стоит ремонт 1-комнатной квартиры ${region.cityGen}?`, a: `Для 1-комнатной квартиры площадью ~38 м² ${region.cityGen}: косметический ремонт «под ключ» — ${(p.cosm * 38 / 1000).toFixed(0)} тыс. ₽, капитальный — ${(p.capital * 38 / 1000).toFixed(0)} тыс. ₽, евроремонт — ${(p.euro * 38 / 1000).toFixed(0)} тыс. ₽.` },
+  { q: `Сколько стоит ремонт 2-комнатной квартиры ${region.cityGen}?`, a: `Для 2-комнатной квартиры ~55 м² ${region.cityGen}: косметический — ${(p.cosm * 55 / 1000).toFixed(0)} тыс. ₽, капитальный — ${(p.capital * 55 / 1000).toFixed(0)} тыс. ₽, евроремонт — ${(p.euro * 55 / 1000).toFixed(0)} тыс. ₽.` },
+  { q: `Сколько стоит ремонт 3-комнатной квартиры ${region.cityGen}?`, a: `Для 3-комнатной квартиры ~75 м² ${region.cityGen}: косметический — ${(p.cosm * 75 / 1000).toFixed(0)} тыс. ₽, капитальный — ${(p.capital * 75 / 1000).toFixed(0)} тыс. ₽, евроремонт — ${(p.euro * 75 / 1000).toFixed(0)} тыс. ₽.` },
+  { q: `Как найти мастера ${region.cityGen}?`, a: `Используйте сервисы поиска мастеров — Profi.ru, YouDo, Авито Услуги. Опишите задачу, получите 5-10 откликов с ценами за 1-2 дня. Сравните и выберите лучшее предложение. Большинство мастеров составляют смету бесплатно.` },
+  { q: `Как сэкономить на ремонте ${region.cityGen}?`, a: `1) Сравните минимум 3 сметы — разница до 40%. 2) Покупайте материалы сами — обычно дешевле чем через мастера. 3) Делайте ремонт зонами, не всей квартирой сразу. 4) Не платите больше 30% аванса. 5) Договор обязательно в письменном виде.` }
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((it) => ({
+    '@type': 'Question', name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: it.a }
+  }))
+};
+
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, faqSchema] };
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs">
+    <a href="/">Главная</a><span>›</span>
+    <a href="/stoimost-remonta/">Стоимость ремонта</a><span>›</span>
+    <span>{region.city}</span>
+  </nav>
+
+  <h1>Стоимость ремонта квартиры {region.cityGen}</h1>
+  <p class="lead">
+    {region.intro}
+  </p>
+
+  <RepairCostCalc prefill={{ region: region.region, area: 50, type: 'capital' }} />
+
+  <Rsya slot="top" />
+
+  <h2>Цены на ремонт {region.cityGen} в 2026 году</h2>
+  <table class="prices-table">
+    <thead>
+      <tr><th>Тип ремонта</th><th>Цена за 1 м²</th><th>1-комн (38 м²)</th><th>2-комн (55 м²)</th><th>3-комн (75 м²)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Косметический</td>
+        <td>{p.cosm.toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.cosm * 38).toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.cosm * 55).toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.cosm * 75).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+      <tr>
+        <td>Капитальный</td>
+        <td>{p.capital.toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.capital * 38).toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.capital * 55).toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.capital * 75).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+      <tr>
+        <td>Евроремонт</td>
+        <td>{p.euro.toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.euro * 38).toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.euro * 55).toLocaleString('ru-RU')} ₽</td>
+        <td>{(p.euro * 75).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+      <tr>
+        <td>Дизайнерский</td>
+        <td>от {p.design.toLocaleString('ru-RU')} ₽</td>
+        <td>от {(p.design * 38).toLocaleString('ru-RU')} ₽</td>
+        <td>от {(p.design * 55).toLocaleString('ru-RU')} ₽</td>
+        <td>от {(p.design * 75).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="hint">Указана общая стоимость работ + материалов «под ключ». Данные актуальны на 2026 год.</p>
+
+  <Rsya slot="middle" />
+
+  <h2>Особенности ремонта {region.cityGen}</h2>
+  <p>
+    Город {region.city} с населением около {region.population} имеет свой рынок ремонта со своими особенностями.
+    Цены здесь {region.region === 'msk' ? 'самые высокие в России' : region.region === 'spb' ? 'вторые после московских' : region.region === 'mil' ? 'на 30-40% ниже московских' : 'на 35-50% ниже московских'}.
+  </p>
+  <p>
+    Качественных мастеров в {region.city.replace(/ -.*/, '')} достаточно — большой выбор предложений на популярных сервисах. Многие специалисты выезжают на бесплатный замер и составляют смету за 1-3 дня.
+  </p>
+
+  <Faq items={faqs} />
+
+  <Rsya slot="bottom" />
+
+  <section class="related">
+    <h2>Стоимость ремонта в других городах</h2>
+    <ul class="related-list">
+      {regionScenarios.filter((s) => s.slug !== region.slug).slice(0, 12).map((s) => (
+        <li><a href={`/stoimost-remonta/${s.slug}/`}>Ремонт {s.cityGen}</a></li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .prices-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .prices-table th, .prices-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e6e8eb; }
+  .prices-table thead th { background: #f7f8fa; font-weight: 600; }
+  .prices-table tbody tr:hover { background: #fafbfc; }
+  .hint { color: #888; font-size: 13px; font-style: italic; }
+  .related { margin: 40px 0 0; }
+  .related-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 16px; }
+  .related-list a { display: block; padding: 8px 12px; background: #f7f8fa; border-radius: 6px; border: 1px solid #e6e8eb; font-size: 14px; }
+  .related-list a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) {
+    .related-list { grid-template-columns: 1fr; }
+    .prices-table { font-size: 12px; }
+  }
+</style>

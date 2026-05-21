@@ -16,6 +16,7 @@ import { linoleumScenarios } from '../src/data/linoleum-scenarios';
 import { drywallScenarios } from '../src/data/drywall-scenarios';
 import { insulationScenarios } from '../src/data/insulation-scenarios';
 import { concreteScenarios } from '../src/data/concrete-scenarios';
+import { regionScenarios } from '../src/data/repair-regions';
 
 const KEY = process.env.INDEXNOW_KEY;
 const DOMAIN = 'www.kalkremont.ru';
@@ -47,7 +48,8 @@ function allUrls(): string[] {
     ...linoleumScenarios.map((s) => `${base}/raschet-linoleuma/${s.slug}/`),
     ...drywallScenarios.map((s) => `${base}/raschet-gipsokartona/${s.slug}/`),
     ...insulationScenarios.map((s) => `${base}/raschet-uteplitelya/${s.slug}/`),
-    ...concreteScenarios.map((s) => `${base}/raschet-betona/${s.slug}/`)
+    ...concreteScenarios.map((s) => `${base}/raschet-betona/${s.slug}/`),
+    ...regionScenarios.map((s) => `${base}/stoimost-remonta/${s.slug}/`)
   ];
   return urls;
 }

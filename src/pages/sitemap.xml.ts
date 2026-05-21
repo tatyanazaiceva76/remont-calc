@@ -8,6 +8,7 @@ import { linoleumScenarios } from '~/data/linoleum-scenarios';
 import { drywallScenarios } from '~/data/drywall-scenarios';
 import { insulationScenarios } from '~/data/insulation-scenarios';
 import { concreteScenarios } from '~/data/concrete-scenarios';
+import { regionScenarios } from '~/data/repair-regions';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -69,6 +70,11 @@ export const GET: APIRoute = ({ site }) => {
     ...concreteScenarios.map((s) => ({
       loc: `${base}/raschet-betona/${s.slug}/`,
       priority: 0.8,
+      changefreq: 'monthly'
+    })),
+    ...regionScenarios.map((s) => ({
+      loc: `${base}/stoimost-remonta/${s.slug}/`,
+      priority: 0.9, // высокий — это коммерческий контент
       changefreq: 'monthly'
     }))
   ];
