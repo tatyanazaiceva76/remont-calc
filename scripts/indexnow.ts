@@ -17,6 +17,7 @@ import { drywallScenarios } from '../src/data/drywall-scenarios';
 import { insulationScenarios } from '../src/data/insulation-scenarios';
 import { concreteScenarios } from '../src/data/concrete-scenarios';
 import { regionScenarios } from '../src/data/repair-regions';
+import { articles } from '../src/data/sovety-articles';
 
 const KEY = process.env.INDEXNOW_KEY;
 const DOMAIN = 'www.kalkremont.ru';
@@ -40,6 +41,7 @@ function allUrls(): string[] {
     `${base}/raschet-uteplitelya/`,
     `${base}/raschet-betona/`,
     `${base}/stoimost-remonta/`,
+    `${base}/sovety/`,
     ...wallpaperScenarios.map((s) => `${base}/raschet-oboev/${s.slug}/`),
     ...laminateScenarios.map((s) => `${base}/raschet-laminata/${s.slug}/`),
     ...paintScenarios.map((s) => `${base}/raschet-kraski/${s.slug}/`),
@@ -49,7 +51,8 @@ function allUrls(): string[] {
     ...drywallScenarios.map((s) => `${base}/raschet-gipsokartona/${s.slug}/`),
     ...insulationScenarios.map((s) => `${base}/raschet-uteplitelya/${s.slug}/`),
     ...concreteScenarios.map((s) => `${base}/raschet-betona/${s.slug}/`),
-    ...regionScenarios.map((s) => `${base}/stoimost-remonta/${s.slug}/`)
+    ...regionScenarios.map((s) => `${base}/stoimost-remonta/${s.slug}/`),
+    ...articles.map((a) => `${base}/sovety/${a.slug}/`)
   ];
   return urls;
 }

@@ -9,6 +9,7 @@ import { drywallScenarios } from '~/data/drywall-scenarios';
 import { insulationScenarios } from '~/data/insulation-scenarios';
 import { concreteScenarios } from '~/data/concrete-scenarios';
 import { regionScenarios } from '~/data/repair-regions';
+import { articles } from '~/data/sovety-articles';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -27,6 +28,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/raschet-uteplitelya/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/raschet-betona/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/stoimost-remonta/`, priority: 1.0, changefreq: 'weekly' },
+    { loc: `${base}/sovety/`, priority: 0.9, changefreq: 'weekly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,
@@ -75,6 +77,11 @@ export const GET: APIRoute = ({ site }) => {
     ...regionScenarios.map((s) => ({
       loc: `${base}/stoimost-remonta/${s.slug}/`,
       priority: 0.9, // высокий — это коммерческий контент
+      changefreq: 'monthly'
+    })),
+    ...articles.map((a) => ({
+      loc: `${base}/sovety/${a.slug}/`,
+      priority: 0.8,
       changefreq: 'monthly'
     }))
   ];
