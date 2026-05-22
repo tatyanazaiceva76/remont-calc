@@ -1,0 +1,147 @@
+---
+import Base from '~/layouts/Base.astro';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Калькулятор-виджет для встраивания на сайт';
+const description = 'Бесплатный встраиваемый виджет калькулятора материалов для ремонта. Подключите одной строкой к любому сайту или блогу.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Виджет', item: url }
+  ]
+};
+
+const widgets = [
+  { type: 'oboi', name: 'Калькулятор обоев', icon: '🎨' },
+  { type: 'laminat', name: 'Калькулятор ламината', icon: '🪵' },
+  { type: 'kraska', name: 'Калькулятор краски', icon: '🪣' },
+  { type: 'plitka', name: 'Калькулятор плитки', icon: '🧱' },
+  { type: 'shtukaturka', name: 'Калькулятор штукатурки', icon: '🏗️' }
+];
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Виджет</span></nav>
+
+  <h1>Виджет калькулятора для вашего сайта</h1>
+  <p class="lead">
+    Бесплатно подключите наш калькулятор материалов к своему блогу, ремонтному сайту или порталу.
+    Без регистрации, без рекламы виджета — только полезный инструмент для ваших читателей.
+  </p>
+
+  <h2>Как подключить — 2 строки</h2>
+  <p>Скопируйте код на свою страницу, замените тип калькулятора (oboi / laminat / kraska / plitka / shtukaturka):</p>
+
+  <pre class="code"><code>&lt;div data-kalkremont-widget="oboi"&gt;&lt;/div&gt;
+&lt;script src="https://www.kalkremont.ru/widget/embed.js" async&gt;&lt;/script&gt;</code></pre>
+
+  <h2>Доступные виджеты</h2>
+  <div class="widgets-grid">
+    {widgets.map((w) => (
+      <div class="widget-card">
+        <div class="widget-icon">{w.icon}</div>
+        <div class="widget-name">{w.name}</div>
+        <code class="widget-code">data-kalkremont-widget="{w.type}"</code>
+      </div>
+    ))}
+  </div>
+
+  <h2>Опции (через data-атрибуты)</h2>
+  <table class="opts">
+    <thead>
+      <tr><th>Атрибут</th><th>Назначение</th><th>Пример</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>data-kalkremont-widget</code></td>
+        <td>Тип калькулятора (обязательно)</td>
+        <td><code>"oboi"</code></td>
+      </tr>
+      <tr>
+        <td><code>data-theme</code></td>
+        <td>Тема — light / dark (по умолчанию light)</td>
+        <td><code>"light"</code></td>
+      </tr>
+      <tr>
+        <td><code>data-utm</code></td>
+        <td>UTM-метка для аналитики трафика</td>
+        <td><code>"мой-блог-о-ремонте"</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Пример с UTM-меткой</h2>
+  <pre class="code"><code>&lt;div data-kalkremont-widget="oboi" data-utm="remont-blog"&gt;&lt;/div&gt;
+&lt;script src="https://www.kalkremont.ru/widget/embed.js" async&gt;&lt;/script&gt;</code></pre>
+
+  <h2>Условия использования</h2>
+  <ul>
+    <li><strong>Бесплатно</strong> для любого сайта (личного, коммерческого).</li>
+    <li><strong>Не нужно регистрироваться</strong> — просто вставьте код.</li>
+    <li><strong>Сохраняется ссылка</strong> "Powered by KalkRemont" под виджетом — это условие бесплатного использования.</li>
+    <li><strong>Не модифицируйте</strong> код виджета — обновления приходят автоматически с нашей стороны.</li>
+  </ul>
+
+  <h2>Зачем нам это?</h2>
+  <p>
+    Мы развиваем калькулятор как открытый проект. Если ваш виджет помогает читателям — нам тоже хорошо: больше людей знают о KalkRemont.
+    Используйте свободно, рекомендуйте коллегам.
+  </p>
+  <p>Если планируете встроить — напишите на <a href="mailto:hello@kalkremont.ru">hello@kalkremont.ru</a>, расскажем про новые виджеты и обновления.</p>
+
+  <h2>Живой пример</h2>
+  <p>Калькуляторы доступны в полной версии:</p>
+  <ul>
+    <li><a href="/raschet-oboev/">Калькулятор обоев</a></li>
+    <li><a href="/raschet-laminata/">Калькулятор ламината</a></li>
+    <li><a href="/raschet-kraski/">Калькулятор краски</a></li>
+    <li><a href="/raschet-plitki/">Калькулятор плитки</a></li>
+    <li><a href="/raschet-shtukaturki/">Калькулятор штукатурки</a></li>
+  </ul>
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .code {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    overflow-x: auto;
+    line-height: 1.5;
+  }
+  .code code { color: inherit; background: none; padding: 0; }
+  .widgets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 16px 0 24px;
+  }
+  .widget-card {
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .widget-icon { font-size: 36px; }
+  .widget-name { font-weight: 600; margin: 8px 0; }
+  .widget-code {
+    display: inline-block;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: ui-monospace, monospace;
+  }
+  .opts { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .opts th, .opts td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e6e8eb; vertical-align: top; }
+  .opts thead th { background: #f7f8fa; }
+  .opts code { background: #f0f1f3; padding: 2px 6px; border-radius: 3px; font-size: 12px; }
+  ul li { margin-bottom: 6px; }
+</style>
