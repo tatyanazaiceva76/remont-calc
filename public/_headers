@@ -1,0 +1,41 @@
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+
+# HTML страницы — refresh каждый запрос (для CF revalidate, CDN держит свежее)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Статика — кэш на 1 год (имена с хэшем после Astro build)
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Картинки, шрифты — долго
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+
+# Sitemap и turbo — пусть кэшируются, но проверка раз в час
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+/turbo.xml
+  Cache-Control: public, max-age=3600
+/robots.txt
+  Cache-Control: public, max-age=86400
+
+# IndexNow ключ — статика, не меняется
+/indexnow_*.txt
+  Cache-Control: public, max-age=86400
+
+# Widget embed — кэш на сутки
+/widget/embed.js
+  Cache-Control: public, max-age=86400, s-maxage=86400
+  Access-Control-Allow-Origin: *
