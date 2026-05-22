@@ -4,6 +4,7 @@ import LaminateCalc from '~/components/LaminateCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import RelatedLaminate from '~/components/RelatedLaminate.astro';
 import CrossCalcLinks from '~/components/CrossCalcLinks.astro';
 import { laminateScenarios } from '~/data/laminate-scenarios';
@@ -80,6 +81,7 @@ const crossLinks = getCrossLinks('laminate', scenario.slug, {
     <li><strong>Класс износа.</strong> Для жилых комнат 31-32, для прихожих/кухни 33+, для коммерции 34.</li>
   </ul>
 
+  <CalcLeadCTA material="ламинат" source={`laminat-${scenario.slug}`} />
   <AffiliateLinks material="laminate" />
   <Faq items={laminateFAQs} />
   <CrossCalcLinks links={crossLinks} />

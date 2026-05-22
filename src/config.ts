@@ -19,3 +19,6 @@ export const SITE_CONFIG = {
     blockIdBottom: ''
   }
 } as const;
+
+/** Текущий год для freshness signals в titles */
+export const CURRENT_YEAR = new Date().getFullYear();

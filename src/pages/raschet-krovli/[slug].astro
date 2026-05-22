@@ -4,6 +4,7 @@ import RoofCalc from '~/components/RoofCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import { roofScenarios } from '~/data/roof-scenarios';
 import { roofFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
@@ -48,6 +49,7 @@ const related = roofScenarios.filter((s) => s.slug !== scenario.slug).slice(0, 1
 
   <Rsya slot="middle" />
 
+  <CalcLeadCTA material="кровлю" source={`krovlya-${scenario.slug}`} />
   <AffiliateLinks material="plaster" />
   <Faq items={roofFAQs} />
   <Rsya slot="bottom" />

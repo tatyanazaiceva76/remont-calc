@@ -4,6 +4,7 @@ import LinoleumCalc from '~/components/LinoleumCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import { linoleumScenarios } from '~/data/linoleum-scenarios';
 import { linoleumFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
@@ -46,6 +47,7 @@ const related = linoleumScenarios.filter((s) => s.slug !== scenario.slug).slice(
     <li><strong>Плинтус.</strong> Линолеум кладётся с зазором 5-10 мм от стен, потом закрывается плинтусом.</li>
   </ul>
 
+  <CalcLeadCTA material="линолеум" source={`linoleum-${scenario.slug}`} />
   <AffiliateLinks material="linoleum" />
   <Faq items={linoleumFAQs} />
   <Rsya slot="bottom" />

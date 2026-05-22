@@ -4,6 +4,7 @@ import TileCalc from '~/components/TileCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import RelatedTile from '~/components/RelatedTile.astro';
 import CrossCalcLinks from '~/components/CrossCalcLinks.astro';
 import { tileScenarios } from '~/data/tile-scenarios';
@@ -73,6 +74,7 @@ const crossLinks = getCrossLinks('tile', scenario.slug, {
     <li><strong>Запас «на ремонт».</strong> Купите дополнительно 2-3 плитки и сохраните — серии быстро снимаются с производства.</li>
   </ul>
 
+  <CalcLeadCTA material="плитку" source={`plitka-${scenario.slug}`} />
   <AffiliateLinks material="tile" />
   <Faq items={tileFAQs} />
   <CrossCalcLinks links={crossLinks} />

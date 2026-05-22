@@ -1,0 +1,69 @@
+---
+// Блок CTA "Хотите точную смету?" — ставится сразу под результатом калькулятора.
+// Конвертирует информационный трафик (юзер пришёл посчитать) в коммерческий (нужен мастер).
+interface Props {
+  material?: string; // для подстановки в текст
+  source?: string;
+}
+const { material = 'материал', source = 'calc-cta' } = Astro.props;
+// Замени на свой WhatsApp
+const WHATSAPP = '79991234567';
+const waMessage = `Здравствуйте! Только что посчитал ${material} на сайте, хочу узнать про ремонт. Источник: ${source}`;
+---
+<section class="calc-cta-box">
+  <div class="cta-content">
+    <h3>📋 Точная смета — бесплатно</h3>
+    <p>Калькулятор даёт ориентир. Точную смету по вашей квартире составят мастера — сравните 3-5 предложений и выберите лучшее.</p>
+  </div>
+  <div class="cta-actions">
+    <a href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(waMessage)}`}
+       target="_blank" rel="nofollow noopener"
+       class="cta-btn cta-whatsapp"
+       data-source={source}>
+      💬 Написать в WhatsApp
+    </a>
+    <a href="https://profi.ru/repair/" target="_blank" rel="nofollow sponsored noopener" class="cta-btn cta-profi" data-source={source}>
+      🔍 Найти мастера на Profi.ru
+    </a>
+  </div>
+</section>
+
+<style>
+  .calc-cta-box {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: #fff;
+    padding: 20px 24px;
+    border-radius: 10px;
+    margin: 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cta-content { flex: 1; min-width: 240px; }
+  .cta-content h3 { color: #fff; margin: 0 0 6px; font-size: 18px; }
+  .cta-content p { color: #fff8e1; margin: 0; font-size: 14px; line-height: 1.5; }
+  .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: transform 0.1s;
+  }
+  .cta-btn:hover { text-decoration: none; transform: translateY(-1px); }
+  .cta-whatsapp { background: #25d366; color: #fff; }
+  .cta-whatsapp:hover { background: #1da855; }
+  .cta-profi { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+  .cta-profi:hover { background: rgba(255,255,255,0.3); }
+  @media (max-width: 540px) {
+    .calc-cta-box { flex-direction: column; align-items: stretch; }
+    .cta-actions { flex-direction: column; }
+    .cta-btn { justify-content: center; }
+  }
+</style>

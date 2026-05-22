@@ -4,6 +4,7 @@ import DrywallCalc from '~/components/DrywallCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import { drywallScenarios } from '~/data/drywall-scenarios';
 import { drywallFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
@@ -51,6 +52,7 @@ const related = drywallScenarios.filter((s) => s.slug !== scenario.slug).slice(0
 
   <Rsya slot="middle" />
 
+  <CalcLeadCTA material="гипсокартон" source={`gkl-${scenario.slug}`} />
   <AffiliateLinks material="plaster" />
   <Faq items={drywallFAQs} />
   <Rsya slot="bottom" />

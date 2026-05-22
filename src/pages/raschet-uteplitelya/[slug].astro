@@ -4,6 +4,7 @@ import InsulationCalc from '~/components/InsulationCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import { insulationScenarios } from '~/data/insulation-scenarios';
 import { insulationFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
@@ -48,6 +49,7 @@ const related = insulationScenarios.filter((s) => s.slug !== scenario.slug).slic
 
   <Rsya slot="middle" />
 
+  <CalcLeadCTA material="утеплитель" source={`uteplenie-${scenario.slug}`} />
   <AffiliateLinks material="plaster" />
   <Faq items={insulationFAQs} />
   <Rsya slot="bottom" />

@@ -4,6 +4,7 @@ import PaintCalc from '~/components/PaintCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import RelatedPaint from '~/components/RelatedPaint.astro';
 import CrossCalcLinks from '~/components/CrossCalcLinks.astro';
 import { paintScenarios } from '~/data/paint-scenarios';
@@ -73,6 +74,7 @@ const crossLinks = getCrossLinks('paint', scenario.slug, {
     <li><strong>Запас.</strong> 10% — минимум. Если делаете сложные узоры — берите 15-20%.</li>
   </ul>
 
+  <CalcLeadCTA material="краску" source={`kraska-${scenario.slug}`} />
   <AffiliateLinks material="paint" />
   <Faq items={paintFAQs} />
   <CrossCalcLinks links={crossLinks} />

@@ -4,6 +4,7 @@ import PlasterCalc from '~/components/PlasterCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import RelatedPlaster from '~/components/RelatedPlaster.astro';
 import { plasterScenarios } from '~/data/plaster-scenarios';
 import { plasterFAQs } from '~/data/faqs';
@@ -60,6 +61,7 @@ const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo
     <li><strong>Температура.</strong> При +5...+25°C. На морозе схватывание нарушается, в жару — слишком быстрая усадка.</li>
   </ul>
 
+  <CalcLeadCTA material="штукатурку" source={`shtukaturka-${scenario.slug}`} />
   <AffiliateLinks material="plaster" />
   <Faq items={plasterFAQs} />
   <Rsya slot="bottom" />

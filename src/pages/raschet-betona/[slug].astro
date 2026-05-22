@@ -4,6 +4,7 @@ import ConcreteCalc from '~/components/ConcreteCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
 import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import CalcLeadCTA from '~/components/CalcLeadCTA.astro';
 import { concreteScenarios } from '~/data/concrete-scenarios';
 import { concreteFAQs } from '~/data/faqs';
 import { SITE_CONFIG } from '~/config';
@@ -48,6 +49,7 @@ const related = concreteScenarios.filter((s) => s.slug !== scenario.slug).slice(
 
   <Rsya slot="middle" />
 
+  <CalcLeadCTA material="бетон" source={`beton-${scenario.slug}`} />
   <AffiliateLinks material="plaster" />
   <Faq items={concreteFAQs} />
   <Rsya slot="bottom" />
