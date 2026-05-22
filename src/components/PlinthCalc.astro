@@ -1,0 +1,104 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    doors?: number;
+    plinthLength?: number; // длина одной планки
+    pricePerPiece?: number;
+  };
+}
+const { prefill = {} } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 5,
+  width: prefill.width ?? 4,
+  doors: prefill.doors ?? 1,
+  plinthLength: prefill.plinthLength ?? 2.5,
+  pricePerPiece: prefill.pricePerPiece ?? 0
+};
+---
+<div class="calc" id="pl-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label><span>Длина комнаты, м</span><input type="number" name="length" min="0.5" max="50" step="0.1" value={defaults.length} /></label>
+    <label><span>Ширина комнаты, м</span><input type="number" name="width" min="0.5" max="50" step="0.1" value={defaults.width} /></label>
+    <label><span>Количество дверей</span><input type="number" name="doors" min="0" max="10" step="1" value={defaults.doors} /></label>
+    <label>
+      <span>Длина одной планки, м</span>
+      <select name="plinthLength">
+        <option value="2" selected={defaults.plinthLength === 2}>2 м</option>
+        <option value="2.4" selected={defaults.plinthLength === 2.4}>2,4 м (МДФ)</option>
+        <option value="2.5" selected={defaults.plinthLength === 2.5}>2,5 м (ПВХ стандарт)</option>
+        <option value="3" selected={defaults.plinthLength === 3}>3 м (дерево)</option>
+      </select>
+    </label>
+    <label class="full"><span>Цена за планку, ₽ <span class="hint">(необязательно)</span></span><input type="number" name="pricePerPiece" min="0" max="100000" step="50" value={defaults.pricePerPiece} placeholder="например, 250" /></label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Периметр комнаты</span><strong data-out="perimeter">—</strong></div>
+      <div class="row"><span>Минус дверные проёмы</span><strong data-out="doorWidth">—</strong></div>
+      <div class="row"><span>Эффективная длина плинтуса</span><strong data-out="effective">—</strong></div>
+      <div class="row big"><span>Планок нужно</span><strong data-out="pieces">—</strong></div>
+      <div class="row"><span>С запасом на запил углов</span><strong data-out="piecesReserve">—</strong></div>
+      <div class="row"><span>Угловых соединителей</span><strong data-out="corners">—</strong></div>
+      <div class="row big cost" data-cost-row hidden><span>Стоимость планок</span><strong data-out="cost">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('pl-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+    const DOOR_W = 0.9;
+    function num(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return Number(d[n])||0;}return parseFloat(el.value)||0;}
+    function calc() {
+      const L = num('length'), W = num('width');
+      const doors = num('doors');
+      const pl = num('plinthLength');
+      const perimeter = 2 * (L + W);
+      const doorTotal = doors * DOOR_W;
+      const effective = Math.max(0, perimeter - doorTotal);
+      const pieces = pl > 0 ? Math.ceil(effective / pl) : 0;
+      const piecesReserve = pieces + 1; // +1 на угловые запилы
+      const corners = 4; // в типовой комнате 4 внутренних угла
+
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('perimeter').textContent = fmt(perimeter, ' м');
+      out('doorWidth').textContent = '−' + fmt(doorTotal, ' м (' + doors + ' дверей × 0,9 м)');
+      out('effective').textContent = fmt(effective, ' м');
+      out('pieces').textContent = String(pieces) + ' шт';
+      out('piecesReserve').textContent = String(piecesReserve) + ' шт';
+      out('corners').textContent = String(corners) + ' шт (внутренних)';
+      const price = num('pricePerPiece');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && piecesReserve > 0) {
+        out('cost').textContent = (piecesReserve * price).toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) costRow.setAttribute('hidden', '');
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>
