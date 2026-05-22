@@ -3,6 +3,7 @@ import Base from '~/layouts/Base.astro';
 import RepairCostCalc from '~/components/RepairCostCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
+import LeadForm from '~/components/LeadForm.astro';
 import type { FAQ } from '~/data/faqs';
 import { roomTypePages } from '~/data/repair-by-room';
 import { regionScenarios } from '~/data/repair-regions';
@@ -132,6 +133,12 @@ const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, faqSc
     <li>Договор обязательно. Указание объёмов, материалов, сроков, штрафных санкций.</li>
     <li>Поэтапная оплата. Не больше 30% аванса.</li>
   </ol>
+
+  <LeadForm
+    source={`remont-kvartiry-${page.slug}`}
+    title={`Получить смету на ремонт ${page.roomType}`}
+    description="Опишите задачу — пришлём расчёт и контакты проверенных мастеров"
+  />
 
   <Faq items={faqs} />
 

@@ -32,10 +32,30 @@ const websiteSchema = {
   name: SITE_CONFIG.siteName,
   url: `https://${SITE_CONFIG.domain}/`,
   inLanguage: 'ru-RU',
-  description: SITE_CONFIG.siteDescription
+  description: SITE_CONFIG.siteDescription,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `https://${SITE_CONFIG.domain}/poisk/?q={search_term_string}`
+    },
+    'query-input': 'required name=search_term_string'
+  }
 };
+
+const orgSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_CONFIG.siteName,
+  url: `https://${SITE_CONFIG.domain}/`,
+  logo: `https://${SITE_CONFIG.domain}/og.svg`,
+  description: SITE_CONFIG.siteDescription,
+  sameAs: []
+};
+
+const combinedSchema = { '@context': 'https://schema.org', '@graph': [websiteSchema, orgSchema] };
 ---
-<Base title={title} description={description} canonical={url} schema={websiteSchema}>
+<Base title={title} description={description} canonical={url} schema={combinedSchema}>
   <h1>Онлайн-калькуляторы для ремонта</h1>
   <p>
     Точные расчёты строительных материалов: обои, ламинат, краска.

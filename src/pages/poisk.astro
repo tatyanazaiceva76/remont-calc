@@ -1,0 +1,148 @@
+---
+import Base from '~/layouts/Base.astro';
+import { SITE_CONFIG } from '~/config';
+import { scenarios as wallpaperScenarios } from '~/data/wallpaper-scenarios';
+import { laminateScenarios } from '~/data/laminate-scenarios';
+import { paintScenarios } from '~/data/paint-scenarios';
+import { tileScenarios } from '~/data/tile-scenarios';
+import { plasterScenarios } from '~/data/plaster-scenarios';
+import { linoleumScenarios } from '~/data/linoleum-scenarios';
+import { drywallScenarios } from '~/data/drywall-scenarios';
+import { insulationScenarios } from '~/data/insulation-scenarios';
+import { concreteScenarios } from '~/data/concrete-scenarios';
+import { roofScenarios } from '~/data/roof-scenarios';
+import { regionScenarios } from '~/data/repair-regions';
+import { articles } from '~/data/sovety-articles';
+import { comparisons } from '~/data/comparison-pages';
+import { brandProducts } from '~/data/brand-products';
+import { roomTypePages } from '~/data/repair-by-room';
+
+const title = 'Поиск по сайту';
+const description = 'Найдите нужный калькулятор материалов, статью по ремонту или информацию о бренде.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Поиск', item: url }
+  ]
+};
+
+// Билдим индекс — все страницы с их h1/keywords
+type IndexItem = { url: string; title: string; tags: string };
+const idx: IndexItem[] = [
+  ...wallpaperScenarios.map((s) => ({ url: `/raschet-oboev/${s.slug}/`, title: s.h1, tags: 'обои калькулятор расчёт' })),
+  ...laminateScenarios.map((s) => ({ url: `/raschet-laminata/${s.slug}/`, title: s.h1, tags: 'ламинат калькулятор расчёт пол' })),
+  ...paintScenarios.map((s) => ({ url: `/raschet-kraski/${s.slug}/`, title: s.h1, tags: 'краска калькулятор расчёт литры' })),
+  ...tileScenarios.map((s) => ({ url: `/raschet-plitki/${s.slug}/`, title: s.h1, tags: 'плитка кафель калькулятор расчёт' })),
+  ...plasterScenarios.map((s) => ({ url: `/raschet-shtukaturki/${s.slug}/`, title: s.h1, tags: 'штукатурка калькулятор расчёт' })),
+  ...linoleumScenarios.map((s) => ({ url: `/raschet-linoleuma/${s.slug}/`, title: s.h1, tags: 'линолеум калькулятор расчёт пол' })),
+  ...drywallScenarios.map((s) => ({ url: `/raschet-gipsokartona/${s.slug}/`, title: s.h1, tags: 'гипсокартон ГКЛ калькулятор расчёт' })),
+  ...insulationScenarios.map((s) => ({ url: `/raschet-uteplitelya/${s.slug}/`, title: s.h1, tags: 'утеплитель минвата пеноплекс калькулятор' })),
+  ...concreteScenarios.map((s) => ({ url: `/raschet-betona/${s.slug}/`, title: s.h1, tags: 'бетон фундамент стяжка калькулятор' })),
+  ...roofScenarios.map((s) => ({ url: `/raschet-krovli/${s.slug}/`, title: s.h1, tags: 'кровля крыша металлочерепица калькулятор' })),
+  ...regionScenarios.map((s) => ({ url: `/stoimost-remonta/${s.slug}/`, title: `Стоимость ремонта ${s.cityGen}`, tags: 'ремонт стоимость цена ' + s.city.toLowerCase() })),
+  ...articles.map((a) => ({ url: `/sovety/${a.slug}/`, title: a.h1, tags: 'совет инструкция ремонт' })),
+  ...comparisons.map((c) => ({ url: `/chto-luchshe/${c.slug}/`, title: c.h1, tags: 'сравнение что лучше выбор' })),
+  ...brandProducts.map((p) => ({ url: `/brand/${p.slug}/`, title: `${p.brand} ${p.product}`, tags: 'бренд расход цена ' + p.brand.toLowerCase() })),
+  ...roomTypePages.map((p) => ({ url: `/remont-kvartiry/${p.slug}/`, title: p.h1, tags: 'ремонт квартиры комнатной' })),
+  { url: '/raschet-oboev/', title: 'Калькулятор обоев', tags: 'обои' },
+  { url: '/raschet-laminata/', title: 'Калькулятор ламината', tags: 'ламинат' },
+  { url: '/raschet-kraski/', title: 'Калькулятор краски', tags: 'краска' },
+  { url: '/raschet-plitki/', title: 'Калькулятор плитки', tags: 'плитка' },
+  { url: '/raschet-shtukaturki/', title: 'Калькулятор штукатурки', tags: 'штукатурка' },
+  { url: '/raschet-linoleuma/', title: 'Калькулятор линолеума', tags: 'линолеум' },
+  { url: '/raschet-gipsokartona/', title: 'Калькулятор гипсокартона', tags: 'гипсокартон гкл' },
+  { url: '/raschet-uteplitelya/', title: 'Калькулятор утеплителя', tags: 'утеплитель' },
+  { url: '/raschet-betona/', title: 'Калькулятор бетона', tags: 'бетон цемент' },
+  { url: '/raschet-krovli/', title: 'Калькулятор кровли', tags: 'кровля крыша' },
+  { url: '/raschet-plintusa/', title: 'Калькулятор плинтуса', tags: 'плинтус' },
+  { url: '/raschet-gruntovki/', title: 'Калькулятор грунтовки', tags: 'грунтовка бетоноконтакт' },
+  { url: '/stoimost-remonta/', title: 'Стоимость ремонта квартиры', tags: 'стоимость цена ремонта' },
+  { url: '/skolko-hvatit/', title: 'Обратный калькулятор', tags: 'сколько хватит остатки' }
+];
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Поиск</span></nav>
+
+  <h1>Поиск по сайту</h1>
+  <p>Введите название материала, тип запроса или название бренда. Поиск работает мгновенно.</p>
+
+  <input type="search" id="search-input" placeholder="например: обои, ламинат, ремонт Москва, Knauf Ротбанд..." autofocus />
+
+  <div id="search-results"></div>
+
+  <script type="application/json" id="search-index" set:html={JSON.stringify(idx)}></script>
+
+  <script is:inline>
+    (function () {
+      const input = document.getElementById('search-input');
+      const results = document.getElementById('search-results');
+      const indexEl = document.getElementById('search-index');
+      const index = JSON.parse(indexEl.textContent || '[]');
+
+      function search(q) {
+        if (!q || q.length < 2) {
+          results.innerHTML = '<p class="hint">Введите хотя бы 2 символа</p>';
+          return;
+        }
+        const lower = q.toLowerCase();
+        const matches = index
+          .map((it) => {
+            const titleLower = it.title.toLowerCase();
+            const tagsLower = it.tags.toLowerCase();
+            let score = 0;
+            if (titleLower.startsWith(lower)) score = 100;
+            else if (titleLower.includes(lower)) score = 80;
+            else if (tagsLower.includes(lower)) score = 40;
+            return { ...it, score };
+          })
+          .filter((it) => it.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 50);
+
+        if (matches.length === 0) {
+          results.innerHTML = '<p class="hint">Ничего не найдено. Попробуйте другой запрос.</p>';
+          return;
+        }
+        results.innerHTML = '<ul class="results-list">' + matches.map((m) =>
+          '<li><a href="' + m.url + '">' + m.title + '</a></li>'
+        ).join('') + '</ul>';
+      }
+
+      input.addEventListener('input', (e) => search(e.target.value));
+
+      // Если в URL есть ?q=... — заполнить
+      const params = new URLSearchParams(window.location.search);
+      const q = params.get('q');
+      if (q) {
+        input.value = q;
+        search(q);
+      }
+    })();
+  </script>
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  #search-input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 17px;
+    border: 2px solid #c8ccd0;
+    border-radius: 8px;
+    margin: 16px 0 20px;
+    box-sizing: border-box;
+  }
+  #search-input:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .hint { color: #888; font-size: 14px; }
+  .results-list { list-style: none; padding: 0; margin: 0; }
+  .results-list li { border-bottom: 1px solid #e6e8eb; }
+  .results-list a {
+    display: block;
+    padding: 12px 16px;
+    color: #1a1a1a;
+    text-decoration: none;
+  }
+  .results-list a:hover { background: #eef3fb; }
+</style>

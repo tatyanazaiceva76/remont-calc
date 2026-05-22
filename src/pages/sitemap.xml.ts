@@ -40,6 +40,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/skolko-hvatit/`, priority: 0.85, changefreq: 'monthly' },
     { loc: `${base}/widget/`, priority: 0.7, changefreq: 'monthly' },
     { loc: `${base}/karta-sayta/`, priority: 0.6, changefreq: 'weekly' },
+    { loc: `${base}/poisk/`, priority: 0.5, changefreq: 'monthly' },
     { loc: `${base}/raschet-plintusa/`, priority: 0.9, changefreq: 'monthly' },
     { loc: `${base}/raschet-gruntovki/`, priority: 0.9, changefreq: 'monthly' },
     { loc: `${base}/remont-kvartiry/`, priority: 0.95, changefreq: 'weekly' },

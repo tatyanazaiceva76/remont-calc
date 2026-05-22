@@ -3,6 +3,7 @@ import Base from '~/layouts/Base.astro';
 import RepairCostCalc from '~/components/RepairCostCalc.astro';
 import Rsya from '~/components/Rsya.astro';
 import Faq from '~/components/Faq.astro';
+import LeadForm from '~/components/LeadForm.astro';
 import type { FAQ } from '~/data/faqs';
 import { regionScenarios } from '~/data/repair-regions';
 import { SITE_CONFIG } from '~/config';
@@ -100,6 +101,8 @@ const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, howTo
   </ol>
 
   <Faq items={faqs} />
+
+  <LeadForm source="stoimost-remonta-main" title="Получить смету бесплатно" description="Опишите задачу — пришлём ориентировочный расчёт и контакты проверенных мастеров в вашем городе" />
 
   <section class="cities">
     <h2>Стоимость ремонта по городам России</h2>
