@@ -4,3 +4,7 @@ Allow: /
 # Sitemap создаётся @astrojs/sitemap автоматически
 # (доступен по адресу /sitemap-index.xml)
 Sitemap: https://www.kalkremont.ru/sitemap.xml
+
+# Yandex Turbo Pages RSS feed
+# Подписать вручную: https://webmaster.yandex.ru/site/https:www.kalkremont.ru:443/turbo/sources/
+Host: www.kalkremont.ru
