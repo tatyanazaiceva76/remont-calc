@@ -9,6 +9,7 @@ import { drywallScenarios } from '~/data/drywall-scenarios';
 import { insulationScenarios } from '~/data/insulation-scenarios';
 import { concreteScenarios } from '~/data/concrete-scenarios';
 import { regionScenarios } from '~/data/repair-regions';
+import { roomTypePages } from '~/data/repair-by-room';
 import { articles } from '~/data/sovety-articles';
 import { comparisons } from '~/data/comparison-pages';
 import { brandProducts } from '~/data/brand-products';
@@ -41,6 +42,12 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/karta-sayta/`, priority: 0.6, changefreq: 'weekly' },
     { loc: `${base}/raschet-plintusa/`, priority: 0.9, changefreq: 'monthly' },
     { loc: `${base}/raschet-gruntovki/`, priority: 0.9, changefreq: 'monthly' },
+    { loc: `${base}/remont-kvartiry/`, priority: 0.95, changefreq: 'weekly' },
+    ...roomTypePages.map((p) => ({
+      loc: `${base}/remont-kvartiry/${p.slug}/`,
+      priority: 0.9,
+      changefreq: 'monthly'
+    })),
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,

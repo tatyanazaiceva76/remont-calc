@@ -1,0 +1,83 @@
+---
+import Base from '~/layouts/Base.astro';
+import Rsya from '~/components/Rsya.astro';
+import { roomTypePages } from '~/data/repair-by-room';
+import { regionScenarios } from '~/data/repair-regions';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Ремонт квартиры — стоимость по типам и городам';
+const description = 'Стоимость ремонта квартиры в 2026: студии, 1-, 2-, 3-, 4-комнатных. По городам России с расчётом для вашей квартиры.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Ремонт квартир', item: url }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Ремонт квартир</span></nav>
+
+  <h1>Ремонт квартиры — цены и виды</h1>
+  <p class="lead">Подробные руководства по ремонту квартир разного типа. Цены, сроки, особенности каждого типа в России 2026.</p>
+
+  <Rsya slot="top" />
+
+  <h2>По типу квартиры</h2>
+  <ul class="cards">
+    {roomTypePages.map((p) => (
+      <li>
+        <a href={`/remont-kvartiry/${p.slug}/`}>
+          <h3>{p.h1}</h3>
+          <p>Типовая площадь: {p.typicalArea} м². {p.intro.slice(0, 140)}...</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>По городам</h2>
+  <p>Стоимость ремонта существенно зависит от региона. Москва — самая дорогая, регионы на 30-50% дешевле.</p>
+  <ul class="cities">
+    {regionScenarios.map((s) => (
+      <li><a href={`/stoimost-remonta/${s.slug}/`}>Стоимость ремонта {s.cityGen}</a></li>
+    ))}
+  </ul>
+
+  <Rsya slot="bottom" />
+
+  <section class="related">
+    <h2>Связанные разделы</h2>
+    <ul class="links">
+      <li><a href="/stoimost-remonta/">Главный калькулятор стоимости ремонта</a></li>
+      <li><a href="/sovety/s-chego-nachat-remont/">С чего начать ремонт</a></li>
+      <li><a href="/chto-luchshe/">Что лучше — сравнения материалов</a></li>
+      <li><a href="/brand/">Стройматериалы по брендам</a></li>
+    </ul>
+  </section>
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .cards { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 32px; }
+  .cards a {
+    display: block;
+    padding: 18px 20px;
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    color: #1a1a1a;
+    text-decoration: none;
+  }
+  .cards a:hover { background: #eef3fb; border-color: #0a5cce; }
+  .cards h3 { font-size: 17px; margin: 0 0 8px; color: #0a5cce; }
+  .cards p { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
+  .cities { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 14px; margin: 16px 0; }
+  .cities a { display: block; padding: 6px 10px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; font-size: 14px; }
+  .cities a:hover { background: #eef3fb; text-decoration: none; }
+  .related { margin: 36px 0 0; }
+  .links { list-style: none; padding: 0; }
+  .links li { margin-bottom: 6px; }
+  @media (max-width: 540px) { .cards, .cities { grid-template-columns: 1fr; } }
+</style>

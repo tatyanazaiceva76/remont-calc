@@ -1,0 +1,180 @@
+---
+import Base from '~/layouts/Base.astro';
+import RepairCostCalc from '~/components/RepairCostCalc.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import type { FAQ } from '~/data/faqs';
+import { roomTypePages } from '~/data/repair-by-room';
+import { regionScenarios } from '~/data/repair-regions';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return roomTypePages.map((p) => ({ params: { slug: p.slug }, props: { page: p } }));
+}
+const { page } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Ремонт квартир', item: `https://${SITE_CONFIG.domain}/remont-kvartiry/` },
+    { '@type': 'ListItem', position: 3, name: page.h1, item: url }
+  ]
+};
+
+// Цены за м²
+const prices = {
+  cosm: { msk: 7500, spb: 7000, mil: 5500, reg: 5500 },
+  capital: { msk: 15500, spb: 14000, mil: 11500, reg: 11000 },
+  euro: { msk: 26000, spb: 24000, mil: 19500, reg: 19000 },
+  design: { msk: 42000, spb: 38000, mil: 32500, reg: 31000 }
+};
+
+const a = page.typicalArea;
+
+const faqs: FAQ[] = [
+  {
+    q: `Сколько стоит ремонт ${page.roomType} ${page.rooms === 1 && page.slug === 'studii' ? '' : '(' + a + ' м²)'} в Москве?`,
+    a: `В Москве ${page.rooms === 1 && page.slug === 'studii' ? 'студии' : page.roomType} площадью ${a} м²: косметический — ${(prices.cosm.msk * a / 1000).toFixed(0)} тыс. ₽, капитальный — ${(prices.capital.msk * a / 1000).toFixed(0)} тыс. ₽, евроремонт — ${(prices.euro.msk * a / 1000).toFixed(0)} тыс. ₽, дизайнерский — от ${(prices.design.msk * a / 1000).toFixed(0)} тыс. ₽.`
+  },
+  {
+    q: `Сколько стоит ремонт ${page.roomType} в регионах?`,
+    a: `В регионах (СПб, миллионники, областные города) стоимость на 30-50% ниже московской. Для ${page.roomType} ${a} м² капитальный ремонт: СПб — ${(prices.capital.spb * a / 1000).toFixed(0)} тыс. ₽, миллионники — ${(prices.capital.mil * a / 1000).toFixed(0)} тыс. ₽, другие регионы — ${(prices.capital.reg * a / 1000).toFixed(0)} тыс. ₽.`
+  },
+  {
+    q: `Сколько времени делается ремонт ${page.roomType}?`,
+    a: page.features.find((f) => f.includes('Сроки')) || 'Зависит от типа ремонта и сложности. От 3-4 недель (косметический) до 6-12 месяцев (дизайнерский премиум).'
+  },
+  {
+    q: 'Что выгоднее — нанимать бригаду или мастеров поодиночке?',
+    a: 'Бригада "под ключ" дороже на 10-20%, но даёт гарантию и единый ответственный. Мастера поодиночке (один электрик, отдельный плиточник) — дешевле, но требуют координации с вашей стороны. Для большой квартиры — бригада, для маленькой — можно отдельных.'
+  },
+  {
+    q: 'Что включает ремонт под ключ?',
+    a: 'Демонтаж старой отделки → электрика → сантехника → выравнивание стен и пола → чистовая отделка → установка дверей и сантехники → уборка. Не входит: мебель, шторы, бытовая техника. Это покупается отдельно.'
+  }
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqs.map((it) => ({
+    '@type': 'Question', name: it.q,
+    acceptedAnswer: { '@type': 'Answer', text: it.a }
+  }))
+};
+
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, faqSchema] };
+---
+<Base title={page.title} description={page.description} canonical={url} schema={schema}>
+  <nav class="breadcrumbs">
+    <a href="/">Главная</a><span>›</span>
+    <a href="/remont-kvartiry/">Ремонт квартир</a><span>›</span>
+    <span>{page.h1}</span>
+  </nav>
+
+  <h1>{page.h1}</h1>
+  <p class="lead">{page.intro}</p>
+
+  <RepairCostCalc prefill={{ area: a, type: 'capital' }} />
+
+  <Rsya slot="top" />
+
+  <h2>Цены по типам ремонта ({a} м²)</h2>
+  <table class="prices-table">
+    <thead>
+      <tr><th>Тип</th><th>Москва</th><th>СПб</th><th>Миллионники</th><th>Регионы</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Косметический</td>
+        <td>{(prices.cosm.msk * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.cosm.spb * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.cosm.mil * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.cosm.reg * a).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+      <tr>
+        <td>Капитальный</td>
+        <td>{(prices.capital.msk * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.capital.spb * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.capital.mil * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.capital.reg * a).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+      <tr>
+        <td>Евроремонт</td>
+        <td>{(prices.euro.msk * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.euro.spb * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.euro.mil * a).toLocaleString('ru-RU')} ₽</td>
+        <td>{(prices.euro.reg * a).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+      <tr>
+        <td>Дизайнерский</td>
+        <td>от {(prices.design.msk * a).toLocaleString('ru-RU')} ₽</td>
+        <td>от {(prices.design.spb * a).toLocaleString('ru-RU')} ₽</td>
+        <td>от {(prices.design.mil * a).toLocaleString('ru-RU')} ₽</td>
+        <td>от {(prices.design.reg * a).toLocaleString('ru-RU')} ₽</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="hint">Площадь {a} м² — типовая для {page.rooms === 1 && page.slug === 'studii' ? 'студий' : page.roomType}. Для вашей квартиры — используйте калькулятор выше.</p>
+
+  <h2>Особенности ремонта {page.roomType}</h2>
+  <ul>
+    {page.features.map((f) => <li>{f}</li>)}
+  </ul>
+
+  <Rsya slot="middle" />
+
+  <h2>Как выбрать подрядчика</h2>
+  <ol>
+    <li>Сравните минимум 3 сметы от разных мастеров. Разброс цен в нише — 30-40%.</li>
+    <li>Проверьте отзывы на Profi.ru, YouDo, Авито. Свежие отзывы — за последние 6 месяцев.</li>
+    <li>Запросите фото предыдущих работ. Желательно похожих по сложности.</li>
+    <li>Договор обязательно. Указание объёмов, материалов, сроков, штрафных санкций.</li>
+    <li>Поэтапная оплата. Не больше 30% аванса.</li>
+  </ol>
+
+  <Faq items={faqs} />
+
+  <Rsya slot="bottom" />
+
+  <section class="related">
+    <h2>Ремонт в вашем городе</h2>
+    <ul class="related-list">
+      {regionScenarios.slice(0, 12).map((s) => (
+        <li><a href={`/stoimost-remonta/${s.slug}/`}>Стоимость ремонта {s.cityGen}</a></li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="related">
+    <h2>Другие типы квартир</h2>
+    <ul class="related-list">
+      {roomTypePages.filter((p) => p.slug !== page.slug).map((p) => (
+        <li><a href={`/remont-kvartiry/${p.slug}/`}>{p.h1}</a></li>
+      ))}
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .prices-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .prices-table th, .prices-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e6e8eb; }
+  .prices-table thead th { background: #f7f8fa; font-weight: 600; }
+  .hint { color: #888; font-size: 13px; font-style: italic; }
+  ul, ol { padding-left: 20px; }
+  ul li, ol li { margin-bottom: 6px; }
+  .related { margin: 36px 0 0; }
+  .related-list {
+    list-style: none; padding: 0; margin: 12px 0 0;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 16px;
+  }
+  .related-list a { display: block; padding: 8px 12px; background: #f7f8fa; border-radius: 6px; border: 1px solid #e6e8eb; font-size: 14px; }
+  .related-list a:hover { background: #eef3fb; text-decoration: none; }
+  @media (max-width: 540px) {
+    .related-list { grid-template-columns: 1fr; }
+    .prices-table { font-size: 12px; }
+  }
+</style>
