@@ -1,0 +1,94 @@
+---
+import Base from '~/layouts/Base.astro';
+import { cities, repairTypes } from '~/data/cities';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Прайс на ремонт квартиры 2026 — цены по городам России';
+const description = 'Точные цены на ремонт квартиры в 2026 году по 30 городам РФ. Косметический, капитальный, евроремонт, дизайнерский.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_CONFIG.siteName,
+  url: `https://${SITE_CONFIG.domain}/`,
+  inLanguage: 'ru-RU',
+  description
+};
+
+// Топ-10 городов для главной
+const topCities = cities.slice(0, 10);
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>Прайс на ремонт квартиры — 2026</h1>
+  <p class="lead">
+    Цены на ремонт по 30 крупным городам России. {cities.length} городов × {repairTypes.length} типа ремонта =
+    <strong>{cities.length * repairTypes.length} комбинаций</strong> расчёта стоимости. С учётом локальных цен на материалы и работу.
+  </p>
+
+  <h2>По типу ремонта</h2>
+  <div class="cards">
+    {repairTypes.map((t) => (
+      <a href={`/${t.slug}/`} class="card">
+        <h3>{t.name}</h3>
+        <p>{t.description.slice(0, 110)}...</p>
+        <span class="card-link">Цены по городам →</span>
+      </a>
+    ))}
+  </div>
+
+  <h2>Крупнейшие города</h2>
+  <div class="cards-grid">
+    {topCities.map((c) => (
+      <a href={`/v-${c.slug}/`} class="city-card">
+        <h3>Ремонт {c.cityGen}</h3>
+        <p>Население {c.population}. Косметический от {c.prices.cosmetic.toLocaleString('ru-RU')} ₽/м²</p>
+      </a>
+    ))}
+  </div>
+
+  <h2>Все 30 городов</h2>
+  <ul class="cities-list">
+    {cities.map((c) => (
+      <li><a href={`/v-${c.slug}/`}>{c.city}</a></li>
+    ))}
+  </ul>
+
+  <h2>Что это за сайт</h2>
+  <p>
+    <strong>price.kalkremont.ru</strong> — спецпроект kalkremont.ru. Здесь собраны цены на ремонт в разных городах России,
+    с учётом локальной экономики, доступности материалов, особенностей климата и архитектуры.
+  </p>
+  <p>
+    Для технических расчётов материалов (обои, ламинат, краска, плитка) — используйте основной сайт
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`} target="_blank">www.kalkremont.ru</a>.
+  </p>
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 32px; }
+  .card {
+    display: block;
+    padding: 18px 20px;
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+    color: #1a1a1a;
+  }
+  .card:hover { background: #eef9f0; border-color: #16933b; text-decoration: none; }
+  .card h3 { font-size: 17px; margin: 0 0 8px; color: #16933b; }
+  .card p { font-size: 14px; color: #555; margin: 0 0 10px; }
+  .card-link { color: #16933b; font-size: 14px; font-weight: 600; }
+  .cards-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .city-card { display: block; padding: 14px 16px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; color: #1a1a1a; }
+  .city-card:hover { background: #eef9f0; }
+  .city-card h3 { font-size: 16px; margin: 0 0 4px; }
+  .city-card p { font-size: 13px; color: #666; margin: 0; }
+  .cities-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 14px; margin: 16px 0; }
+  .cities-list a { display: block; padding: 6px 10px; background: #f7f8fa; border-radius: 6px; border: 1px solid #e6e8eb; font-size: 14px; }
+  .cities-list a:hover { background: #eef9f0; text-decoration: none; }
+  @media (max-width: 540px) {
+    .cards, .cards-grid { grid-template-columns: 1fr; }
+    .cities-list { grid-template-columns: 1fr 1fr; }
+  }
+</style>

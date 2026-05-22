@@ -1,0 +1,95 @@
+---
+import Base from '~/layouts/Base.astro';
+import { cities, repairTypes } from '~/data/cities';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return cities.map((c) => ({ params: { city: c.slug }, props: { city: c } }));
+}
+const { city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = `Прайс на ремонт квартиры ${city.cityGen} 2026 — все типы`;
+const description = `Цены на ремонт квартиры ${city.cityGen} в 2026 году. Косметический, капитальный, евроремонт, дизайнерский. Стоимость за м².`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: `Ремонт ${city.cityGen}`, item: url }
+  ]
+};
+
+// Типовая площадь для расчётов
+const typicalArea = 50;
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="bc"><a href="/">Главная</a> › <span>{city.city}</span></nav>
+
+  <h1>Цены на ремонт квартиры {city.cityGen}</h1>
+  <p class="lead">{city.intro}</p>
+
+  <h2>Стоимость по типам ремонта (за 1 м²)</h2>
+  <div class="prices-grid">
+    {repairTypes.map((t) => (
+      <a href={`/v-${city.slug}/${t.slug}/`} class="price-card">
+        <div class="pc-name">{t.name}</div>
+        <div class="pc-price">{city.prices[t.priceKey].toLocaleString('ru-RU')} ₽/м²</div>
+        <div class="pc-example">За квартиру {typicalArea} м² ≈ {(city.prices[t.priceKey] * typicalArea).toLocaleString('ru-RU')} ₽</div>
+        <span class="pc-link">Подробнее →</span>
+      </a>
+    ))}
+  </div>
+
+  <h2>Особенности ремонта {city.cityGen}</h2>
+  <ul>
+    {city.localNotes.map((n) => <li>{n}</li>)}
+  </ul>
+
+  <h2>Расчёт под вашу квартиру</h2>
+  <p>
+    Для точного расчёта стоимости и количества материалов под вашу площадь — используйте
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/stoimost-remonta/v-${city.slug.replace('-', '-')}/`} target="_blank">
+      основной калькулятор стоимости ремонта {city.cityGen}
+    </a>.
+  </p>
+  <p>
+    Также доступны калькуляторы материалов: <a href={`https://www.${SITE_CONFIG.parentDomain}/raschet-oboev/`} target="_blank">обои</a>,
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/raschet-laminata/`} target="_blank">ламинат</a>,
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/raschet-kraski/`} target="_blank">краска</a>,
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/raschet-plitki/`} target="_blank">плитка</a>.
+  </p>
+
+  <h2>Другие города</h2>
+  <ul class="cities-list">
+    {cities.filter((c) => c.slug !== city.slug).slice(0, 12).map((c) => (
+      <li><a href={`/v-${c.slug}/`}>{c.city}</a></li>
+    ))}
+  </ul>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; }
+  .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .prices-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+  .price-card {
+    display: block;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #eef9f0 0%, #d6f1d8 100%);
+    border: 1px solid #b6dfbb;
+    border-radius: 10px;
+    color: #1a1a1a;
+  }
+  .price-card:hover { transform: translateY(-1px); border-color: #16933b; text-decoration: none; }
+  .pc-name { font-size: 15px; color: #2d5a35; font-weight: 600; }
+  .pc-price { font-size: 28px; font-weight: 700; color: #16933b; margin: 6px 0; }
+  .pc-example { font-size: 13px; color: #555; }
+  .pc-link { color: #16933b; font-weight: 600; font-size: 14px; display: block; margin-top: 8px; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 6px; }
+  .cities-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px 14px; }
+  .cities-list a { display: block; padding: 6px 10px; background: #f7f8fa; border-radius: 6px; border: 1px solid #e6e8eb; font-size: 14px; }
+  @media (max-width: 540px) {
+    .prices-grid { grid-template-columns: 1fr; }
+    .cities-list { grid-template-columns: 1fr 1fr; }
+  }
+</style>

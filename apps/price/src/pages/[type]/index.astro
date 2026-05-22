@@ -1,0 +1,90 @@
+---
+import Base from '~/layouts/Base.astro';
+import { cities, repairTypes } from '~/data/cities';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return repairTypes.map((t) => ({ params: { type: t.slug }, props: { type: t } }));
+}
+const { type } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = `${type.name} квартиры — цены по городам России 2026`;
+const description = `Стоимость ${type.nameGen} квартиры в 2026 году по 30 городам РФ. ${type.description.slice(0, 100)}`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: type.name, item: url }
+  ]
+};
+
+// Сортируем города по цене этого типа ремонта
+const sortedCities = [...cities].sort((a, b) => a.prices[type.priceKey] - b.prices[type.priceKey]);
+const minCity = sortedCities[0];
+const maxCity = sortedCities[sortedCities.length - 1];
+const medianPrice = sortedCities[Math.floor(sortedCities.length / 2)].prices[type.priceKey];
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="bc"><a href="/">Главная</a> › <span>{type.name}</span></nav>
+
+  <h1>{type.name} квартиры — цены по городам России</h1>
+  <p class="lead">{type.description}</p>
+
+  <div class="summary">
+    <div class="sum-card"><div class="sum-label">Самый дешёвый</div><div class="sum-val">{minCity.city}</div><div class="sum-sub">{minCity.prices[type.priceKey].toLocaleString('ru-RU')} ₽/м²</div></div>
+    <div class="sum-card"><div class="sum-label">Самый дорогой</div><div class="sum-val">{maxCity.city}</div><div class="sum-sub">{maxCity.prices[type.priceKey].toLocaleString('ru-RU')} ₽/м²</div></div>
+    <div class="sum-card"><div class="sum-label">Медиана</div><div class="sum-val">{medianPrice.toLocaleString('ru-RU')} ₽/м²</div><div class="sum-sub">по 30 городам</div></div>
+  </div>
+
+  <h2>Что входит в {type.nameAcc}</h2>
+  <ul>
+    {type.works.map((w) => <li>{w}</li>)}
+  </ul>
+  <p><strong>Срок:</strong> {type.duration}. <strong>Не входит:</strong> {type.notInclude}.</p>
+
+  <h2>Цены на {type.nameAcc} по городам</h2>
+  <table class="prices-table">
+    <thead>
+      <tr><th>Город</th><th>Цена за 1 м²</th><th>Квартира 50 м²</th><th>Квартира 75 м²</th></tr>
+    </thead>
+    <tbody>
+      {sortedCities.map((c) => (
+        <tr>
+          <td><a href={`/v-${c.slug}/${type.slug}/`}>{type.name} {c.cityGen}</a></td>
+          <td>{c.prices[type.priceKey].toLocaleString('ru-RU')} ₽</td>
+          <td>{(c.prices[type.priceKey] * 50).toLocaleString('ru-RU')} ₽</td>
+          <td>{(c.prices[type.priceKey] * 75).toLocaleString('ru-RU')} ₽</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2>Другие типы ремонта</h2>
+  <ul class="links-list">
+    {repairTypes.filter((t) => t.slug !== type.slug).map((t) => (
+      <li><a href={`/${t.slug}/`}>{t.name} — цены по городам</a></li>
+    ))}
+  </ul>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; }
+  .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .summary { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0 32px; }
+  .sum-card { padding: 14px 16px; background: #eef9f0; border: 1px solid #b6dfbb; border-radius: 8px; text-align: center; }
+  .sum-label { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+  .sum-val { font-size: 20px; font-weight: 700; color: #16933b; margin: 4px 0; }
+  .sum-sub { font-size: 13px; color: #555; }
+  .prices-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .prices-table th, .prices-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e6e8eb; }
+  .prices-table thead th { background: #f7f8fa; font-weight: 600; }
+  .prices-table tbody tr:hover { background: #fafbfc; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 6px; }
+  .links-list { list-style: none; padding: 0; }
+  @media (max-width: 540px) {
+    .summary { grid-template-columns: 1fr; }
+    .prices-table { font-size: 12px; }
+  }
+</style>

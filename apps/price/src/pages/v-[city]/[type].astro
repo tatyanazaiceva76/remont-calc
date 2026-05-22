@@ -1,0 +1,198 @@
+---
+import Base from '~/layouts/Base.astro';
+import { cities, repairTypes } from '~/data/cities';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const c of cities) {
+    for (const t of repairTypes) {
+      paths.push({ params: { city: c.slug, type: t.slug }, props: { city: c, type: t } });
+    }
+  }
+  return paths;
+}
+const { city, type } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const price = city.prices[type.priceKey];
+const title = `${type.name} квартиры ${city.cityGen} 2026 — цена ${price.toLocaleString('ru-RU')} ₽/м²`;
+const description = `Стоимость ${type.nameGen} ${city.cityGen} в 2026 году. Цена от ${price.toLocaleString('ru-RU')} ₽ за м². Что входит, сроки, особенности.`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: type.name, item: `https://${SITE_CONFIG.domain}/${type.slug}/` },
+    { '@type': 'ListItem', position: 3, name: `${type.name} ${city.cityGen}`, item: url }
+  ]
+};
+
+const offerSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  serviceType: type.name,
+  areaServed: { '@type': 'City', name: city.city },
+  offers: {
+    '@type': 'AggregateOffer',
+    priceCurrency: 'RUB',
+    lowPrice: price * 30,
+    highPrice: price * 120,
+    offerCount: 5
+  }
+};
+
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, offerSchema] };
+
+const wa = SITE_CONFIG.whatsapp;
+const waMsg = encodeURIComponent(`Здравствуйте! Хочу узнать про ${type.nameAcc.toLowerCase()} ${city.cityGen}. Источник: price-${city.slug}-${type.slug}`);
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc">
+    <a href="/">Главная</a> ›
+    <a href={`/${type.slug}/`}>{type.name}</a> ›
+    <span>{city.city}</span>
+  </nav>
+
+  <h1>{type.name} квартиры {city.cityGen}</h1>
+
+  <div class="price-hero">
+    <div class="ph-main">
+      <div class="ph-label">Стоимость</div>
+      <div class="ph-num">{price.toLocaleString('ru-RU')} ₽</div>
+      <div class="ph-unit">за 1 м²</div>
+    </div>
+    <div class="ph-examples">
+      <div class="ph-ex"><b>Квартира 35 м²:</b> {(price * 35).toLocaleString('ru-RU')} ₽</div>
+      <div class="ph-ex"><b>Квартира 50 м²:</b> {(price * 50).toLocaleString('ru-RU')} ₽</div>
+      <div class="ph-ex"><b>Квартира 75 м²:</b> {(price * 75).toLocaleString('ru-RU')} ₽</div>
+      <div class="ph-ex"><b>Квартира 100 м²:</b> {(price * 100).toLocaleString('ru-RU')} ₽</div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <p><b>📋 Получите 3 сметы бесплатно от мастеров {city.cityGen}</b></p>
+    <div class="cta-actions">
+      <a href={`https://wa.me/${wa}?text=${waMsg}`} target="_blank" rel="nofollow noopener" class="cta-btn cta-wa">
+        💬 Написать в WhatsApp
+      </a>
+      <a href="https://profi.ru/repair/" target="_blank" rel="nofollow sponsored noopener" class="cta-btn cta-profi">
+        🔍 Найти мастера на Profi.ru
+      </a>
+    </div>
+  </div>
+
+  <h2>Что входит в {type.nameAcc} {city.cityGen}</h2>
+  <ul>
+    {type.works.map((w) => <li>{w}</li>)}
+  </ul>
+  <p><strong>Срок выполнения:</strong> {type.duration}. <strong>Не входит:</strong> {type.notInclude}.</p>
+
+  <h2>Особенности {city.cityGen}</h2>
+  <ul>
+    {city.localNotes.map((n) => <li>{n}</li>)}
+  </ul>
+
+  <h2>{type.name} {city.cityGen}: что определяет цену</h2>
+  <p>
+    Цена <strong>{price.toLocaleString('ru-RU')} ₽/м²</strong> — средняя по {city.cityGen} в 2026 году. Реальная стоимость
+    зависит от:
+  </p>
+  <ul>
+    <li><strong>Площадь квартиры.</strong> Чем меньше — тем выше относительная стоимость 1 м² (фиксированные затраты на демонтаж, доставку, начальные работы).</li>
+    <li><strong>Состояние "до".</strong> Если стены ровные, электрика свежая — экономия 15-25%. Старый фонд может удорожить на 20-30%.</li>
+    <li><strong>Материалы.</strong> Сегмент эконом / средний / премиум — диапазон цен 1:3.</li>
+    <li><strong>Сезон.</strong> Зимой ниже спрос → скидки 10-20% у мастеров.</li>
+    <li><strong>Срочность.</strong> "За месяц" — наценка 20-30%, "когда сможете" — скидки.</li>
+  </ul>
+
+  <h2>Сравнение с другими типами ремонта {city.cityGen}</h2>
+  <table class="comp-table">
+    <thead>
+      <tr><th>Тип</th><th>Цена за м²</th><th>50 м²</th></tr>
+    </thead>
+    <tbody>
+      {repairTypes.map((t) => {
+        const p = city.prices[t.priceKey];
+        const active = t.slug === type.slug;
+        return (
+          <tr class={active ? 'active' : ''}>
+            <td>{active ? <strong>{t.name}</strong> : <a href={`/v-${city.slug}/${t.slug}/`}>{t.name}</a>}</td>
+            <td>{p.toLocaleString('ru-RU')} ₽</td>
+            <td>{(p * 50).toLocaleString('ru-RU')} ₽</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+
+  <h2>{type.name} в других городах</h2>
+  <ul class="other-cities">
+    {cities.filter((c) => c.slug !== city.slug).slice(0, 12).map((c) => (
+      <li>
+        <a href={`/v-${c.slug}/${type.slug}/`}>
+          {type.name} {c.cityGen} — {c.prices[type.priceKey].toLocaleString('ru-RU')} ₽/м²
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Точный расчёт под вашу квартиру</h2>
+  <p>
+    Цены в этой таблице — ориентировочные. Для точного расчёта стоимости работ и материалов под параметры вашей квартиры —
+    используйте <a href={`https://www.${SITE_CONFIG.parentDomain}/stoimost-remonta/v-${city.slug}/`} target="_blank">калькулятор стоимости ремонта {city.cityGen}</a>
+    на основном сайте.
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; }
+  .bc a { color: #555; }
+  .price-hero {
+    background: linear-gradient(135deg, #16933b 0%, #1da855 100%);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: 12px;
+    margin: 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 28px;
+    align-items: center;
+  }
+  .ph-label { font-size: 13px; opacity: 0.8; }
+  .ph-num { font-size: 42px; font-weight: 800; line-height: 1; margin: 4px 0; }
+  .ph-unit { font-size: 14px; opacity: 0.9; }
+  .ph-examples { display: grid; gap: 6px; font-size: 14px; }
+  .cta-box {
+    background: #fff8e1;
+    border: 1px solid #f3d99a;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 20px 0;
+  }
+  .cta-box p { margin: 0 0 12px; }
+  .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-btn {
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cta-wa { background: #25d366; color: #fff !important; }
+  .cta-profi { background: #fff; color: #6e4f0c !important; border: 1px solid #d09b1a; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 6px; }
+  .comp-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .comp-table th, .comp-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e6e8eb; }
+  .comp-table thead th { background: #f7f8fa; }
+  .comp-table .active { background: #eef9f0; }
+  .other-cities { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 14px; }
+  .other-cities a { display: block; padding: 8px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; font-size: 13px; color: #444; }
+  .other-cities a:hover { background: #eef9f0; text-decoration: none; }
+  @media (max-width: 600px) {
+    .price-hero { grid-template-columns: 1fr; gap: 16px; }
+    .other-cities { grid-template-columns: 1fr; }
+  }
+</style>

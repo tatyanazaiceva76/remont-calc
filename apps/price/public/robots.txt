@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://price.kalkremont.ru/sitemap.xml
+Host: price.kalkremont.ru
