@@ -11,6 +11,7 @@ import { concreteScenarios } from '~/data/concrete-scenarios';
 import { regionScenarios } from '~/data/repair-regions';
 import { articles } from '~/data/sovety-articles';
 import { comparisons } from '~/data/comparison-pages';
+import { brandProducts } from '~/data/brand-products';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -32,6 +33,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/sovety/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/chto-luchshe/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/o-sayte/`, priority: 0.5, changefreq: 'yearly' },
+    { loc: `${base}/brand/`, priority: 0.9, changefreq: 'weekly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,
@@ -90,6 +92,11 @@ export const GET: APIRoute = ({ site }) => {
     ...comparisons.map((c) => ({
       loc: `${base}/chto-luchshe/${c.slug}/`,
       priority: 0.85, // высокий коммерческий интент
+      changefreq: 'monthly'
+    })),
+    ...brandProducts.map((p) => ({
+      loc: `${base}/brand/${p.slug}/`,
+      priority: 0.85, // самый коммерческий интент в нише
       changefreq: 'monthly'
     }))
   ];

@@ -1,0 +1,68 @@
+---
+import Base from '~/layouts/Base.astro';
+import Rsya from '~/components/Rsya.astro';
+import { brandsByCategory } from '~/data/brand-products';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Стройматериалы по брендам — расход, характеристики, цена';
+const description = 'Каталог стройматериалов по брендам: Knauf, Volma, Ceresit, Tikkurila, Dulux, Bergauf. Расход, инструкции, отзывы.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Материалы по брендам', item: url }
+  ]
+};
+const cats: Record<string, string> = {
+  plaster: 'Штукатурки',
+  'tile-glue': 'Клеи для плитки',
+  putty: 'Шпаклёвки',
+  paint: 'Краски',
+  primer: 'Грунтовки',
+  'self-leveling': 'Наливные полы'
+};
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Материалы по брендам</span></nav>
+  <h1>Стройматериалы по брендам</h1>
+  <p>Подробные характеристики, расход и инструкции по конкретным маркам стройматериалов. Knauf, Volma, Ceresit, Tikkurila и других.</p>
+
+  <Rsya slot="top" />
+
+  {Object.entries(brandsByCategory).map(([cat, list]) => list.length > 0 && (
+    <section>
+      <h2>{cats[cat]}</h2>
+      <ul class="products">
+        {list.map((p) => (
+          <li>
+            <a href={`/brand/${p.slug}/`}>
+              <h3>{p.brand} {p.product}</h3>
+              <p>{p.intro.slice(0, 140)}...</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <Rsya slot="bottom" />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .products { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 32px; }
+  .products a {
+    display: block;
+    padding: 16px 18px;
+    background: #f7f8fa;
+    border: 1px solid #e6e8eb;
+    border-radius: 8px;
+    color: #1a1a1a;
+    text-decoration: none;
+  }
+  .products a:hover { background: #eef3fb; border-color: #0a5cce; }
+  .products h3 { font-size: 16px; margin: 0 0 6px; color: #0a5cce; }
+  .products p { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
+  @media (max-width: 540px) { .products { grid-template-columns: 1fr; } }
+</style>

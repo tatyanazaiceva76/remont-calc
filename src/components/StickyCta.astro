@@ -1,0 +1,114 @@
+---
+// Закреплённая кнопка внизу экрана при скролле.
+// Показывается на leadgen-страницах и страницах калькуляторов.
+// Уводит юзера на /stoimost-remonta/ (главный leadgen).
+interface Props {
+  hideOnPath?: string; // если текущий путь начинается с этого — не показывать
+  text?: string;
+  href?: string;
+}
+const { hideOnPath = '/stoimost-remonta', text = 'Узнать стоимость ремонта', href = '/stoimost-remonta/' } = Astro.props;
+const currentPath = Astro.url.pathname;
+const hidden = currentPath.startsWith(hideOnPath);
+---
+{!hidden && (
+  <div class="sticky-cta" id="sticky-cta" data-show-after="600">
+    <a href={href} class="sticky-btn">
+      <span class="sticky-icon">💰</span>
+      <span class="sticky-text">{text}</span>
+      <span class="sticky-arrow">→</span>
+    </a>
+    <button class="sticky-close" aria-label="Закрыть" id="sticky-close">×</button>
+  </div>
+)}
+
+<script is:inline>
+  (function () {
+    const cta = document.getElementById('sticky-cta');
+    const close = document.getElementById('sticky-close');
+    if (!cta) return;
+
+    // Если юзер уже закрывал в этой сессии — не показываем
+    if (sessionStorage.getItem('sticky-closed') === '1') {
+      cta.style.display = 'none';
+      return;
+    }
+
+    const showAfter = parseInt(cta.getAttribute('data-show-after') || '600', 10);
+
+    function onScroll() {
+      if (window.scrollY > showAfter) {
+        cta.classList.add('visible');
+      } else {
+        cta.classList.remove('visible');
+      }
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    if (close) {
+      close.addEventListener('click', (e) => {
+        e.preventDefault();
+        cta.style.display = 'none';
+        sessionStorage.setItem('sticky-closed', '1');
+      });
+    }
+  })();
+</script>
+
+<style>
+  .sticky-cta {
+    position: fixed;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #0a5cce 0%, #1565c0 100%);
+    border-radius: 50px;
+    padding: 4px 8px 4px 4px;
+    box-shadow: 0 8px 24px rgba(10, 92, 206, 0.35);
+    transition: transform 0.3s ease;
+    max-width: 90%;
+  }
+  .sticky-cta.visible {
+    transform: translateX(-50%) translateY(0);
+  }
+  .sticky-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.0);
+    border-radius: 50px;
+  }
+  .sticky-btn:hover { text-decoration: none; opacity: 0.95; }
+  .sticky-icon { font-size: 18px; }
+  .sticky-arrow { font-size: 18px; }
+  .sticky-close {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    margin-left: 4px;
+    line-height: 1;
+  }
+  .sticky-close:hover { background: rgba(255,255,255,0.3); }
+  @media (max-width: 540px) {
+    .sticky-cta { bottom: 8px; padding: 3px 6px 3px 3px; }
+    .sticky-btn { padding: 8px 14px; font-size: 14px; }
+    .sticky-text { display: none; }
+    .sticky-icon { font-size: 20px; }
+  }
+  @media (max-width: 380px) {
+    .sticky-text { display: inline; font-size: 13px; }
+  }
+</style>

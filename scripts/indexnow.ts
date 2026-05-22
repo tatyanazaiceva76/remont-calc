@@ -19,6 +19,7 @@ import { concreteScenarios } from '../src/data/concrete-scenarios';
 import { regionScenarios } from '../src/data/repair-regions';
 import { articles } from '../src/data/sovety-articles';
 import { comparisons } from '../src/data/comparison-pages';
+import { brandProducts } from '../src/data/brand-products';
 
 const KEY = process.env.INDEXNOW_KEY;
 const DOMAIN = 'www.kalkremont.ru';
@@ -44,6 +45,7 @@ function allUrls(): string[] {
     `${base}/stoimost-remonta/`,
     `${base}/sovety/`,
     `${base}/chto-luchshe/`,
+    `${base}/brand/`,
     ...wallpaperScenarios.map((s) => `${base}/raschet-oboev/${s.slug}/`),
     ...laminateScenarios.map((s) => `${base}/raschet-laminata/${s.slug}/`),
     ...paintScenarios.map((s) => `${base}/raschet-kraski/${s.slug}/`),
@@ -55,7 +57,8 @@ function allUrls(): string[] {
     ...concreteScenarios.map((s) => `${base}/raschet-betona/${s.slug}/`),
     ...regionScenarios.map((s) => `${base}/stoimost-remonta/${s.slug}/`),
     ...articles.map((a) => `${base}/sovety/${a.slug}/`),
-    ...comparisons.map((c) => `${base}/chto-luchshe/${c.slug}/`)
+    ...comparisons.map((c) => `${base}/chto-luchshe/${c.slug}/`),
+    ...brandProducts.map((p) => `${base}/brand/${p.slug}/`)
   ];
   return urls;
 }

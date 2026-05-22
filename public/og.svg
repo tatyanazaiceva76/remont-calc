@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a5cce;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1565c0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#ffc107;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ffb300;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <text x="80" y="220" font-family="-apple-system, system-ui, sans-serif" font-size="100" font-weight="700" fill="#ffffff">Калькулятор ремонта</text>
+  <text x="80" y="320" font-family="-apple-system, system-ui, sans-serif" font-size="42" fill="#d4e3f8">Точный расчёт обоев, ламината, краски,</text>
+  <text x="80" y="375" font-family="-apple-system, system-ui, sans-serif" font-size="42" fill="#d4e3f8">плитки, штукатурки и других материалов</text>
+  <rect x="80" y="445" width="300" height="80" rx="40" fill="url(#accent)"/>
+  <text x="230" y="496" font-family="-apple-system, system-ui, sans-serif" font-size="32" font-weight="600" fill="#2d1f00" text-anchor="middle">10 калькуляторов</text>
+  <text x="80" y="580" font-family="-apple-system, system-ui, sans-serif" font-size="28" fill="#a3c1ed">www.kalkremont.ru</text>
+</svg>
