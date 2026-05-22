@@ -1,0 +1,142 @@
+---
+// Exit-intent popup — показывается когда юзер двигает мышь к закрытию вкладки.
+// Цель: поймать уходящего юзера, предложить leadgen.
+// Показывается 1 раз в сессии (sessionStorage).
+// Замени WHATSAPP перед публичным использованием.
+const WHATSAPP = '79991234567';
+---
+<div id="exit-intent" class="exit-intent" hidden>
+  <div class="ei-backdrop" data-close></div>
+  <div class="ei-modal">
+    <button class="ei-close" data-close aria-label="Закрыть">×</button>
+    <div class="ei-icon">⏰</div>
+    <h2>Уходите? Возьмите смету бесплатно</h2>
+    <p>Опытные мастера составят расчёт под вашу квартиру за 1-2 дня. Сравните 3-5 предложений и выберите лучшее.</p>
+    <div class="ei-actions">
+      <a href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Здравствуйте! Хочу получить смету на ремонт.')}`}
+         target="_blank" rel="nofollow noopener" class="ei-btn ei-primary">
+        💬 Получить смету в WhatsApp
+      </a>
+      <button class="ei-btn ei-secondary" data-close>Спасибо, не надо</button>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const popup = document.getElementById('exit-intent');
+    if (!popup) return;
+    if (sessionStorage.getItem('exit-intent-shown') === '1') return;
+
+    // Не показывать сразу — даём юзеру 5 секунд "вжиться" в страницу
+    let armed = false;
+    setTimeout(() => { armed = true; }, 5000);
+
+    // Не показывать на мобильных (там нет mouse leave)
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+
+    function show() {
+      if (!armed) return;
+      popup.hidden = false;
+      sessionStorage.setItem('exit-intent-shown', '1');
+      document.body.style.overflow = 'hidden';
+      // Метрика
+      if (typeof ym === 'function') {
+        try { ym(109345156, 'reachGoal', 'exit_intent_shown'); } catch (e) {}
+      }
+    }
+
+    function hide() {
+      popup.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('mouseout', (e) => {
+      // Курсор покидает viewport через верхний край
+      if (e.clientY <= 0 && !e.relatedTarget) {
+        show();
+      }
+    });
+
+    popup.addEventListener('click', (e) => {
+      if (e.target.dataset.close !== undefined) {
+        hide();
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !popup.hidden) hide();
+    });
+  })();
+</script>
+
+<style>
+  .exit-intent {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: ei-fade 0.2s ease;
+  }
+  @keyframes ei-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .ei-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+  .ei-modal {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    padding: 36px 32px;
+    max-width: 460px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .ei-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f1f3;
+    color: #555;
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .ei-close:hover { background: #e6e8eb; }
+  .ei-icon { font-size: 48px; margin-bottom: 12px; }
+  .ei-modal h2 { font-size: 22px; margin: 0 0 10px; color: #1a1a1a; }
+  .ei-modal p { color: #555; font-size: 15px; margin: 0 0 22px; line-height: 1.5; }
+  .ei-actions { display: flex; flex-direction: column; gap: 10px; }
+  .ei-btn {
+    padding: 13px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .ei-primary {
+    background: linear-gradient(135deg, #25d366, #1da855);
+    color: #fff !important;
+  }
+  .ei-primary:hover { transform: translateY(-1px); text-decoration: none; }
+  .ei-secondary { background: transparent; color: #888; font-weight: 400; }
+  .ei-secondary:hover { color: #555; }
+</style>

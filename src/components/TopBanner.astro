@@ -1,0 +1,74 @@
+---
+// Top sticky banner — над навигацией, всегда виден если не закрыт.
+// На leadgen-страницах призывает к смете.
+// Sticky — пропадает при скролле вниз, появляется при скролле вверх.
+---
+<div id="top-banner" class="top-banner">
+  <div class="container tb-content">
+    <span class="tb-icon">🎯</span>
+    <span class="tb-text">
+      <strong>Бесплатная смета на ремонт</strong> — сравните 3-5 предложений мастеров в вашем городе
+    </span>
+    <a href="/stoimost-remonta/" class="tb-btn">Получить →</a>
+    <button class="tb-close" id="tb-close" aria-label="Закрыть">×</button>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const banner = document.getElementById('top-banner');
+    const close = document.getElementById('tb-close');
+    if (!banner) return;
+    if (sessionStorage.getItem('top-banner-closed') === '1') {
+      banner.style.display = 'none';
+      return;
+    }
+    if (close) {
+      close.addEventListener('click', () => {
+        banner.style.display = 'none';
+        sessionStorage.setItem('top-banner-closed', '1');
+      });
+    }
+  })();
+</script>
+
+<style>
+  .top-banner {
+    background: linear-gradient(90deg, #16933b 0%, #1da855 100%);
+    color: #fff;
+    font-size: 14px;
+    padding: 8px 0;
+  }
+  .tb-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .tb-icon { font-size: 18px; }
+  .tb-text { color: #fff; }
+  .tb-text strong { font-weight: 600; }
+  .tb-btn {
+    color: #fff !important;
+    text-decoration: underline;
+    font-weight: 600;
+  }
+  .tb-btn:hover { text-decoration: none; opacity: 0.9; }
+  .tb-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    line-height: 1;
+    font-size: 14px;
+  }
+  .tb-close:hover { background: rgba(255,255,255,0.3); }
+  @media (max-width: 540px) {
+    .tb-text { font-size: 12px; }
+    .tb-text strong { display: block; }
+  }
+</style>

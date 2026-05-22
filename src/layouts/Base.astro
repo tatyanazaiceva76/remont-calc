@@ -2,6 +2,8 @@
 import { SITE_CONFIG } from '~/config';
 import Metrika from '~/components/Metrika.astro';
 import StickyCta from '~/components/StickyCta.astro';
+import ExitIntent from '~/components/ExitIntent.astro';
+import TopBanner from '~/components/TopBanner.astro';
 
 interface Props {
   title: string;
@@ -92,6 +94,7 @@ const webPageSchema = {
     <Metrika />
   </head>
   <body>
+    <TopBanner />
     <header class="site-header">
       <div class="container">
         <a href="/" class="logo">{SITE_CONFIG.siteName}</a>
@@ -120,6 +123,7 @@ const webPageSchema = {
     </main>
 
     <StickyCta />
+    <ExitIntent />
 
     <footer class="site-footer">
       <div class="container">
