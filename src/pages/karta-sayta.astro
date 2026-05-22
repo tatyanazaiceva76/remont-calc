@@ -1,0 +1,184 @@
+---
+import Base from '~/layouts/Base.astro';
+import { SITE_CONFIG } from '~/config';
+import { scenarios as wallpaperScenarios, scenariosByCategory as wallpaperCats } from '~/data/wallpaper-scenarios';
+import { laminateScenarios, laminateByCategory } from '~/data/laminate-scenarios';
+import { paintScenarios, paintByCategory } from '~/data/paint-scenarios';
+import { tileScenarios, tileByCategory } from '~/data/tile-scenarios';
+import { plasterScenarios, plasterByCategory } from '~/data/plaster-scenarios';
+import { linoleumScenarios, linoleumByCategory } from '~/data/linoleum-scenarios';
+import { drywallScenarios } from '~/data/drywall-scenarios';
+import { insulationScenarios } from '~/data/insulation-scenarios';
+import { concreteScenarios } from '~/data/concrete-scenarios';
+import { roofScenarios } from '~/data/roof-scenarios';
+import { regionScenarios } from '~/data/repair-regions';
+import { articles } from '~/data/sovety-articles';
+import { comparisons } from '~/data/comparison-pages';
+import { brandProducts } from '~/data/brand-products';
+
+const title = 'Карта сайта — все калькуляторы и статьи';
+const description = 'Полная карта сайта KalkRemont: все калькуляторы материалов, советы по ремонту, сравнения, обзоры брендов.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Карта сайта', item: url }
+  ]
+};
+
+const totalPages =
+  3 + // index, sovety, chto-luchshe hubs
+  wallpaperScenarios.length + laminateScenarios.length +
+  paintScenarios.length + tileScenarios.length +
+  plasterScenarios.length + linoleumScenarios.length +
+  drywallScenarios.length + insulationScenarios.length +
+  concreteScenarios.length + roofScenarios.length +
+  regionScenarios.length + articles.length +
+  comparisons.length + brandProducts.length + 12; // плюс хабы и trust
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Карта сайта</span></nav>
+
+  <h1>Карта сайта</h1>
+  <p class="lead">Полный список из {totalPages}+ страниц на KalkRemont. Структура и навигация по всем разделам сайта.</p>
+
+  <h2>Калькуляторы материалов</h2>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-oboev/">Расчёт обоев</a> · {wallpaperScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {wallpaperScenarios.map((s) => <li><a href={`/raschet-oboev/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-laminata/">Расчёт ламината</a> · {laminateScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {laminateScenarios.map((s) => <li><a href={`/raschet-laminata/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-kraski/">Расчёт краски</a> · {paintScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {paintScenarios.map((s) => <li><a href={`/raschet-kraski/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-plitki/">Расчёт плитки</a> · {tileScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {tileScenarios.map((s) => <li><a href={`/raschet-plitki/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-shtukaturki/">Расчёт штукатурки</a> · {plasterScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {plasterScenarios.map((s) => <li><a href={`/raschet-shtukaturki/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-linoleuma/">Расчёт линолеума</a> · {linoleumScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {linoleumScenarios.map((s) => <li><a href={`/raschet-linoleuma/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-gipsokartona/">Расчёт гипсокартона</a> · {drywallScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {drywallScenarios.map((s) => <li><a href={`/raschet-gipsokartona/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-uteplitelya/">Расчёт утеплителя</a> · {insulationScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {insulationScenarios.map((s) => <li><a href={`/raschet-uteplitelya/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-betona/">Расчёт бетона</a> · {concreteScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {concreteScenarios.map((s) => <li><a href={`/raschet-betona/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <section class="calc-section">
+    <h3><a href="/raschet-krovli/">Расчёт кровли</a> · {roofScenarios.length} сценариев</h3>
+    <ul class="links-grid">
+      {roofScenarios.map((s) => <li><a href={`/raschet-krovli/${s.slug}/`}>{s.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <h2>Стоимость ремонта</h2>
+  <section class="calc-section">
+    <h3><a href="/stoimost-remonta/">Стоимость ремонта квартиры</a> · по {regionScenarios.length} городам</h3>
+    <ul class="links-grid">
+      <li><a href="/stoimost-remonta/">Главный калькулятор стоимости</a></li>
+      {regionScenarios.map((s) => <li><a href={`/stoimost-remonta/${s.slug}/`}>Ремонт {s.cityGen}</a></li>)}
+    </ul>
+  </section>
+
+  <h2>Советы по ремонту</h2>
+  <section class="calc-section">
+    <h3><a href="/sovety/">Все статьи</a> · {articles.length} статей</h3>
+    <ul class="links-grid">
+      {articles.map((a) => <li><a href={`/sovety/${a.slug}/`}>{a.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <h2>Что лучше выбрать</h2>
+  <section class="calc-section">
+    <h3><a href="/chto-luchshe/">Все сравнения</a> · {comparisons.length} сравнений</h3>
+    <ul class="links-grid">
+      {comparisons.map((c) => <li><a href={`/chto-luchshe/${c.slug}/`}>{c.h1}</a></li>)}
+    </ul>
+  </section>
+
+  <h2>Материалы по брендам</h2>
+  <section class="calc-section">
+    <h3><a href="/brand/">Все бренды</a> · {brandProducts.length} продуктов</h3>
+    <ul class="links-grid">
+      {brandProducts.map((p) => <li><a href={`/brand/${p.slug}/`}>{p.brand} {p.product}</a></li>)}
+    </ul>
+  </section>
+
+  <h2>Другие разделы</h2>
+  <ul class="links-grid">
+    <li><a href="/skolko-hvatit/">Сколько хватит материала (обратный калькулятор)</a></li>
+    <li><a href="/widget/">Виджет калькулятора для встраивания</a></li>
+    <li><a href="/o-sayte/">О проекте</a></li>
+    <li><a href="/politika/">Политика конфиденциальности</a></li>
+    <li><a href="/sitemap.xml">XML-карта сайта (для поисковиков)</a></li>
+  </ul>
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .calc-section { margin: 24px 0; }
+  .calc-section h3 { font-size: 18px; margin: 0 0 10px; }
+  .calc-section h3 a { color: #0a5cce; }
+  .links-grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px 16px;
+    font-size: 13px;
+  }
+  .links-grid li {
+    padding: 4px 8px;
+    border-bottom: 1px solid #f0f1f3;
+  }
+  .links-grid a { color: #444; }
+  .links-grid a:hover { color: #0a5cce; }
+  @media (max-width: 720px) { .links-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 540px) { .links-grid { grid-template-columns: 1fr; } }
+</style>
