@@ -12,6 +12,7 @@ import { regionScenarios } from '~/data/repair-regions';
 import { articles } from '~/data/sovety-articles';
 import { comparisons } from '~/data/comparison-pages';
 import { brandProducts } from '~/data/brand-products';
+import { roofScenarios } from '~/data/roof-scenarios';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -34,6 +35,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/chto-luchshe/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/o-sayte/`, priority: 0.5, changefreq: 'yearly' },
     { loc: `${base}/brand/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/raschet-krovli/`, priority: 0.9, changefreq: 'weekly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,
@@ -97,6 +99,11 @@ export const GET: APIRoute = ({ site }) => {
     ...brandProducts.map((p) => ({
       loc: `${base}/brand/${p.slug}/`,
       priority: 0.85, // самый коммерческий интент в нише
+      changefreq: 'monthly'
+    })),
+    ...roofScenarios.map((s) => ({
+      loc: `${base}/raschet-krovli/${s.slug}/`,
+      priority: 0.8,
       changefreq: 'monthly'
     }))
   ];

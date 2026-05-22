@@ -1,0 +1,146 @@
+---
+interface Props {
+  prefill?: {
+    length?: number;
+    width?: number;
+    slope?: number; // угол ската в градусах
+    roofType?: 'gable' | 'shed' | 'hip';
+    material?: 'metal-tile' | 'corrugated' | 'soft' | 'ondulin';
+    pricePerSqm?: number;
+  };
+  lock?: Array<'roofType' | 'material'>;
+}
+const { prefill = {}, lock = [] } = Astro.props;
+const defaults = {
+  length: prefill.length ?? 10,
+  width: prefill.width ?? 8,
+  slope: prefill.slope ?? 30,
+  roofType: prefill.roofType ?? 'gable',
+  material: prefill.material ?? 'metal-tile',
+  pricePerSqm: prefill.pricePerSqm ?? 0
+};
+---
+<div class="calc" id="roof-calc" data-defaults={JSON.stringify(defaults)}>
+  <div class="calc-grid">
+    <label><span>Длина дома, м</span><input type="number" name="length" min="3" max="50" step="0.5" value={defaults.length} /></label>
+    <label><span>Ширина дома, м</span><input type="number" name="width" min="3" max="30" step="0.5" value={defaults.width} /></label>
+    <label><span>Угол ската, °</span><input type="number" name="slope" min="5" max="60" step="1" value={defaults.slope} /></label>
+
+    {!lock.includes('roofType') && (
+      <label>
+        <span>Тип крыши</span>
+        <select name="roofType">
+          <option value="gable" selected={defaults.roofType === 'gable'}>Двускатная</option>
+          <option value="shed" selected={defaults.roofType === 'shed'}>Односкатная</option>
+          <option value="hip" selected={defaults.roofType === 'hip'}>Четырёхскатная (вальмовая)</option>
+        </select>
+      </label>
+    )}
+    {!lock.includes('material') && (
+      <label>
+        <span>Кровельный материал</span>
+        <select name="material">
+          <option value="metal-tile" selected={defaults.material === 'metal-tile'}>Металлочерепица</option>
+          <option value="corrugated" selected={defaults.material === 'corrugated'}>Профнастил</option>
+          <option value="soft" selected={defaults.material === 'soft'}>Мягкая кровля (битумная черепица)</option>
+          <option value="ondulin" selected={defaults.material === 'ondulin'}>Ондулин</option>
+        </select>
+      </label>
+    )}
+    <label class="full"><span>Цена за 1 м² материала, ₽ <span class="hint">(необязательно)</span></span><input type="number" name="pricePerSqm" min="0" max="100000" step="50" value={defaults.pricePerSqm} placeholder="например, 450" /></label>
+  </div>
+
+  <div class="calc-result" aria-live="polite">
+    <div class="rows">
+      <div class="row"><span>Площадь проекции крыши</span><strong data-out="projArea">—</strong></div>
+      <div class="row"><span>Площадь скатов</span><strong data-out="slopeArea">—</strong></div>
+      <div class="row"><span>Запас на нахлёст и обрезки</span><strong data-out="reservePct">—</strong></div>
+      <div class="row big"><span>Кровельного материала</span><strong data-out="materialArea">—</strong></div>
+      <div class="row"><span>Длина конька</span><strong data-out="ridge">—</strong></div>
+      <div class="row"><span>Длина свесов</span><strong data-out="eave">—</strong></div>
+      <div class="row big cost" data-cost-row hidden><span>Стоимость материала</span><strong data-out="cost">—</strong></div>
+    </div>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const root = document.getElementById('roof-calc');
+    if (!root) return;
+    const inputs = root.querySelectorAll('input, select');
+    const out = (k) => root.querySelector(`[data-out="${k}"]`);
+    function num(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return Number(d[n])||0;}return parseFloat(el.value)||0;}
+    function str(n){const el=root.querySelector(`[name="${n}"]`);if(!el){const d=JSON.parse(root.getAttribute('data-defaults')||'{}');return String(d[n]||'');}return el.value;}
+    // Запас по материалу: металлочерепица — много отходов из-за волны рисунка
+    const reserves = { 'metal-tile': 0.15, 'corrugated': 0.10, 'soft': 0.12, 'ondulin': 0.08 };
+    function calc() {
+      const L = num('length'), W = num('width');
+      const slopeDeg = num('slope');
+      const roofType = str('roofType');
+      const material = str('material');
+      const slopeRad = (slopeDeg * Math.PI) / 180;
+      const factor = 1 / Math.cos(slopeRad); // увеличение площади из-за наклона
+
+      // Площадь проекции и скатов
+      let projArea = L * W;
+      let slopeArea = 0;
+      let ridge = 0;
+      let eave = 0;
+
+      if (roofType === 'gable') {
+        // Двускатная: два прямоугольника
+        slopeArea = L * W * factor;
+        ridge = L;
+        eave = 2 * L; // нижние свесы
+      } else if (roofType === 'shed') {
+        // Односкатная: один прямоугольник
+        slopeArea = L * W * factor;
+        ridge = 0;
+        eave = L + 2 * W * factor; // нижний + два боковых
+      } else if (roofType === 'hip') {
+        // Вальмовая: примерно та же площадь что у двускатной + 5% на скосы
+        slopeArea = L * W * factor * 1.05;
+        ridge = Math.max(0, L - W);
+        eave = 2 * (L + W);
+      }
+
+      const reservePct = reserves[material] || 0.10;
+      const materialArea = slopeArea * (1 + reservePct);
+
+      const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+      out('projArea').textContent = fmt(projArea, ' м²');
+      out('slopeArea').textContent = fmt(slopeArea, ' м²');
+      out('reservePct').textContent = Math.round(reservePct * 100) + '%';
+      out('materialArea').textContent = fmt(materialArea, ' м²');
+      out('ridge').textContent = fmt(ridge, ' м');
+      out('eave').textContent = fmt(eave, ' м');
+
+      const price = num('pricePerSqm');
+      const costRow = root.querySelector('[data-cost-row]');
+      if (price > 0 && materialArea > 0) {
+        out('cost').textContent = Math.ceil(materialArea * price).toLocaleString('ru-RU') + ' ₽';
+        if (costRow) costRow.removeAttribute('hidden');
+      } else if (costRow) costRow.setAttribute('hidden', '');
+    }
+    inputs.forEach((el) => el.addEventListener('input', calc));
+    calc();
+  })();
+</script>
+
+<style>
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid label.full { grid-column: 1 / -1; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-grid input:focus, .calc-grid select:focus { outline: 2px solid #0a5cce; border-color: #0a5cce; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .row.cost strong { color: #16933b; }
+  .hint { color: #999; font-weight: 400; font-size: 12px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>
