@@ -1,0 +1,196 @@
+---
+import Base from '~/layouts/Base.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import AffiliateLinks from '~/components/AffiliateLinks.astro';
+import type { FAQ } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Калькулятор грунтовки — расход на 1 м², литры';
+const description = 'Точный расчёт грунтовки для стен и потолка: глубокого проникновения, бетоноконтакт, акриловая.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Расчёт грунтовки', item: url }
+  ]
+};
+
+const faqs: FAQ[] = [
+  { q: 'Какой расход у грунтовки глубокого проникновения?', a: '100-200 мл/м² в один слой. На пористые впитывающие основания (свежая штукатурка, газобетон) — ближе к 200 мл. На плотные — 100 мл.' },
+  { q: 'Какой расход у бетоноконтакта?', a: '250-350 мл/м². Больше чем у обычной грунтовки потому что бетоноконтакт густой (с кварцевым песком). Создаёт шероховатость на гладких поверхностях.' },
+  { q: 'Сколько слоёв грунтовки нужно?', a: 'Обычно 1 слой. На сильно впитывающие основания (свежая шпаклёвка, газобетон без отделки) — 2 слоя. На непористые гладкие — 1 слой бетоноконтакта.' },
+  { q: 'Чем отличается грунтовка от концентрата?', a: 'Концентрат разбавляется водой 1:1 или 1:2 — даёт меньшую цену за литр готовой грунтовки. Готовая грунтовка не разбавляется, наносится сразу. Для бетоноконтакта концентратов нет.' },
+  { q: 'Можно ли наносить штукатурку без грунтовки?', a: 'Можно, но не рекомендуется. Без грунтовки сильно впитывающее основание "вытягивает" воду из штукатурки → она пересыхает и трескается. Также грунтовка снижает расход штукатурки.' }
+];
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Расчёт грунтовки</span></nav>
+
+  <h1>Калькулятор грунтовки</h1>
+  <p>Узнайте сколько литров грунтовки нужно для подготовки стен или потолка перед штукатуркой, шпаклёвкой, покраской.</p>
+
+  <div class="calc" id="gr-calc">
+    <div class="calc-grid">
+      <label><span>Длина комнаты, м</span><input type="number" name="length" min="0.5" max="50" step="0.1" value="5" /></label>
+      <label><span>Ширина комнаты, м</span><input type="number" name="width" min="0.5" max="50" step="0.1" value="4" /></label>
+      <label><span>Высота потолка, м</span><input type="number" name="height" min="2.0" max="6.0" step="0.05" value="2.7" /></label>
+      <label>
+        <span>Что грунтуем</span>
+        <select name="surface">
+          <option value="walls">Только стены</option>
+          <option value="ceiling">Только потолок</option>
+          <option value="walls-ceiling">Стены + потолок</option>
+        </select>
+      </label>
+      <label>
+        <span>Тип грунтовки</span>
+        <select name="primer">
+          <option value="deep" data-rate="0.15">Глубокого проникновения (150 мл/м²)</option>
+          <option value="concrete" data-rate="0.3">Бетоноконтакт (300 мл/м²)</option>
+          <option value="acrylic" data-rate="0.12">Акриловая универсальная (120 мл/м²)</option>
+          <option value="quartz" data-rate="0.4">С кварцевым песком (400 мл/м²)</option>
+        </select>
+      </label>
+      <label>
+        <span>Слои</span>
+        <select name="layers">
+          <option value="1">1 слой</option>
+          <option value="2" selected>2 слоя</option>
+          <option value="3">3 слоя</option>
+        </select>
+      </label>
+      <label><span>Дверей</span><input type="number" name="doors" min="0" max="10" step="1" value="1" /></label>
+      <label><span>Окон</span><input type="number" name="windows" min="0" max="10" step="1" value="1" /></label>
+    </div>
+
+    <div class="calc-result">
+      <div class="rows">
+        <div class="row"><span>Площадь обработки</span><strong data-out="area">—</strong></div>
+        <div class="row"><span>Объём грунтовки</span><strong data-out="litres">—</strong></div>
+        <div class="row big"><span>С запасом 10%</span><strong data-out="litresReserve">—</strong></div>
+        <div class="row"><span>Стандартная фасовка</span><strong data-out="packaging">—</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const root = document.getElementById('gr-calc');
+      if (!root) return;
+      const inputs = root.querySelectorAll('input, select');
+      const out = (k) => root.querySelector(`[data-out="${k}"]`);
+      const DOOR = 1.8, WIN = 2.1;
+      function num(n){return parseFloat(root.querySelector('[name="'+n+'"]').value)||0;}
+      function str(n){return root.querySelector('[name="'+n+'"]').value;}
+      function calc() {
+        const L = num('length'), W = num('width'), H = num('height');
+        const surface = str('surface');
+        const primerOpt = root.querySelector('[name="primer"]').selectedOptions[0];
+        const rate = parseFloat(primerOpt.getAttribute('data-rate'));
+        const layers = num('layers');
+        const doors = num('doors'), windows = num('windows');
+
+        const perimeter = 2 * (L + W);
+        const wallArea = Math.max(0, perimeter * H - doors * DOOR - windows * WIN);
+        const ceilingArea = L * W;
+        let area = 0;
+        if (surface === 'walls') area = wallArea;
+        else if (surface === 'ceiling') area = ceilingArea;
+        else area = wallArea + ceilingArea;
+
+        const litres = area * rate * layers;
+        const reserve = litres * 1.1;
+
+        // Стандартные фасовки
+        let packaging = '';
+        if (reserve <= 1) packaging = '1 канистра 1 л';
+        else if (reserve <= 2.5) packaging = '1 канистра 2,5 л';
+        else if (reserve <= 5) packaging = '1 канистра 5 л';
+        else if (reserve <= 10) packaging = '1 канистра 10 л';
+        else {
+          const canisters = Math.ceil(reserve / 10);
+          packaging = `${canisters} канистр по 10 л = ${canisters * 10} л`;
+        }
+
+        const fmt = (n, s) => (Number.isFinite(n) ? n.toFixed(2).replace(/\.?0+$/, '') : '—') + (s || '');
+        out('area').textContent = fmt(area, ' м²');
+        out('litres').textContent = fmt(litres, ' л');
+        out('litresReserve').textContent = fmt(reserve, ' л');
+        out('packaging').textContent = packaging;
+      }
+      inputs.forEach((el) => el.addEventListener('input', calc));
+      calc();
+    })();
+  </script>
+
+  <Rsya slot="top" />
+
+  <h2>Типы грунтовок и расход</h2>
+  <table class="primers-table">
+    <thead>
+      <tr><th>Тип</th><th>Расход на 1 м²</th><th>Где применяется</th><th>Цена за 10 л</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Глубокого проникновения (акриловая)</td>
+        <td>100-200 мл</td>
+        <td>Перед штукатуркой, шпаклёвкой, поклейкой обоев. На пористые основания.</td>
+        <td>500-800 ₽</td>
+      </tr>
+      <tr>
+        <td>Бетоноконтакт</td>
+        <td>250-400 мл</td>
+        <td>На гладкие непористые поверхности (плотный бетон, плитка под штукатурку).</td>
+        <td>1500-2500 ₽</td>
+      </tr>
+      <tr>
+        <td>Акриловая универсальная</td>
+        <td>100-150 мл</td>
+        <td>Перед покраской. По шпаклёвке, штукатурке.</td>
+        <td>400-700 ₽</td>
+      </tr>
+      <tr>
+        <td>С кварцевым песком</td>
+        <td>300-500 мл</td>
+        <td>Между слоями штукатурки. Для адгезии плитки на нестандартное основание.</td>
+        <td>1800-3000 ₽</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <Rsya slot="middle" />
+
+  <h2>Зачем нужна грунтовка</h2>
+  <ul>
+    <li><strong>Снижает впитываемость основания</strong> — следующий слой ляжет равномерно, без пятен.</li>
+    <li><strong>Улучшает адгезию</strong> — материал держится прочнее.</li>
+    <li><strong>Экономит финишный материал</strong> — расход штукатурки/шпаклёвки/краски снижается на 20-30%.</li>
+    <li><strong>Предотвращает плесень</strong> (антисептические грунтовки) — для влажных помещений.</li>
+    <li><strong>Закрепляет рыхлые поверхности</strong> — старая штукатурка перестанет сыпаться.</li>
+  </ul>
+
+  <AffiliateLinks material="plaster" />
+  <Faq items={faqs} />
+  <Rsya slot="bottom" />
+</Base>
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 20px 0; }
+  .calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .calc-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .calc-grid input, .calc-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .calc-result { margin-top: 20px; background: #fff; border-radius: 6px; padding: 14px 16px; border: 1px solid #e6e8eb; }
+  .rows { display: flex; flex-direction: column; gap: 8px; }
+  .row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .row strong { color: #1a1a1a; font-weight: 600; }
+  .row.big { font-size: 16px; border-top: 1px dashed #d8dade; padding-top: 10px; margin-top: 4px; }
+  .row.big strong { color: #0a5cce; font-size: 18px; }
+  .primers-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+  .primers-table th, .primers-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e6e8eb; vertical-align: top; }
+  .primers-table thead th { background: #f7f8fa; font-weight: 600; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 6px; }
+  @media (max-width: 540px) { .calc-grid { grid-template-columns: 1fr; } }
+</style>

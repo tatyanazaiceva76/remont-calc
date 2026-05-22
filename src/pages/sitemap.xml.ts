@@ -40,6 +40,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/widget/`, priority: 0.7, changefreq: 'monthly' },
     { loc: `${base}/karta-sayta/`, priority: 0.6, changefreq: 'weekly' },
     { loc: `${base}/raschet-plintusa/`, priority: 0.9, changefreq: 'monthly' },
+    { loc: `${base}/raschet-gruntovki/`, priority: 0.9, changefreq: 'monthly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,
