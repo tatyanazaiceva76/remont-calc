@@ -36,6 +36,7 @@ export const GET: APIRoute = ({ site }) => {
     { loc: `${base}/o-sayte/`, priority: 0.5, changefreq: 'yearly' },
     { loc: `${base}/brand/`, priority: 0.9, changefreq: 'weekly' },
     { loc: `${base}/raschet-krovli/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/skolko-hvatit/`, priority: 0.85, changefreq: 'monthly' },
     ...scenarios.map((s) => ({
       loc: `${base}/raschet-oboev/${s.slug}/`,
       priority: 0.8,

@@ -48,6 +48,7 @@ function allUrls(): string[] {
     `${base}/chto-luchshe/`,
     `${base}/brand/`,
     `${base}/raschet-krovli/`,
+    `${base}/skolko-hvatit/`,
     ...wallpaperScenarios.map((s) => `${base}/raschet-oboev/${s.slug}/`),
     ...laminateScenarios.map((s) => `${base}/raschet-laminata/${s.slug}/`),
     ...paintScenarios.map((s) => `${base}/raschet-kraski/${s.slug}/`),

@@ -1,0 +1,192 @@
+---
+import Base from '~/layouts/Base.astro';
+import Rsya from '~/components/Rsya.astro';
+import Faq from '~/components/Faq.astro';
+import type { FAQ } from '~/data/faqs';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Сколько хватит материала — обратный калькулятор';
+const description = 'Обратный калькулятор: посчитайте на какую комнату хватит ваших рулонов обоев, банок краски, мешков штукатурки.';
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: 'Сколько хватит', item: url }
+  ]
+};
+
+const faqs: FAQ[] = [
+  { q: 'Зачем нужен обратный калькулятор?', a: 'Когда материал уже куплен — нужно понять хватит или нет, на какую часть квартиры. Полезно при перепродаже остатков от ремонта, при планировании работы по частям, при оценке покупки "лотом" на Авито.' },
+  { q: 'Как пересчитать рулоны обоев в площадь?', a: 'Стандартный рулон 0,53 × 10,05 м = ~5,3 м² обоев. С учётом подрезки (10%) хватит на ~4,8 м² стены. Метровый рулон 1,06 × 10,05 м = ~10,6 м², на ~9,5 м² стены.' },
+  { q: 'Сколько м² стен в типовой комнате?', a: 'Комната 18 м² с потолком 2,7 м и одним окном/дверью — ~45-48 м² стен. Комната 12 м² — ~32 м² стен. Комната 30 м² — ~62 м² стен.' },
+  { q: 'Можно ли смешать остатки разных партий?', a: 'Технически да, но цвет может отличаться. Лучше использовать остатки в местах где не видно: за мебелью, в кладовке, на акцентной стене (где цвет не сравнить с соседним).' }
+];
+
+// Калькуляторы для разных материалов
+const calculators = [
+  { id: 'oboi', name: 'Обои', unit: 'рулонов', perUnit: 4.8, perUnitMetr: 9.5 },
+  { id: 'kraska', name: 'Краска', unit: 'литров', perUnit: 6 }, // 1 л в 2 слоя ~6 м²
+  { id: 'laminat', name: 'Ламинат', unit: 'упаковок', perUnit: 2.13 }, // 1 упаковка ~2.13 м²
+  { id: 'plitka', name: 'Плитка 30×30', unit: 'плиток', perUnit: 0.09 }, // 1 плитка 30×30 = 0.09 м²
+  { id: 'shtukaturka', name: 'Штукатурка', unit: 'мешков 30 кг', perUnit: 3.3 } // 1 мешок при слое 10мм ~3.3 м²
+];
+---
+<Base title={title} description={description} canonical={url} schema={breadcrumbs}>
+  <nav class="breadcrumbs"><a href="/">Главная</a><span>›</span><span>Сколько хватит</span></nav>
+  <h1>Сколько хватит материала — обратный калькулятор</h1>
+  <p class="lead">У вас остался материал и нужно понять на какую комнату или площадь его хватит? Введите количество — посчитаем площадь покрытия.</p>
+
+  <Rsya slot="top" />
+
+  <div class="rev-calc" id="rev-calc">
+    <div class="rev-grid">
+      <label>
+        <span>Что считаем?</span>
+        <select name="material" id="rev-mat">
+          {calculators.map((c) => (
+            <option value={c.id} data-per={c.perUnit} data-per-metr={c.perUnitMetr ?? ''} data-unit={c.unit} data-name={c.name}>{c.name}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span>Количество (<span id="rev-unit-label">рулонов</span>)</span>
+        <input type="number" id="rev-qty" min="0.1" max="10000" step="0.1" value="10" />
+      </label>
+      <label id="rev-roll-type-label" style="display: block;">
+        <span>Тип рулона</span>
+        <select id="rev-roll-type">
+          <option value="narrow">Узкий 0,53 м (4,8 м² с запасом)</option>
+          <option value="wide">Метровый 1,06 м (9,5 м² с запасом)</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="rev-result">
+      <div class="rev-row big">
+        <span>Хватит на площадь</span>
+        <strong id="rev-area">—</strong>
+      </div>
+      <div class="rev-row">
+        <span>Это примерно</span>
+        <strong id="rev-rooms">—</strong>
+      </div>
+    </div>
+
+    <div class="rev-suggestion" id="rev-suggestion"></div>
+  </div>
+
+  <script is:inline>
+    (function () {
+      const matSel = document.getElementById('rev-mat');
+      const qty = document.getElementById('rev-qty');
+      const unitLabel = document.getElementById('rev-unit-label');
+      const areaEl = document.getElementById('rev-area');
+      const roomsEl = document.getElementById('rev-rooms');
+      const sugg = document.getElementById('rev-suggestion');
+      const rollTypeLabel = document.getElementById('rev-roll-type-label');
+      const rollType = document.getElementById('rev-roll-type');
+
+      function calc() {
+        const opt = matSel.options[matSel.selectedIndex];
+        const matId = matSel.value;
+        const perUnit = parseFloat(opt.getAttribute('data-per'));
+        const perUnitMetr = parseFloat(opt.getAttribute('data-per-metr'));
+        const unit = opt.getAttribute('data-unit');
+        const name = opt.getAttribute('data-name');
+
+        unitLabel.textContent = unit;
+
+        // Для обоев — показать выбор типа рулона
+        if (matId === 'oboi') {
+          rollTypeLabel.style.display = 'block';
+        } else {
+          rollTypeLabel.style.display = 'none';
+        }
+
+        const q = parseFloat(qty.value) || 0;
+        let coverage = q * perUnit;
+        if (matId === 'oboi' && rollType.value === 'wide') {
+          coverage = q * (perUnitMetr || 9.5);
+        }
+
+        areaEl.textContent = coverage.toFixed(1) + ' м²';
+
+        // Преобразование в "комнаты"
+        // Площадь стен в типовой комнате: 18 м² комната → ~46 м² стен
+        // Площадь пола: считаем как площадь комнаты
+        let comparison = '';
+        if (['oboi', 'kraska', 'shtukaturka'].includes(matId)) {
+          // Стены
+          const rooms18 = coverage / 46;
+          if (coverage < 20) comparison = `Хватит на маленькую кладовку или туалет (~${Math.round(coverage / 8)} м²)`;
+          else if (rooms18 < 1) comparison = `Хватит примерно на ${Math.round(rooms18 * 18)} м² жилого помещения`;
+          else comparison = `Хватит примерно на ${rooms18.toFixed(1)} комнаты по 18 м²`;
+        } else if (['laminat', 'plitka'].includes(matId)) {
+          // Пол
+          if (coverage < 5) comparison = `Хватит на ванную или туалет (~${coverage.toFixed(0)} м²)`;
+          else comparison = `Хватит на комнату ${coverage.toFixed(0)} м² (≈${Math.round(coverage * 0.6)}× ${Math.round(coverage * 0.6 / 1.5)}м)`;
+        }
+        roomsEl.textContent = comparison;
+
+        // Предложение
+        let suggestion = '';
+        if (matId === 'oboi') suggestion = `Хотите точно посчитать на свою комнату? <a href="/raschet-oboev/">Калькулятор обоев</a> учтёт рапорт и проёмы.`;
+        else if (matId === 'kraska') suggestion = `Уточнить расход краски для вашей комнаты — <a href="/raschet-kraski/">Калькулятор краски</a>`;
+        else if (matId === 'laminat') suggestion = `Точный расчёт ламината — <a href="/raschet-laminata/">Калькулятор ламината</a>`;
+        else if (matId === 'plitka') suggestion = `Подобрать плитку под комнату — <a href="/raschet-plitki/">Калькулятор плитки</a>`;
+        else if (matId === 'shtukaturka') suggestion = `Точный расход штукатурки — <a href="/raschet-shtukaturki/">Калькулятор штукатурки</a>`;
+        sugg.innerHTML = suggestion;
+      }
+
+      matSel.addEventListener('change', calc);
+      qty.addEventListener('input', calc);
+      rollType.addEventListener('change', calc);
+      calc();
+    })();
+  </script>
+
+  <h2>Когда нужен обратный калькулятор</h2>
+  <ul>
+    <li><strong>Купили материал «с запасом» и хотите понять реальное покрытие.</strong> Часто продавцы советуют брать с большим запасом — на самом деле может остаться лишнее.</li>
+    <li><strong>Получили материал в наследство или нашли остатки.</strong> На какую часть квартиры хватит?</li>
+    <li><strong>Планируете покупку «лотом» на Авито или с распродажи.</strong> Посчитайте сколько м² за эти деньги — стоит ли брать.</li>
+    <li><strong>Делаете ремонт по частям.</strong> Понять что одной партией покроется, что докупать.</li>
+  </ul>
+
+  <Rsya slot="middle" />
+
+  <h2>Прямые калькуляторы — для точного расчёта</h2>
+  <p>Этот обратный калькулятор даёт примерную оценку. Для точного расчёта под вашу комнату используйте прямые калькуляторы:</p>
+  <ul class="links">
+    <li><a href="/raschet-oboev/">Калькулятор обоев</a> — с учётом рапорта, проёмов, типа рулона</li>
+    <li><a href="/raschet-laminata/">Калькулятор ламината</a> — с учётом типа укладки</li>
+    <li><a href="/raschet-kraski/">Калькулятор краски</a> — с учётом слоёв и фасовки</li>
+    <li><a href="/raschet-plitki/">Калькулятор плитки</a> — с учётом шва и формата</li>
+    <li><a href="/raschet-shtukaturki/">Калькулятор штукатурки</a> — по типу смеси и толщине</li>
+  </ul>
+
+  <Faq items={faqs} />
+  <Rsya slot="bottom" />
+</Base>
+
+<style>
+  .breadcrumbs { font-size: 13px; color: #777; margin: 0 0 16px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .breadcrumbs a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .rev-calc { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 20px; margin: 24px 0; }
+  .rev-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+  .rev-grid label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #444; }
+  .rev-grid input, .rev-grid select { padding: 8px 10px; border: 1px solid #c8ccd0; border-radius: 6px; font-size: 15px; background: #fff; width: 100%; }
+  .rev-result { background: #fff; border-radius: 6px; padding: 14px 18px; margin-top: 16px; border: 1px solid #e6e8eb; }
+  .rev-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: #555; padding: 4px 0; }
+  .rev-row.big { font-size: 18px; }
+  .rev-row.big strong { color: #0a5cce; font-size: 22px; }
+  .rev-row strong { color: #1a1a1a; font-weight: 600; }
+  .rev-suggestion { margin-top: 14px; padding: 12px 14px; background: #eef3fb; border-left: 3px solid #0a5cce; border-radius: 4px; font-size: 14px; color: #444; }
+  .rev-suggestion a { color: #0a5cce; font-weight: 600; }
+  .links { list-style: none; padding: 0; }
+  .links li { margin-bottom: 8px; }
+  ul { padding-left: 20px; } ul li { margin-bottom: 6px; }
+  @media (max-width: 540px) { .rev-grid { grid-template-columns: 1fr; } }
+</style>
