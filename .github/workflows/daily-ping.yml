@@ -1,9 +1,12 @@
-name: Daily IndexNow ping
+name: Daily IndexNow + Recrawl (2x per day)
 
 on:
   schedule:
-    # Каждый день в 09:00 UTC = 12:00 МСК
-    - cron: '0 9 * * *'
+    # 2 окна квот в день: 04:00 и 21:00 МСК (00:00 / 18:00 UTC)
+    # Яндекс сбрасывает квоту recrawl в 00:00 МСК = 21:00 UTC
+    # Делаем первый прогон сразу после сброса, второй — в конце дня
+    - cron: '0 0 * * *'   # 03:00 МСК
+    - cron: '0 18 * * *'  # 21:00 МСК
   workflow_dispatch:
 
 jobs:
@@ -15,7 +18,12 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - name: IndexNow daily ping (фрешность для Яндекс/Bing)
+      - name: IndexNow ping (30 хостов)
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-        run: bun scripts/indexnow.ts
+        run: bun scripts/indexnow-multi.ts || true
+      - name: Yandex Webmaster recrawl (30 хостов × до 150/день)
+        env:
+          YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+          YANDEX_WEBMASTER_USER_ID: ${{ secrets.YANDEX_WEBMASTER_USER_ID }}
+        run: bun scripts/recrawl-all-hosts.ts || true
