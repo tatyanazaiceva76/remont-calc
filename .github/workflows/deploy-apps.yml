@@ -45,6 +45,11 @@ jobs:
         with:
           bun-version: latest
 
+      # Node нужен для wrangler — bun не запускает его корректно
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Skip if app dir missing
         id: check
         run: |
