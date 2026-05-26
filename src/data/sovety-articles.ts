@@ -2,6 +2,7 @@
 // Высокий поисковый объём, информационный трафик → отправляем в калькулятор → в leadgen.
 
 import type { FAQ } from './faqs';
+import { articlesExtra } from './sovety-articles-extra';
 
 export interface ArticleSection {
   h2: string;
@@ -1480,8 +1481,7 @@ export const articlesByCategory = {
   process: articles.filter((a) => a.category === 'process')
 };
 
-// Append: +15 SEO articles auto-generated
-import { articlesExtra } from './sovety-articles-extra';
+// Append: +15 SEO articles auto-generated (импорт перенесён в начало файла)
 articles.push(...articlesExtra);
 articlesByCategory['how-to'] = articles.filter((a) => a.category === 'how-to');
 articlesByCategory['choice'] = articles.filter((a) => a.category === 'choice');

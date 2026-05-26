@@ -1,8 +1,25 @@
 // Auto-generated +15 SEO articles for /sovety/ — high-volume queries 2026.
-import type { FAQ } from './faqs';
-import type { Article } from './sovety-articles';
+// NOTE: тип Article здесь объявлен inline чтобы избежать circular dependency
+// с sovety-articles.ts (CI/строгий TS ломался).
 
-export const articlesExtra: Article[] = [
+interface ArticleSectionExtra {
+  h2: string;
+  paragraphs: string[];
+  list?: string[];
+}
+interface ArticleExtra {
+  slug: string;
+  category: 'how-to' | 'choice' | 'process';
+  h1: string;
+  title: string;
+  description: string;
+  intro: string;
+  sections: ArticleSectionExtra[];
+  faqs: { q: string; a: string }[];
+  relatedCalc?: { href: string; label: string };
+}
+
+export const articlesExtra: ArticleExtra[] = [
   {
     "slug": "skolko-stoit-remont-1-komnatnoy-kvartiry",
     "category": "choice",
