@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://irk.kalkremont.ru/sitemap.xml
+Host: irk.kalkremont.ru

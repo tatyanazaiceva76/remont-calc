@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cbx.kalkremont.ru/sitemap.xml
+Host: cbx.kalkremont.ru

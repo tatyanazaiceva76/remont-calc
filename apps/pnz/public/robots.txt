@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://pnz.kalkremont.ru/sitemap.xml
+Host: pnz.kalkremont.ru

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://yar.kalkremont.ru/sitemap.xml
+Host: yar.kalkremont.ru

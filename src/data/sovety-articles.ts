@@ -1479,3 +1479,11 @@ export const articlesByCategory = {
   choice: articles.filter((a) => a.category === 'choice'),
   process: articles.filter((a) => a.category === 'process')
 };
+
+// Append: +15 SEO articles auto-generated
+import { articlesExtra } from './sovety-articles-extra';
+articles.push(...articlesExtra);
+articlesByCategory['how-to'] = articles.filter((a) => a.category === 'how-to');
+articlesByCategory['choice'] = articles.filter((a) => a.category === 'choice');
+articlesByCategory['process'] = articles.filter((a) => a.category === 'process');
+

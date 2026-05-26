@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://lpk.kalkremont.ru/sitemap.xml
+Host: lpk.kalkremont.ru

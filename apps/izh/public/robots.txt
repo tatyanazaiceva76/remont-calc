@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://izh.kalkremont.ru/sitemap.xml
+Host: izh.kalkremont.ru

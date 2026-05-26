@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tul.kalkremont.ru/sitemap.xml
+Host: tul.kalkremont.ru

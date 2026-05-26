@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kir.kalkremont.ru/sitemap.xml
+Host: kir.kalkremont.ru

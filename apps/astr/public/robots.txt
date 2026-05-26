@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://astr.kalkremont.ru/sitemap.xml
+Host: astr.kalkremont.ru

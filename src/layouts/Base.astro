@@ -2,7 +2,8 @@
 import { SITE_CONFIG } from '~/config';
 import Metrika from '~/components/Metrika.astro';
 import StickyCta from '~/components/StickyCta.astro';
-import ExitIntent from '~/components/ExitIntent.astro';
+// ExitIntent временно отключён — заменяем на нормальную лид-форму (не WhatsApp redirect)
+// import ExitIntent from '~/components/ExitIntent.astro';
 import TopBanner from '~/components/TopBanner.astro';
 
 interface Props {
@@ -73,8 +74,12 @@ const webPageSchema = {
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="https://www.kalkremont.ru/og.svg" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content="https://www.kalkremont.ru/og/main.svg" />
+    <meta name="twitter:site" content="@kalkremont" />
 
+    <link rel="alternate" type="application/rss+xml" title="RSS — новые материалы" href="https://www.kalkremont.ru/feed.rss" />
     <link rel="alternate" type="application/rss+xml" title="Turbo-страницы Яндекс" href="https://www.kalkremont.ru/turbo.xml" />
     <link rel="preconnect" href="https://mc.yandex.ru" />
     <link rel="preconnect" href="https://yandex.ru" />
@@ -123,7 +128,8 @@ const webPageSchema = {
     </main>
 
     <StickyCta />
-    <ExitIntent />
+    <!-- ExitIntent временно отключён -->
+    <!-- <ExitIntent /> -->
 
     <footer class="site-footer">
       <div class="container">
@@ -176,6 +182,38 @@ const webPageSchema = {
               <li><a href="/widget/">Виджет для сайта</a></li>
             </ul>
           </div>
+        </div>
+
+        <div class="footer-network">
+          <strong>Проекты сети:</strong>
+          <a href="https://price.kalkremont.ru/">price — цены 30 городов РФ</a>
+          <a href="https://sovety.kalkremont.ru/">sovety — гайды</a>
+          <a href="https://brand.kalkremont.ru/">brand — каталог брендов</a>
+        </div>
+        <div class="footer-network">
+          <strong>Каталог регионов:</strong>
+          <a href="/regiony/">17 городов России</a>
+          <a href="/stoimost-remonta/">Стоимость по 60 регионам</a>
+        </div>
+        <div class="footer-network">
+          <strong>Города (топ):</strong>
+          <a href="https://moskva.kalkremont.ru/">Москва</a>
+          <a href="https://spb.kalkremont.ru/">СПб</a>
+          <a href="https://ekb.kalkremont.ru/">Екатеринбург</a>
+          <a href="https://kzn.kalkremont.ru/">Казань</a>
+          <a href="https://nsk.kalkremont.ru/">Новосибирск</a>
+          <a href="https://nn.kalkremont.ru/">Н. Новгород</a>
+          <a href="https://krd.kalkremont.ru/">Краснодар</a>
+        </div>
+        <div class="footer-network">
+          <strong>Города:</strong>
+          <a href="https://chel.kalkremont.ru/">Челябинск</a>
+          <a href="https://ufa.kalkremont.ru/">Уфа</a>
+          <a href="https://sam.kalkremont.ru/">Самара</a>
+          <a href="https://rnd.kalkremont.ru/">Ростов-на-Дону</a>
+          <a href="https://vrn.kalkremont.ru/">Воронеж</a>
+          <a href="https://perm.kalkremont.ru/">Пермь</a>
+          <a href="https://vlg.kalkremont.ru/">Волгоград</a>
         </div>
 
         <nav class="footer-nav">
@@ -242,6 +280,20 @@ const webPageSchema = {
       }
       .footer-nav { display: flex; gap: 18px; flex-wrap: wrap; margin: 16px 0 10px; padding-top: 14px; border-top: 1px solid #e6e8eb; }
       .footer-nav a { color: #666; }
+      .footer-network {
+        margin: 18px 0 6px;
+        padding: 12px 14px;
+        background: #fff7e6;
+        border: 1px solid #f5d3a3;
+        border-radius: 6px;
+        font-size: 13px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+      }
+      .footer-network strong { color: #333; }
+      .footer-network a { color: #0a5cce; }
       .footer-mega {
         display: grid;
         grid-template-columns: repeat(5, 1fr);

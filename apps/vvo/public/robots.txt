@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vvo.kalkremont.ru/sitemap.xml
+Host: vvo.kalkremont.ru

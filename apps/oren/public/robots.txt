@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://oren.kalkremont.ru/sitemap.xml
+Host: oren.kalkremont.ru

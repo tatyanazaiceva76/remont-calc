@@ -8,6 +8,9 @@ import { comparisons } from '~/data/comparison-pages';
 import { brandProducts } from '~/data/brand-products';
 import { regionScenarios } from '~/data/repair-regions';
 import { roomTypePages } from '~/data/repair-by-room';
+import { niches } from '~/data/niche-services';
+import { nicheCities } from '~/data/niche-cities';
+import { nicheScenarios } from '~/data/niche-scenarios';
 import { SITE_CONFIG } from '~/config';
 
 function esc(s: string) {
@@ -114,6 +117,69 @@ export const GET: APIRoute = ({ site }) => {
         <author>KalkRemont</author>
         <turbo:content>${cdata(contentHtml)}</turbo:content>
       </item>`);
+  }
+
+  // Ниши (10 hub-страниц)
+  for (const n of niches) {
+    const link = `${base}/${n.slug}/`;
+    const contentHtml =
+      `<p>${esc(n.intro)}</p>` +
+      `<h2>Что входит в ${esc(n.name.toLowerCase())}</h2><ul>${n.whatIncluded.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>` +
+      `<h2>Виды работ</h2><ul>${n.works.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` +
+      `<h2>Стоимость материалов</h2><ul>${n.materials.map((m) => `<li>${esc(m)}</li>`).join('')}</ul>` +
+      `<h2>От чего зависит цена</h2><ul>${n.factors.map((f) => `<li>${esc(f)}</li>`).join('')}</ul>` +
+      `<h2>FAQ</h2>` +
+      n.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join('');
+    items.push(`
+      <item turbo="true">
+        <link>${link}</link>
+        <pubDate>${now}</pubDate>
+        <title>${esc(n.name + ' — цены 2026 от ' + n.pricePerSqM.min.toLocaleString('ru-RU') + ' ₽/м²')}</title>
+        <author>KalkRemont</author>
+        <turbo:content>${cdata(contentHtml)}</turbo:content>
+      </item>`);
+  }
+
+  // Ниши × город (200 страниц)
+  for (const n of niches) {
+    for (const c of nicheCities) {
+      const link = `${base}/${n.slug}/v-${c.slug}/`;
+      const priceLow = Math.round(n.pricePerSqM.min * c.priceMult);
+      const contentHtml =
+        `<p>${esc(n.name + ' в ' + c.name + ' (' + c.population + ' жителей). ' + n.intro.slice(0, 200))}</p>` +
+        `<h2>Цены в ${esc(c.name)}</h2><p>${esc('От ' + priceLow.toLocaleString('ru-RU') + ' ₽/м². Срок ' + n.durationDays + '. Гарантия 2 года.')}</p>` +
+        `<h2>Что входит</h2><ul>${n.whatIncluded.slice(0, 8).map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`;
+      items.push(`
+      <item turbo="true">
+        <link>${link}</link>
+        <pubDate>${now}</pubDate>
+        <title>${esc(n.name + ' в ' + c.name + ' — от ' + priceLow.toLocaleString('ru-RU') + ' ₽/м²')}</title>
+        <author>KalkRemont</author>
+        <turbo:content>${cdata(contentHtml)}</turbo:content>
+      </item>`);
+    }
+  }
+
+  // Niche scenarios (40 страниц)
+  for (const n of niches) {
+    for (const s of nicheScenarios) {
+      const link = `${base}/${n.slug}/${s.slug}-remont/`;
+      const priceLow = Math.round(n.pricePerSqM.min * s.priceMult);
+      const contentHtml =
+        `<p>${esc(s.intro)}</p>` +
+        `<h2>Почему именно у нас</h2><ul>${s.whyChoose.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` +
+        `<h2>Что входит</h2><ul>${n.whatIncluded.slice(0, 8).map((i) => `<li>${esc(i)}</li>`).join('')}</ul>` +
+        `<h2>FAQ</h2>` +
+        s.faqs.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join('');
+      items.push(`
+      <item turbo="true">
+        <link>${link}</link>
+        <pubDate>${now}</pubDate>
+        <title>${esc(s.name + ' ' + n.name.toLowerCase() + ' — от ' + priceLow.toLocaleString('ru-RU') + ' ₽/м²')}</title>
+        <author>KalkRemont</author>
+        <turbo:content>${cdata(contentHtml)}</turbo:content>
+      </item>`);
+    }
   }
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kem.kalkremont.ru/sitemap.xml
+Host: kem.kalkremont.ru

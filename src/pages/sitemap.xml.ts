@@ -14,6 +14,11 @@ import { articles } from '~/data/sovety-articles';
 import { comparisons } from '~/data/comparison-pages';
 import { brandProducts } from '~/data/brand-products';
 import { roofScenarios } from '~/data/roof-scenarios';
+import { cities as regionsCities } from '~/data/regions-data';
+import { niches } from '~/data/niche-services';
+import { nicheCities } from '~/data/niche-cities';
+import { topCities } from '~/data/top-cities-districts';
+import { nicheScenarios } from '~/data/niche-scenarios';
 import { SITE_CONFIG } from '~/config';
 
 export const GET: APIRoute = ({ site }) => {
@@ -118,7 +123,55 @@ export const GET: APIRoute = ({ site }) => {
       loc: `${base}/raschet-krovli/${s.slug}/`,
       priority: 0.8,
       changefreq: 'monthly'
-    }))
+    })),
+    // Регионы РФ — мега-каталог из 17 городов × районы × типы (≈400 URL)
+    { loc: `${base}/regiony/`, priority: 0.95, changefreq: 'weekly' },
+    ...regionsCities.flatMap((c) => [
+      { loc: `${base}/regiony/${c.slug}/`, priority: 0.9, changefreq: 'weekly' },
+      ...c.districts.flatMap((d) => [
+        { loc: `${base}/regiony/${c.slug}/${d.slug}/`, priority: 0.85, changefreq: 'monthly' },
+        ...c.repairTypes.map((t) => ({
+          loc: `${base}/regiony/${c.slug}/${d.slug}/${t.key}/`,
+          priority: 0.8,
+          changefreq: 'monthly'
+        })),
+        // Niche × district в /regiony/ (новое!)
+        ...niches.map((n) => ({
+          loc: `${base}/regiony/${c.slug}/${d.slug}/${n.slug}/`,
+          priority: 0.8,
+          changefreq: 'monthly'
+        }))
+      ])
+    ]),
+    // Смежные ниши (ремонт ванной, кухни, потолки, двери, электрика)
+    { loc: `${base}/srednyaya-tsena-na-remont/`, priority: 0.9, changefreq: 'weekly' },
+    { loc: `${base}/smeta/`, priority: 0.95, changefreq: 'monthly' },
+    { loc: `${base}/karta-seti/`, priority: 0.7, changefreq: 'monthly' },
+    ...niches.flatMap((n) => [
+      { loc: `${base}/${n.slug}/`, priority: 0.9, changefreq: 'weekly' },
+      ...n.subTypes.map((s) => ({
+        loc: `${base}/${n.slug}/${s.slug}/`,
+        priority: 0.85,
+        changefreq: 'monthly'
+      })),
+      ...nicheCities.map((c) => ({
+        loc: `${base}/${n.slug}/v-${c.slug}/`,
+        priority: 0.85,
+        changefreq: 'monthly'
+      })),
+      // District × niche для топ-4 городов (Москва, СПб, Екб, Казань)
+      ...topCities.flatMap((tc) => tc.districts.map((d) => ({
+        loc: `${base}/${n.slug}/${d.slug}-${tc.slug}/`,
+        priority: 0.85,
+        changefreq: 'monthly'
+      }))),
+      // Niche scenarios: срочный, после потопа, эконом, премиум
+      ...nicheScenarios.map((s) => ({
+        loc: `${base}/${n.slug}/${s.slug}-remont/`,
+        priority: 0.85,
+        changefreq: 'monthly'
+      }))
+    ])
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>
