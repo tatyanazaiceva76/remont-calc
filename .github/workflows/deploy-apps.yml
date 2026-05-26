@@ -65,10 +65,14 @@ jobs:
           bun install
           bun run build
 
-      - name: Deploy to CF Pages
+      - name: Deploy to CF Pages (direct npx, wrangler-action имеет баг)
         if: steps.check.outputs.skip != 'true'
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy apps/${{ matrix.app }}/dist --project-name=kalkremont-${{ matrix.app }} --branch=main --commit-dirty=true --commit-message="auto-deploy from ${{ github.sha }}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          npx -y wrangler@latest pages deploy "apps/${{ matrix.app }}/dist" \
+            --project-name="kalkremont-${{ matrix.app }}" \
+            --branch=main \
+            --commit-dirty=true \
+            --commit-message="auto-deploy ${{ github.sha }}"
