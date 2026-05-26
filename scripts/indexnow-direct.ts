@@ -6,7 +6,7 @@ const KEY = process.env.INDEXNOW_KEY;
 if (!KEY) { console.error('❌ INDEXNOW_KEY не задан'); process.exit(1); }
 
 const HOSTS = [
-  'www', 'price', 'sovety', 'brand',
+  '@', 'www', 'price', 'sovety', 'brand',
   'moskva', 'spb', 'ekb', 'kzn',
   'nsk', 'krd', 'nn', 'chel', 'ufa', 'sam', 'rnd', 'vrn', 'perm', 'vlg', 'tyumen', 'brn',
   'vannye', 'kuhni', 'okna', 'potolki', 'dveri', 'elektro',
@@ -41,7 +41,7 @@ let totalUrls = 0;
 let yandexOk = 0, bingOk = 0;
 
 for (const sub of HOSTS) {
-  const fullHost = sub === 'www' ? 'www.kalkremont.ru' : `${sub}.kalkremont.ru`;
+  const fullHost = sub === '@' ? 'kalkremont.ru' : sub === 'www' ? 'www.kalkremont.ru' : `${sub}.kalkremont.ru`;
   process.stdout.write(`▶ ${fullHost}: `);
   const urls = await fetchSitemapUrls(fullHost);
   if (urls.length === 0) { console.log('пустой sitemap'); continue; }

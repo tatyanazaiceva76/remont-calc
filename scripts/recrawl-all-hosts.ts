@@ -17,8 +17,8 @@ if (!TOKEN || !USER_ID) {
 const PER_HOST_BUDGET = 150;
 
 const SUBS = [
-  // 4 основных
-  'www', 'price', 'sovety', 'brand',
+  // apex + 4 основных
+  '@', 'www', 'price', 'sovety', 'brand',
   // 16 городских поддоменов
   'moskva', 'spb', 'ekb', 'kzn', 'nsk', 'krd', 'nn', 'chel', 'ufa', 'sam',
   'rnd', 'vrn', 'perm', 'vlg', 'tyumen', 'brn',
@@ -30,7 +30,8 @@ const SUBS = [
 
 const HOSTS = SUBS.map((sub) => ({
   sub,
-  sitemap: sub === 'www'
+  // apex и www используют один и тот же sitemap (www.kalkremont.ru/sitemap.xml)
+  sitemap: sub === '@' || sub === 'www'
     ? 'https://www.kalkremont.ru/sitemap.xml'
     : `https://${sub}.kalkremont.ru/sitemap.xml`
 }));
@@ -58,8 +59,9 @@ async function ya(method: string, path: string, body?: unknown) {
 }
 
 async function recrawlHost(sub: string, sitemap: string) {
-  const hostId = `https:${sub === 'www' ? 'www.kalkremont.ru' : sub + '.kalkremont.ru'}:443`;
-  const hostName = sub === 'www' ? 'www.kalkremont.ru' : `${sub}.kalkremont.ru`;
+  // '@' = apex без www (kalkremont.ru), 'www' = www.kalkremont.ru, остальное = subdomain.kalkremont.ru
+  const hostName = sub === '@' ? 'kalkremont.ru' : sub === 'www' ? 'www.kalkremont.ru' : `${sub}.kalkremont.ru`;
+  const hostId = `https:${hostName}:443`;
   const allUrls = await fetchSitemapUrls(sitemap);
   if (!allUrls.length) {
     console.log(`▶ ${hostName}: пустой sitemap`);
