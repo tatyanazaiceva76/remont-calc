@@ -1,0 +1,72 @@
+---
+// Блок ссылок на 16 city-subdomains. Встраивается в нишевые субдомены.
+// Обратный cross-link от ниш к городам.
+
+interface Props {
+  nicheName: string;       // 'Натяжные потолки' / 'Ремонт ванной' и т.д.
+}
+
+const { nicheName } = Astro.props;
+
+const cities = [
+  { sub: 'moskva', emoji: '🏛', name: 'Москва', cityNiche: 'moskve' },
+  { sub: 'spb', emoji: '⚓', name: 'Санкт-Петербург', cityNiche: 'sankt-peterburge' },
+  { sub: 'ekb', emoji: '⛏', name: 'Екатеринбург', cityNiche: 'ekaterinburge' },
+  { sub: 'kzn', emoji: '🕌', name: 'Казань', cityNiche: 'kazani' },
+  { sub: 'nsk', emoji: '🌲', name: 'Новосибирск', cityNiche: 'novosibirske' },
+  { sub: 'krd', emoji: '🌻', name: 'Краснодар', cityNiche: 'krasnodare' },
+  { sub: 'nn', emoji: '🌉', name: 'Нижний Новгород', cityNiche: 'nizhnem-novgorode' },
+  { sub: 'chel', emoji: '⚙', name: 'Челябинск', cityNiche: 'chelyabinske' },
+  { sub: 'ufa', emoji: '🌅', name: 'Уфа', cityNiche: 'ufe' },
+  { sub: 'sam', emoji: '🚀', name: 'Самара', cityNiche: 'samare' },
+  { sub: 'rnd', emoji: '🌾', name: 'Ростов-на-Дону', cityNiche: 'rostove-na-donu' },
+  { sub: 'vrn', emoji: '🍂', name: 'Воронеж', cityNiche: 'voronezhe' },
+  { sub: 'perm', emoji: '⛰', name: 'Пермь', cityNiche: 'permi' },
+  { sub: 'vlg', emoji: '🌟', name: 'Волгоград', cityNiche: 'volgograde' },
+  { sub: 'tyumen', emoji: '🏛', name: 'Тюмень', cityNiche: 'tyumeni' },
+  { sub: 'brn', emoji: '🌾', name: 'Барнаул', cityNiche: 'barnaule' }
+];
+---
+<section class="city-net">
+  <h2>🌐 {nicheName} в крупнейших городах России</h2>
+  <p class="muted">Заказать {nicheName.toLowerCase()} в вашем городе — выберите из списка:</p>
+  <div class="cities-grid">
+    {cities.map((c) => (
+      <a href={`https://${c.sub}.kalkremont.ru/`} class="city-card">
+        <span class="c-emoji">{c.emoji}</span>
+        <strong>{c.name}</strong>
+      </a>
+    ))}
+  </div>
+  <p class="muted" style="margin-top:10px;font-size:12px;">
+    {cities.slice(0,8).map((c) => (
+      <a href={`/v-${c.cityNiche}/`} style="margin-right:10px;color:#666;text-decoration:underline;">{nicheName.toLowerCase()} в {c.name} →</a>
+    ))}
+  </p>
+  <p class="city-foot">
+    <a href="https://www.kalkremont.ru/srednyaya-tsena-na-remont/">+ Цены по 60 городам России →</a>
+  </p>
+</section>
+<style>
+  .city-net {
+    background: #fafafa;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 28px 0;
+  }
+  .city-net h2 { font-size: 18px; margin: 0 0 6px; }
+  .muted { color: #888; font-size: 13px; margin: 0 0 14px; }
+  .cities-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+  .city-card {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 12px; background: #fff;
+    border: 1px solid #e6e8eb; border-radius: 6px;
+    text-decoration: none; color: #1a1a1a;
+  }
+  .city-card:hover { border-color: #f5a623; background: #fff7e6; text-decoration: none; }
+  .c-emoji { font-size: 16px; }
+  .city-card strong { font-size: 13px; }
+  .city-foot { margin-top: 14px; font-size: 13px; }
+  @media (max-width: 700px) { .cities-grid { grid-template-columns: 1fr 1fr; } }
+</style>

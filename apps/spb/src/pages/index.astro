@@ -1,0 +1,92 @@
+---
+import Base from '~/layouts/Base.astro';
+import NicheNetwork from '~/components/NicheNetwork.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Ремонт квартир в СПб 2026 — от 8 500 ₽/м² по 15 районам ✓ Старый фонд, новостройки';
+const description = '⚓ Цены на ремонт в Санкт-Петербурге: Центральный, Петроградский, Калининский и др. От 8 500 до 50 000 ₽/м². Учли особенности старого фонда. ⏱ Замер за 1-2 дня · ⭐ 4.8/5.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'LocalBusiness',
+  name: SITE_CONFIG.siteName, url: `https://${SITE_CONFIG.domain}/`,
+  description, areaServed: { '@type': 'City', name: 'Санкт-Петербург' },
+  address: { '@type': 'PostalAddress', addressLocality: 'Санкт-Петербург', addressCountry: 'RU' },
+  geo: { '@type': 'GeoCoordinates', latitude: 59.9311, longitude: 30.3609 }
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>⚓ Ремонт квартир в Санкт-Петербурге — цены по районам</h1>
+  <p class="lead">
+    Стоимость ремонта в СПб сильно зависит от района: в Центральном на 25-30% дороже, в Красносельском и Колпинском — на 15% дешевле.
+    Старый фонд требует особого подхода — мы это учли в расчётах. Выберите свой район.
+  </p>
+
+  <h2>Типы ремонта в Санкт-Петербурге</h2>
+  <div class="types">
+    {repairTypes.map((t) => (
+      <div class="type-card">
+        <h3>{t.name}</h3>
+        <p class="price">{t.pricePerSqM.toLocaleString('ru-RU')} ₽/м² <span class="period">базовая по СПб</span></p>
+        <p>{t.description}</p>
+        <p class="duration">⏱ {t.durationDays}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>Районы Санкт-Петербурга</h2>
+  <p>15 районов города. У каждого — свой средний ценник, тип жилого фонда (от модерна и сталинок до панелек), особенности логистики.</p>
+  <ul class="districts">
+    {districts.map((d) => (
+      <li>
+        <a href={`/${d.slug}/`}>
+          <h3>{d.shortName} <span class="mult">×{d.priceMultiplier.toFixed(2)}</span></h3>
+          <p>{d.name}</p>
+          <p class="brief">{d.intro.slice(0, 110)}...</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Калькуляторы материалов</h2>
+  <p>
+    Для расчёта расхода обоев, ламината, краски, плитки —
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>калькуляторы на kalkremont.ru</a>.
+  </p>
+  <p>
+    Цены по другим городам России —
+    <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>price.kalkremont.ru</a>.
+  </p>
+  <p>
+    Практические гайды по ремонту —
+    <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>sovety.kalkremont.ru</a>.
+  </p>
+<NicheNetwork citySlug="spb" cityName="Санкт-Петербурге" />
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 32px; }
+  .type-card {
+    background: #e8f4ff; border: 1px solid #b3d4f5; border-radius: 8px; padding: 14px 16px;
+  }
+  .type-card h3 { margin: 0 0 8px; font-size: 16px; color: #1a5490; }
+  .type-card .price { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 4px 0 8px; }
+  .type-card .period { font-size: 12px; font-weight: 400; color: #888; }
+  .type-card p { font-size: 13px; color: #555; margin: 4px 0; line-height: 1.5; }
+  .type-card .duration { font-size: 12px; color: #888; }
+  .districts { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 32px; }
+  .districts a {
+    display: block; padding: 12px 14px;
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px;
+    color: #1a1a1a; text-decoration: none;
+  }
+  .districts a:hover { background: #e8f4ff; border-color: #1a5490; }
+  .districts h3 { font-size: 17px; margin: 0 0 4px; color: #1a5490; display: flex; justify-content: space-between; align-items: baseline; }
+  .districts .mult { font-size: 12px; color: #888; font-weight: 400; }
+  .districts p { font-size: 13px; color: #555; margin: 0 0 4px; }
+  .districts .brief { font-size: 12px; color: #888; }
+  @media (max-width: 600px) {
+    .types, .districts { grid-template-columns: 1fr; }
+  }
+</style>

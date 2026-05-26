@@ -1,0 +1,75 @@
+---
+import Base from '~/layouts/Base.astro';
+import NicheNetwork from '~/components/NicheNetwork.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Ремонт квартир в Казани 2026 — от 6 800 ₽/м² · Вахитовский, Ново-Савиновский';
+const description = '🕌 Цены на ремонт в Казани по 7 районам: Вахитовский, Ново-Савиновский, Советский, Авиастроительный. От 6 800 до 45 000 ₽/м². ⏱ Бесплатный замер · ⭐ 4.8/5.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'LocalBusiness',
+  name: SITE_CONFIG.siteName, url: `https://${SITE_CONFIG.domain}/`,
+  description, areaServed: { '@type': 'City', name: 'Казань' },
+  address: { '@type': 'PostalAddress', addressLocality: 'Казань', addressCountry: 'RU' },
+  geo: { '@type': 'GeoCoordinates', latitude: 55.7963, longitude: 49.1088 }
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>🕌 Ремонт квартир в Казани — цены по районам</h1>
+  <p class="lead">
+    Стоимость ремонта в Казани сильно зависит от района: в Вахитовском (центр) на 25% дороже, в Кировском и Авиастроительном — на 10% дешевле.
+    Сталинки центра, новостройки Ново-Савиновского и хрущёвки Дербышек — учли всё. Выберите свой район.
+  </p>
+
+  <h2>Типы ремонта в Казани</h2>
+  <div class="types">
+    {repairTypes.map((t) => (
+      <div class="type-card">
+        <h3>{t.name}</h3>
+        <p class="price">{t.pricePerSqM.toLocaleString('ru-RU')} ₽/м² <span class="period">базовая по Казани</span></p>
+        <p>{t.description}</p>
+        <p class="duration">⏱ {t.durationDays}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>Районы Казани</h2>
+  <p>7 административных районов столицы Татарстана. У каждого — свой ценник, тип жилья.</p>
+  <ul class="districts">
+    {districts.map((d) => (
+      <li>
+        <a href={`/${d.slug}/`}>
+          <h3>{d.shortName} <span class="mult">×{d.priceMultiplier.toFixed(2)}</span></h3>
+          <p>{d.name}</p>
+          <p class="brief">{d.intro.slice(0, 110)}...</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Калькуляторы материалов</h2>
+  <p>Расчёт обоев, ламината, плитки — <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>kalkremont.ru</a>.</p>
+  <p>Цены по другим городам — <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>price.kalkremont.ru</a>.</p>
+  <p>Гайды по ремонту — <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>sovety.kalkremont.ru</a>.</p>
+<NicheNetwork citySlug="kzn" cityName="Казани" />
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 32px; }
+  .type-card { background: #fff0e6; border: 1px solid #f5c4a3; border-radius: 8px; padding: 14px 16px; }
+  .type-card h3 { margin: 0 0 8px; font-size: 16px; color: #b8420a; }
+  .type-card .price { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 4px 0 8px; }
+  .type-card .period { font-size: 12px; font-weight: 400; color: #888; }
+  .type-card p { font-size: 13px; color: #555; margin: 4px 0; line-height: 1.5; }
+  .type-card .duration { font-size: 12px; color: #888; }
+  .districts { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 32px; }
+  .districts a { display: block; padding: 12px 14px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; color: #1a1a1a; text-decoration: none; }
+  .districts a:hover { background: #fff0e6; border-color: #b8420a; }
+  .districts h3 { font-size: 17px; margin: 0 0 4px; color: #b8420a; display: flex; justify-content: space-between; align-items: baseline; }
+  .districts .mult { font-size: 12px; color: #888; font-weight: 400; }
+  .districts p { font-size: 13px; color: #555; margin: 0 0 4px; }
+  .districts .brief { font-size: 12px; color: #888; }
+  @media (max-width: 600px) { .types, .districts { grid-template-columns: 1fr; } }
+</style>
