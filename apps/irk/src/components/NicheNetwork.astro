@@ -1,0 +1,79 @@
+---
+// Блок ссылок на 10 нишевых субдоменов. Встраивается в city-subdomain страницы.
+// Даёт мощный cross-domain internal linking для Яндекса и Google.
+
+interface Props {
+  citySlug: string;       // 'moskva' / 'spb' / ...
+  cityName: string;       // 'Москве' / 'СПб' / ...
+  cityNameDative?: string;
+}
+
+const { citySlug, cityName } = Astro.props;
+
+// city slug → niche city-slug в /v-<city>/ URL
+const cityNicheSlugMap: Record<string, string> = {
+  moskva: 'moskve', spb: 'sankt-peterburge', ekb: 'ekaterinburge',
+  kzn: 'kazani', nsk: 'novosibirske', krd: 'krasnodare',
+  nn: 'nizhnem-novgorode', chel: 'chelyabinske', ufa: 'ufe',
+  sam: 'samare', rnd: 'rostove-na-donu', vrn: 'voronezhe',
+  perm: 'permi', vlg: 'volgograde', tyumen: 'tyumeni', brn: 'barnaule'
+};
+
+const nicheCitySlug = cityNicheSlugMap[citySlug] || citySlug;
+
+const niches = [
+  { sub: 'vannye', emoji: '🛁', name: 'Ремонт ванной', from: '25 000 ₽/м²' },
+  { sub: 'kuhni', emoji: '🍳', name: 'Ремонт кухни', from: '18 000 ₽/м²' },
+  { sub: 'okna', emoji: '🪟', name: 'Замена окон', from: '6 000 ₽/м²' },
+  { sub: 'potolki', emoji: '✨', name: 'Натяжные потолки', from: '600 ₽/м²' },
+  { sub: 'dveri', emoji: '🚪', name: 'Установка дверей', from: '4 500 ₽/шт' },
+  { sub: 'elektro', emoji: '⚡', name: 'Электромонтаж', from: '1 500 ₽/м²' },
+  { sub: 'santehnika', emoji: '🔧', name: 'Сантехника', from: '8 000 ₽/м²' },
+  { sub: 'dizayn', emoji: '🎨', name: 'Дизайн интерьера', from: '1 500 ₽/м²' },
+  { sub: 'balkony', emoji: '🏗', name: 'Балконы и лоджии', from: '12 000 ₽/м²' },
+  { sub: 'styazhka', emoji: '⬜', name: 'Стяжка пола', from: '800 ₽/м²' },
+  { sub: 'uborka', emoji: '🧹', name: 'Уборка после стройки', from: '120 ₽/м²' },
+  { sub: 'demontazh', emoji: '🔨', name: 'Демонтажные работы', from: '300 ₽/м²' },
+  { sub: 'kondicioner', emoji: '❄️', name: 'Монтаж кондиционеров', from: '5 500 ₽/шт' },
+  { sub: 'fasad', emoji: '🏠', name: 'Утепление фасада', from: '1 800 ₽/м²' }
+];
+---
+<section class="niche-net">
+  <h2>🔧 Отдельные виды работ в {cityName}</h2>
+  <p class="muted">Нужен не полный ремонт, а только определённая услуга? Закажите специализированную услугу с собственной командой мастеров:</p>
+  <div class="niche-grid">
+    {niches.map((n) => (
+      <a href={`https://${n.sub}.kalkremont.ru/v-${nicheCitySlug}/`} class="niche-card">
+        <span class="n-emoji">{n.emoji}</span>
+        <div class="n-info">
+          <strong>{n.name}</strong>
+          <span class="n-from">от {n.from}</span>
+        </div>
+      </a>
+    ))}
+  </div>
+</section>
+<style>
+  .niche-net {
+    background: #fafafa;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin: 28px 0;
+  }
+  .niche-net h2 { font-size: 18px; margin: 0 0 6px; }
+  .muted { color: #888; font-size: 13px; margin: 0 0 14px; }
+  .niche-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .niche-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: #fff;
+    border: 1px solid #e6e8eb; border-radius: 8px;
+    text-decoration: none;
+  }
+  .niche-card:hover { border-color: #f5a623; background: #fff7e6; text-decoration: none; }
+  .n-emoji { font-size: 22px; flex-shrink: 0; }
+  .n-info { display: flex; flex-direction: column; }
+  .n-info strong { font-size: 14px; color: #1a1a1a; }
+  .n-from { font-size: 11px; color: #888; }
+  @media (max-width: 600px) { .niche-grid { grid-template-columns: 1fr; } }
+</style>

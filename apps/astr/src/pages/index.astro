@@ -1,0 +1,73 @@
+---
+import Base from '~/layouts/Base.astro';
+import NicheNetwork from '~/components/NicheNetwork.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Ремонт квартир в Астрахань — цены по районам 2026';
+const description = 'Цены на ремонт квартир в Астрахань по районам. Косметический, капитальный, евроремонт. Бесплатный расчёт.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'LocalBusiness',
+  name: SITE_CONFIG.siteName, url: `https://${SITE_CONFIG.domain}/`,
+  description, areaServed: { '@type': 'City', name: 'Астрахань' },
+  address: { '@type': 'PostalAddress', addressLocality: 'Астрахань', addressCountry: 'RU' },
+  geo: { '@type': 'GeoCoordinates', latitude: 46.3479, longitude: 48.0336 }
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>🐟 Ремонт квартир в Астрахань — цены по районам</h1>
+  <p class="lead">Расчёт стоимости ремонта в Астрахань с учётом района, типа дома и объёма работ. Базовая ставка от {repairTypes[0].pricePerSqM.toLocaleString('ru-RU')} ₽/м² за косметику.</p>
+
+  <h2>Типы ремонта в Астрахань</h2>
+  <div class="types">
+    {repairTypes.map((t) => (
+      <div class="type-card">
+        <h3>{t.name}</h3>
+        <p class="price">{t.pricePerSqM.toLocaleString('ru-RU')} ₽/м²</p>
+        <p>{t.description}</p>
+        <p class="duration">⏱ {t.durationDays}</p>
+      </div>
+    ))}
+  </div>
+
+  {districts.length > 0 && (
+    <>
+      <h2>Районы Астраханьа</h2>
+      <ul class="districts">
+        {districts.map((d) => (
+          <li>
+            <a href={`/${d.slug}/`}>
+              <h3>{d.shortName} <span class="mult">×{d.priceMultiplier.toFixed(2)}</span></h3>
+              <p>{d.name}</p>
+              <p class="brief">{d.intro.slice(0, 110)}...</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </>
+  )}
+
+  <h2>Калькуляторы материалов</h2>
+  <p>Расчёт обоев, ламината, плитки — <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>kalkremont.ru</a>.</p>
+  <p>Цены по другим городам — <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>price.kalkremont.ru</a>.</p>
+  <p>Гайды — <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>sovety.kalkremont.ru</a>.</p>
+<NicheNetwork citySlug="astr" cityName="Астрахани" />
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 32px; }
+  .type-card { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 14px 16px; }
+  .type-card h3 { margin: 0 0 8px; font-size: 16px; color: #d4761a; }
+  .type-card .price { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 4px 0 8px; }
+  .type-card p { font-size: 13px; color: #555; margin: 4px 0; line-height: 1.5; }
+  .type-card .duration { font-size: 12px; color: #888; }
+  .districts { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 32px; }
+  .districts a { display: block; padding: 12px 14px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; color: #1a1a1a; text-decoration: none; }
+  .districts h3 { font-size: 17px; margin: 0 0 4px; color: #d4761a; display: flex; justify-content: space-between; align-items: baseline; }
+  .districts .mult { font-size: 12px; color: #888; font-weight: 400; }
+  .districts p { font-size: 13px; color: #555; margin: 0 0 4px; }
+  .districts .brief { font-size: 12px; color: #888; }
+  @media (max-width: 600px) { .types, .districts { grid-template-columns: 1fr; } }
+</style>
