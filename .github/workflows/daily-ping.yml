@@ -18,10 +18,10 @@ jobs:
         with:
           bun-version: latest
       - run: bun install
-      - name: IndexNow ping (30 хостов)
+      - name: IndexNow прямой ping (Yandex + Bing) — 34 хоста
         env:
           INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
-        run: bun scripts/indexnow-multi.ts || true
+        run: bun scripts/indexnow-direct.ts || true
       - name: Yandex Webmaster recrawl (30 хостов × до 150/день)
         env:
           YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
