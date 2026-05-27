@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nn.ipoteka-remont.ru/sitemap.xml
+Host: nn.ipoteka-remont.ru

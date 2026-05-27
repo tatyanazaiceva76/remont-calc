@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vrn.ipoteka-remont.ru/sitemap.xml
+Host: vrn.ipoteka-remont.ru

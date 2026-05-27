@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sam.kuhni-zakaz-online.ru/sitemap.xml
+Host: sam.kuhni-zakaz-online.ru

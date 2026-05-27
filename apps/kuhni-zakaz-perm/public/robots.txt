@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://perm.kuhni-zakaz-online.ru/sitemap.xml
+Host: perm.kuhni-zakaz-online.ru

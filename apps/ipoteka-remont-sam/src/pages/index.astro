@@ -1,0 +1,57 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"kredit-na-remont","name":"Потребкредит на ремонт","price":"от 8% годовых","description":"Без залога, до 5 млн ₽, на 5-7 лет"},{"slug":"ipoteka","name":"Ипотека на ремонт","price":"от 6.5% годовых","description":"Под залог квартиры, до 30 млн ₽"},{"slug":"kreditnaya-karta","name":"Кредитная карта","price":"0% на 12 мес","description":"Без переплат при возврате в срок"},{"slug":"refinansirovanie","name":"Рефинансирование","price":"от 7% годовых","description":"Снизить ставку по действующему кредиту"}];
+const faqs = [{"q":"Где взять ипотеку на ремонт в Самара?","a":"В Самара ипотеку на ремонт выдают Сбербанк, ВТБ, Альфа-банк, Газпромбанк. Ставки от 6.5-9% годовых на 25 лет."},{"q":"Дадут ли кредит в Самара с зарплатой 50к ₽?","a":"Да, при зарплате 50к ₽ в Самара одобрят кредит до 1-1.5 млн ₽ на 5-7 лет. Платёж не должен превышать 40-50% дохода."},{"q":"Документы для ипотеки в Самара?","a":"Паспорт, СНИЛС, 2-НДФЛ за 12 мес, трудовая, копия паспорта супруга. Если самозанятый — налоговая декларация."}];
+---
+<Base title="Ипотека на ремонт в Самара 2026 — Кредит на ремонт от 8% годовых" description="Ипотека на ремонт в Самара: цены от 190 000 ₽. Бесплатный замер и расчёт.">
+  <h1>🏦 Ипотека на ремонт в Самара</h1>
+  <p style="font-size:17px;background:white;padding:14px 18px;border-left:4px solid #1abc9c;border-radius:0 8px 8px 0;">Кредит на ремонт от 8% годовых в Самара. Население Самара: 500к-1млн.</p>
+
+  <section style="background:white;padding:20px;border-radius:10px;margin:20px 0;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+    <h2>📞 Получить расчёт ипотеки на ремонт в Самара</h2>
+    <form id="lf" style="display:flex;flex-direction:column;gap:10px;max-width:400px;">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" style="padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;" />
+      <input type="text" name="name" placeholder="Имя" style="padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;" />
+      <button type="submit" style="padding:14px;background:#1abc9c;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">Получить расчёт →</button>
+    </form>
+    <script is:inline>
+      document.getElementById('lf').onsubmit=function(e){e.preventDefault();var d=new FormData(e.target);fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:d.get('phone'),name:d.get('name'),host:'sam.ipoteka-remont.ru',niche:'Ипотека на ремонт',city:'sam',source:'sam.ipoteka-remont.ru/index',url:location.href,page:'/'})}).then(function(){e.target.innerHTML='<p style="color:#27ae60;font-size:18px;">✅ Заявка принята! Перезвоним в течение 30 минут.</p>';});};
+    </script>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги ипотеки на ремонт в Самара</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      {services.map((s) => (
+        <div style="padding:16px;background:white;border:1px solid #e6e8eb;border-radius:10px;">
+          <strong style="color:#1abc9c;font-size:15px;">{s.name}</strong>
+          <div style="font-size:13px;color:#2980b9;margin:6px 0;font-weight:600;">{s.price}</div>
+          <p style="font-size:13px;color:#555;margin:0;">{s.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ FAQ — Ипотека на ремонт в Самара</h2>
+    {faqs.map((f) => (
+      <details style="background:white;padding:14px 18px;border-radius:8px;margin:8px 0;border:1px solid #e6e8eb;">
+        <summary style="font-weight:600;cursor:pointer;">{f.q}</summary>
+        <p style="margin:10px 0 0;color:#555;">{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Ипотека на ремонт в Самара',
+    description: 'Ипотека на ремонт в Самара: Кредит на ремонт от 8% годовых',
+    address: { '@type': 'PostalAddress', addressLocality: 'Самара', addressCountry: 'RU' },
+    areaServed: { '@type': 'City', name: 'Самара' }
+  })} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } }))
+  })} />
+</Base>

@@ -1,0 +1,71 @@
+---
+interface Props { title: string; description: string; canonical?: string; schema?: object; }
+const { title, description, canonical, schema } = Astro.props;
+const url = canonical || new URL(Astro.url.pathname, Astro.site).href;
+---
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={url} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="ru_RU" />
+  {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
+</head>
+<body>
+  <header><div class="container"><a href="/" class="logo">🍳 Кухни на заказ в Волгоград</a></div></header>
+  <main class="container"><slot /></main>
+  <footer>
+    <div class="container">
+      <p>Кухни на заказ в Волгоград · © 2026</p>
+      <p style="font-size:11px;opacity:.6;margin-top:8px;">
+        Также: <a href="https://kuhni-zakaz-online.ru/" rel="noopener">Кухни на заказ по России</a> ·
+        <a href="https://www.kalkremont.ru/" rel="noopener">Калькулятор ремонта</a>
+      </p>
+    </div>
+  </footer>
+  <button class="chat-btn" id="cb">💬</button>
+  <div class="chat-wrap" id="cw">
+    <div class="ch-head"><strong>Анна</strong><button id="cc">×</button></div>
+    <div class="ch-msgs" id="cm"><div class="m bot"><div class="b">Здравствуйте! Помогу с кухни на заказ в Волгоград. Что интересует?</div></div></div>
+    <div class="ch-inp"><input id="ci" placeholder="Ваш вопрос..." /><button id="cs">➤</button></div>
+  </div>
+  <style is:global>
+    *{box-sizing:border-box;}
+    body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;margin:0;line-height:1.5;color:#1a1a1a;background:#fafafa;}
+    .container{max-width:1100px;margin:0 auto;padding:0 20px;}
+    header{background:white;border-bottom:1px solid #e6e8eb;padding:14px 0;}
+    .logo{font-weight:700;font-size:18px;color:#e67e22;text-decoration:none;}
+    main{padding:24px 20px;min-height:60vh;}
+    h1{font-size:26px;color:#e67e22;margin:0 0 16px;}
+    h2{font-size:20px;color:#e67e22;margin-top:24px;}
+    footer{background:#1a1a1a;color:#ccc;padding:24px 0;text-align:center;font-size:13px;}
+    footer a{color:#999;}
+    .chat-btn{position:fixed;bottom:20px;right:20px;width:56px;height:56px;border-radius:50%;background:#e67e22;color:white;border:none;font-size:24px;cursor:pointer;box-shadow:0 6px 20px rgba(0,0,0,0.2);z-index:999;}
+    .chat-wrap{position:fixed;bottom:84px;right:20px;width:320px;background:white;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.2);display:none;flex-direction:column;z-index:998;}
+    .chat-wrap.show{display:flex;}
+    .ch-head{background:#e67e22;color:white;padding:10px 14px;display:flex;justify-content:space-between;border-radius:12px 12px 0 0;}
+    .ch-head button{background:none;border:none;color:white;font-size:22px;cursor:pointer;}
+    .ch-msgs{padding:12px;max-height:280px;min-height:200px;overflow-y:auto;background:#fafafa;display:flex;flex-direction:column;gap:8px;}
+    .m{display:flex;}.m.bot{justify-content:flex-start;}.m.user{justify-content:flex-end;}
+    .b{max-width:80%;padding:8px 12px;border-radius:14px;font-size:13px;}
+    .m.bot .b{background:white;}.m.user .b{background:#e67e22;color:white;}
+    .ch-inp{display:flex;gap:6px;padding:10px;border-top:1px solid #eee;}
+    .ch-inp input{flex:1;padding:8px 12px;border:1.5px solid #ddd;border-radius:16px;font-size:13px;outline:none;}
+    .ch-inp button{width:32px;height:32px;background:#e67e22;color:white;border:none;border-radius:50%;cursor:pointer;}
+  </style>
+  <script is:inline>
+    (function(){var w=document.getElementById('cw'),b=document.getElementById('cb'),c=document.getElementById('cc'),m=document.getElementById('cm'),i=document.getElementById('ci'),s=document.getElementById('cs');
+    b.onclick=function(){w.classList.toggle('show');};c.onclick=function(){w.classList.remove('show');};
+    function add(t,o){var d=document.createElement('div');d.className='m '+o;d.innerHTML='<div class="b">'+t.replace(/</g,'&lt;')+'</div>';m.appendChild(d);m.scrollTop=m.scrollHeight;}
+    function ask(t){if(!t)return;add(t,'user');i.value='';add('...','bot');fetch('https://www.kalkremont.ru/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:t,context:{niche:'Кухни на заказ',city:'Волгоград'},source:'vlg.kuhni-zakaz-online.ru/chat'})}).then(function(r){return r.json();}).then(function(j){m.lastChild.querySelector('.b').textContent=j.reply||'Не понял';}).catch(function(){m.lastChild.querySelector('.b').textContent='Ошибка. Оставьте телефон в форме.';});}
+    s.onclick=function(){ask(i.value.trim());};i.onkeydown=function(e){if(e.key==='Enter')ask(i.value.trim());};
+    })();
+  </script>
+</body>
+</html>

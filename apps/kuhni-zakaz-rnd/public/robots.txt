@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rnd.kuhni-zakaz-online.ru/sitemap.xml
+Host: rnd.kuhni-zakaz-online.ru

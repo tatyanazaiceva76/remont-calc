@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vlg.kuhni-zakaz-online.ru/sitemap.xml
+Host: vlg.kuhni-zakaz-online.ru

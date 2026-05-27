@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tyumen.dom-stroy-online.ru/sitemap.xml
+Host: tyumen.dom-stroy-online.ru

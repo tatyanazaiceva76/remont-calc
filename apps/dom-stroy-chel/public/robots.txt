@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chel.dom-stroy-online.ru/sitemap.xml
+Host: chel.dom-stroy-online.ru

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chel.ipoteka-remont.ru/sitemap.xml
+Host: chel.ipoteka-remont.ru

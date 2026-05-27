@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vrn.dom-stroy-online.ru/sitemap.xml
+Host: vrn.dom-stroy-online.ru

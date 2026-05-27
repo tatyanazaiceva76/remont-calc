@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://moskva.ipoteka-remont.ru/sitemap.xml
+Host: moskva.ipoteka-remont.ru

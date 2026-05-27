@@ -1,0 +1,18 @@
+---
+import Base from '~/layouts/Base.astro';
+---
+<Base title="Кухни в стиле лофт в Новосибирск — от 70k ₽/пог.м | Кухни на заказ" description="Бетон, металл, дерево в Новосибирск. Бесплатный замер.">
+  <h1>Кухни в стиле лофт в Новосибирск</h1>
+  <p style="font-size:17px;background:white;padding:14px;border-left:4px solid #e67e22;border-radius:0 8px 8px 0;">Бетон, металл, дерево. Цена: <strong>от 70k ₽/пог.м</strong> в Новосибирск.</p>
+
+  <section style="background:white;padding:20px;border-radius:10px;margin:20px 0;">
+    <h2>📞 Заказать «Кухни в стиле лофт» в Новосибирск</h2>
+    <form id="lf2" style="display:flex;gap:8px;max-width:400px;">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" style="flex:1;padding:12px;border:2px solid #ddd;border-radius:8px;" />
+      <button type="submit" style="padding:12px 20px;background:#e67e22;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Заказать →</button>
+    </form>
+    <script is:inline>
+      document.getElementById('lf2').onsubmit=function(e){e.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:e.target.phone.value,host:'nsk.kuhni-zakaz-online.ru',niche:'Кухни на заказ',city:'nsk',service:'loft',source:'nsk.kuhni-zakaz-online.ru/uslugi/loft',url:location.href,page:'/uslugi/loft/'})}).then(function(){e.target.innerHTML='<p style="color:#27ae60;">✅ Заявка принята!</p>';});};
+    </script>
+  </section>
+</Base>

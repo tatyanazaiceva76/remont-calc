@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vlg.dom-stroy-online.ru/sitemap.xml
+Host: vlg.dom-stroy-online.ru

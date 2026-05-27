@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ekb.dom-stroy-online.ru/sitemap.xml
+Host: ekb.dom-stroy-online.ru

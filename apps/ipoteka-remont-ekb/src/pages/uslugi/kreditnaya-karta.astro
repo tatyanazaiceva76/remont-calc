@@ -1,0 +1,18 @@
+---
+import Base from '~/layouts/Base.astro';
+---
+<Base title="Кредитная карта в Екатеринбург — 0% на 12 мес | Ипотека на ремонт" description="Без переплат при возврате в срок в Екатеринбург. Бесплатный замер.">
+  <h1>Кредитная карта в Екатеринбург</h1>
+  <p style="font-size:17px;background:white;padding:14px;border-left:4px solid #1abc9c;border-radius:0 8px 8px 0;">Без переплат при возврате в срок. Цена: <strong>0% на 12 мес</strong> в Екатеринбург.</p>
+
+  <section style="background:white;padding:20px;border-radius:10px;margin:20px 0;">
+    <h2>📞 Заказать «Кредитная карта» в Екатеринбург</h2>
+    <form id="lf2" style="display:flex;gap:8px;max-width:400px;">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" style="flex:1;padding:12px;border:2px solid #ddd;border-radius:8px;" />
+      <button type="submit" style="padding:12px 20px;background:#1abc9c;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Заказать →</button>
+    </form>
+    <script is:inline>
+      document.getElementById('lf2').onsubmit=function(e){e.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:e.target.phone.value,host:'ekb.ipoteka-remont.ru',niche:'Ипотека на ремонт',city:'ekb',service:'kreditnaya-karta',source:'ekb.ipoteka-remont.ru/uslugi/kreditnaya-karta',url:location.href,page:'/uslugi/kreditnaya-karta/'})}).then(function(){e.target.innerHTML='<p style="color:#27ae60;">✅ Заявка принята!</p>';});};
+    </script>
+  </section>
+</Base>

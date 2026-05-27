@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kzn.dom-stroy-online.ru/sitemap.xml
+Host: kzn.dom-stroy-online.ru

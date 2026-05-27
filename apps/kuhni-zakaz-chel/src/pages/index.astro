@@ -1,0 +1,57 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"klassika","name":"Классические кухни","price":"от 80k ₽/пог.м","description":"МДФ, патина, фрезеровка"},{"slug":"sovremennyy","name":"Современные кухни","price":"от 60k ₽/пог.м","description":"Акрил, пластик, минимализм"},{"slug":"loft","name":"Кухни в стиле лофт","price":"от 70k ₽/пог.м","description":"Бетон, металл, дерево"},{"slug":"malenkaya","name":"Маленькие кухни (до 6 м²)","price":"от 80k ₽","description":"Эргономика, до потолка, встроенная техника"}];
+const faqs = [{"q":"Сколько стоит кухня в Челябинск?","a":"Средняя цена в Челябинск: 102 000 ₽ за 2 пог.м эконом и до 680 000 ₽ за премиум."},{"q":"Где заказать кухню в Челябинск?","a":"В Челябинск работают локальные фабрики и федеральные сети: Mr.Doors, Maria, Кухонный двор. Выбирайте по отзывам и срокам."},{"q":"Сколько ждать кухню в Челябинск?","a":"30-45 дней с момента подписания договора. Сложные модели — до 60 дней. Срочно (с надбавкой 20%) — 14-21 день."}];
+---
+<Base title="Кухни на заказ в Челябинск 2026 — Кухни от производителя — замер бесплатно" description="Кухни на заказ в Челябинск: цены от 212 500 ₽. Бесплатный замер и расчёт.">
+  <h1>🍳 Кухни на заказ в Челябинск</h1>
+  <p style="font-size:17px;background:white;padding:14px 18px;border-left:4px solid #e67e22;border-radius:0 8px 8px 0;">Кухни от производителя — замер бесплатно в Челябинск. Население Челябинск: 500к-1млн.</p>
+
+  <section style="background:white;padding:20px;border-radius:10px;margin:20px 0;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+    <h2>📞 Получить расчёт кухни на заказ в Челябинск</h2>
+    <form id="lf" style="display:flex;flex-direction:column;gap:10px;max-width:400px;">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" style="padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;" />
+      <input type="text" name="name" placeholder="Имя" style="padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;" />
+      <button type="submit" style="padding:14px;background:#e67e22;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">Получить расчёт →</button>
+    </form>
+    <script is:inline>
+      document.getElementById('lf').onsubmit=function(e){e.preventDefault();var d=new FormData(e.target);fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:d.get('phone'),name:d.get('name'),host:'chel.kuhni-zakaz-online.ru',niche:'Кухни на заказ',city:'chel',source:'chel.kuhni-zakaz-online.ru/index',url:location.href,page:'/'})}).then(function(){e.target.innerHTML='<p style="color:#27ae60;font-size:18px;">✅ Заявка принята! Перезвоним в течение 30 минут.</p>';});};
+    </script>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги кухни на заказ в Челябинск</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      {services.map((s) => (
+        <div style="padding:16px;background:white;border:1px solid #e6e8eb;border-radius:10px;">
+          <strong style="color:#e67e22;font-size:15px;">{s.name}</strong>
+          <div style="font-size:13px;color:#2980b9;margin:6px 0;font-weight:600;">{s.price}</div>
+          <p style="font-size:13px;color:#555;margin:0;">{s.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ FAQ — Кухни на заказ в Челябинск</h2>
+    {faqs.map((f) => (
+      <details style="background:white;padding:14px 18px;border-radius:8px;margin:8px 0;border:1px solid #e6e8eb;">
+        <summary style="font-weight:600;cursor:pointer;">{f.q}</summary>
+        <p style="margin:10px 0 0;color:#555;">{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Кухни на заказ в Челябинск',
+    description: 'Кухни на заказ в Челябинск: Кухни от производителя — замер бесплатно',
+    address: { '@type': 'PostalAddress', addressLocality: 'Челябинск', addressCountry: 'RU' },
+    areaServed: { '@type': 'City', name: 'Челябинск' }
+  })} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } }))
+  })} />
+</Base>

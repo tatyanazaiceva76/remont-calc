@@ -1,0 +1,18 @@
+---
+import Base from '~/layouts/Base.astro';
+---
+<Base title="Потребкредит на ремонт в Самара — от 8% годовых | Ипотека на ремонт" description="Без залога, до 5 млн ₽, на 5-7 лет в Самара. Бесплатный замер.">
+  <h1>Потребкредит на ремонт в Самара</h1>
+  <p style="font-size:17px;background:white;padding:14px;border-left:4px solid #1abc9c;border-radius:0 8px 8px 0;">Без залога, до 5 млн ₽, на 5-7 лет. Цена: <strong>от 8% годовых</strong> в Самара.</p>
+
+  <section style="background:white;padding:20px;border-radius:10px;margin:20px 0;">
+    <h2>📞 Заказать «Потребкредит на ремонт» в Самара</h2>
+    <form id="lf2" style="display:flex;gap:8px;max-width:400px;">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" style="flex:1;padding:12px;border:2px solid #ddd;border-radius:8px;" />
+      <button type="submit" style="padding:12px 20px;background:#1abc9c;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Заказать →</button>
+    </form>
+    <script is:inline>
+      document.getElementById('lf2').onsubmit=function(e){e.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:e.target.phone.value,host:'sam.ipoteka-remont.ru',niche:'Ипотека на ремонт',city:'sam',service:'kredit-na-remont',source:'sam.ipoteka-remont.ru/uslugi/kredit-na-remont',url:location.href,page:'/uslugi/kredit-na-remont/'})}).then(function(){e.target.innerHTML='<p style="color:#27ae60;">✅ Заявка принята!</p>';});};
+    </script>
+  </section>
+</Base>

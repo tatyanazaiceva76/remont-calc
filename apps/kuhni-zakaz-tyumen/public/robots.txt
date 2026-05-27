@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tyumen.kuhni-zakaz-online.ru/sitemap.xml
+Host: tyumen.kuhni-zakaz-online.ru

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brn.kuhni-zakaz-online.ru/sitemap.xml
+Host: brn.kuhni-zakaz-online.ru

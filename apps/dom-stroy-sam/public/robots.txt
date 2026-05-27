@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sam.dom-stroy-online.ru/sitemap.xml
+Host: sam.dom-stroy-online.ru

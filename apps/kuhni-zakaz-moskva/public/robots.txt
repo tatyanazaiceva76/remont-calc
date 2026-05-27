@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://moskva.kuhni-zakaz-online.ru/sitemap.xml
+Host: moskva.kuhni-zakaz-online.ru

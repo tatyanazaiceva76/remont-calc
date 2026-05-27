@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vlg.ipoteka-remont.ru/sitemap.xml
+Host: vlg.ipoteka-remont.ru

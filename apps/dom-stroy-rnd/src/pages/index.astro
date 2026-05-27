@@ -1,0 +1,57 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"karkasnye","name":"Каркасные дома","price":"от 25k ₽/м²","description":"2-3 месяца, до 1.5 млн на 60 м²"},{"slug":"gazobeton","name":"Дома из газобетона","price":"от 35k ₽/м²","description":"Тёплые, долговечные"},{"slug":"kirpich","name":"Кирпичные дома","price":"от 55k ₽/м²","description":"Срок 8-12 месяцев, премиум"},{"slug":"iz-brusa","name":"Дома из бруса","price":"от 30k ₽/м²","description":"Экологичность, усадка 1 год"}];
+const faqs = [{"q":"Сколько стоит построить дом 100 м² в Ростов-на-Дону?","a":"В Ростов-на-Дону каркасный 2.5-3.5 млн ₽, газобетон 3.5-5 млн ₽, кирпич 5.5-8 млн ₽ за 100 м²."},{"q":"Какой фундамент в Ростов-на-Дону?","a":"Для Ростов-на-Дону подходят свайно-винтовой (100-200к ₽), ленточный (300-600к ₽), плита (500-1500к ₽). Зависит от грунта."},{"q":"Кто строит в Ростов-на-Дону надёжно?","a":"В Ростов-на-Дону есть локальные строители и федеральные сети. Главное — договор, поэтапная оплата и портфолио ≥5 работ."}];
+---
+<Base title="Загородные дома в Ростов-на-Дону 2026 — Строительство домов под ключ от 25 000 ₽/м²" description="Загородные дома в Ростов-на-Дону: цены от 2 500 000 ₽. Бесплатный замер и расчёт.">
+  <h1>🏡 Загородные дома в Ростов-на-Дону</h1>
+  <p style="font-size:17px;background:white;padding:14px 18px;border-left:4px solid #27ae60;border-radius:0 8px 8px 0;">Строительство домов под ключ от 25 000 ₽/м² в Ростов-на-Дону. Население Ростов-на-Дону: 500к-1млн.</p>
+
+  <section style="background:white;padding:20px;border-radius:10px;margin:20px 0;box-shadow:0 4px 12px rgba(0,0,0,0.06);">
+    <h2>📞 Получить расчёт загородных домов в Ростов-на-Дону</h2>
+    <form id="lf" style="display:flex;flex-direction:column;gap:10px;max-width:400px;">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" style="padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;" />
+      <input type="text" name="name" placeholder="Имя" style="padding:12px;border:2px solid #ddd;border-radius:8px;font-size:16px;" />
+      <button type="submit" style="padding:14px;background:#27ae60;color:white;border:none;border-radius:8px;font-size:16px;font-weight:700;cursor:pointer;">Получить расчёт →</button>
+    </form>
+    <script is:inline>
+      document.getElementById('lf').onsubmit=function(e){e.preventDefault();var d=new FormData(e.target);fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:d.get('phone'),name:d.get('name'),host:'rnd.dom-stroy-online.ru',niche:'Загородные дома',city:'rnd',source:'rnd.dom-stroy-online.ru/index',url:location.href,page:'/'})}).then(function(){e.target.innerHTML='<p style="color:#27ae60;font-size:18px;">✅ Заявка принята! Перезвоним в течение 30 минут.</p>';});};
+    </script>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги загородных домов в Ростов-на-Дону</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      {services.map((s) => (
+        <div style="padding:16px;background:white;border:1px solid #e6e8eb;border-radius:10px;">
+          <strong style="color:#27ae60;font-size:15px;">{s.name}</strong>
+          <div style="font-size:13px;color:#2980b9;margin:6px 0;font-weight:600;">{s.price}</div>
+          <p style="font-size:13px;color:#555;margin:0;">{s.description}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ FAQ — Загородные дома в Ростов-на-Дону</h2>
+    {faqs.map((f) => (
+      <details style="background:white;padding:14px 18px;border-radius:8px;margin:8px 0;border:1px solid #e6e8eb;">
+        <summary style="font-weight:600;cursor:pointer;">{f.q}</summary>
+        <p style="margin:10px 0 0;color:#555;">{f.a}</p>
+      </details>
+    ))}
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: 'Загородные дома в Ростов-на-Дону',
+    description: 'Загородные дома в Ростов-на-Дону: Строительство домов под ключ от 25 000 ₽/м²',
+    address: { '@type': 'PostalAddress', addressLocality: 'Ростов-на-Дону', addressCountry: 'RU' },
+    areaServed: { '@type': 'City', name: 'Ростов-на-Дону' }
+  })} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org', '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } }))
+  })} />
+</Base>

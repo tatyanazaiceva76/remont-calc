@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spb.kuhni-zakaz-online.ru/sitemap.xml
+Host: spb.kuhni-zakaz-online.ru

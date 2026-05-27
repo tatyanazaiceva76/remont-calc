@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ekb.ipoteka-remont.ru/sitemap.xml
+Host: ekb.ipoteka-remont.ru

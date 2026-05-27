@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tyumen.ipoteka-remont.ru/sitemap.xml
+Host: tyumen.ipoteka-remont.ru

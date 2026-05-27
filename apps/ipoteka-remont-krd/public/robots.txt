@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://krd.ipoteka-remont.ru/sitemap.xml
+Host: krd.ipoteka-remont.ru
