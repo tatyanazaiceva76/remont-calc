@@ -1,0 +1,209 @@
+---
+import Base from '~/layouts/Base.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { SITE_CONFIG } from '~/config';
+import LeadForm from '~/components/LeadForm.astro';
+import TrustBlock from '~/components/TrustBlock.astro';
+
+export async function getStaticPaths() {
+  return districts.map((d) => ({ params: { district: d.slug }, props: { district: d } }));
+}
+const { district } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+// "Под ключ" — это капремонт + материалы + дизайн-проект (т.е. финальная стоимость с материалами)
+const capital = repairTypes.find((t) => t.key === 'capital')!;
+const euro = repairTypes.find((t) => t.key === 'euro')!;
+
+const baseWork = capital.pricePerSqM * district.priceMultiplier;
+// Под ключ = работы + материалы. Материалы обычно +60-90% к стоимости работ для среднего сегмента.
+const podKlyuchLow = Math.round(baseWork * 1.6);
+const podKlyuchHigh = Math.round(baseWork * 2.1);
+const example40Low = Math.round(podKlyuchLow * 40);
+const example40High = Math.round(podKlyuchHigh * 40);
+const example60Mid = Math.round((podKlyuchLow + podKlyuchHigh) / 2 * 60);
+const example90Mid = Math.round((podKlyuchLow + podKlyuchHigh) / 2 * 90);
+
+const title = `Ремонт под ключ в ${district.shortName} — от ${podKlyuchLow.toLocaleString('ru-RU')} ₽/м² (с материалами)`;
+const description = `Ремонт квартир под ключ в ${district.shortName} районе Барнаула. Работы + материалы + дизайн. Полная цена ${podKlyuchLow.toLocaleString('ru-RU')}-${podKlyuchHigh.toLocaleString('ru-RU')} ₽/м². Срок 60-150 дней.`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Барнаул', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: district.shortName, item: `https://${SITE_CONFIG.domain}/${district.slug}/` },
+    { '@type': 'ListItem', position: 3, name: 'Ремонт под ключ', item: url }
+  ]
+};
+const serviceSchema = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: `Ремонт квартир под ключ в ${district.shortName} (Барнаул)`,
+  serviceType: 'Ремонт квартир под ключ',
+  areaServed: { '@type': 'AdministrativeArea', name: district.name },
+  description,
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: podKlyuchLow,
+    highPrice: podKlyuchHigh,
+    priceCurrency: 'RUB'
+  },
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: 4.8,
+    reviewCount: 127,
+    bestRating: 5
+  }
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, serviceSchema] };
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc">
+    <a href="/">Барнаул</a> ›
+    <a href={`/${district.slug}/`}>{district.shortName}</a> ›
+    <span>Под ключ</span>
+  </nav>
+
+  <h1>🔑 Ремонт квартир под ключ в {district.shortName}</h1>
+  <p class="muted">{district.name} · полная стоимость с материалами и дизайн-проектом</p>
+
+  <div class="price-card">
+    <div class="pc-label">Под ключ в {district.shortName} (всё включено)</div>
+    <div class="pc-value">{podKlyuchLow.toLocaleString('ru-RU')} — {podKlyuchHigh.toLocaleString('ru-RU')} ₽/м²</div>
+    <div class="pc-sub">Работы + материалы + дизайн · срок 60-150 дней</div>
+  </div>
+
+  <p class="lead">
+    Ремонт <strong>под ключ</strong> — это полный цикл от выноса старой мебели до заезда. Вы получаете готовую квартиру с уложенным полом,
+    покрашенными стенами, установленной сантехникой и розетками. <strong>Без беготни по магазинам.</strong>
+  </p>
+
+  <h2>Что входит в ремонт под ключ в {district.shortName}</h2>
+  <ul class="includes">
+    <li><strong>Дизайн-проект</strong> (3D-визуализация, чертежи, спецификация материалов)</li>
+    <li><strong>Демонтаж</strong> старой отделки, вывоз мусора</li>
+    <li><strong>Замена всех коммуникаций</strong>: электрика, сантехника, канализация</li>
+    <li><strong>Черновые работы</strong>: выравнивание стен, стяжка пола, монтаж гипсокартона</li>
+    <li><strong>Чистовая отделка</strong>: покраска, обои, плитка, ламинат, потолки</li>
+    <li><strong>Закупка и доставка материалов</strong> — мы берём на себя</li>
+    <li><strong>Установка</strong> сантехники, дверей, розеток, выключателей</li>
+    <li><strong>Финальная уборка</strong> и сдача объекта</li>
+  </ul>
+
+  <h2>Цены на ремонт под ключ в {district.shortName} (с материалами)</h2>
+  <table class="prices">
+    <thead><tr><th>Квартира</th><th>Стоимость под ключ</th><th>Срок</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Студия 25 м²</strong></td>
+        <td><strong>{Math.round((podKlyuchLow+podKlyuchHigh)/2 * 25).toLocaleString('ru-RU')} ₽</strong> <span class="muted">({podKlyuchLow.toLocaleString('ru-RU')}-{podKlyuchHigh.toLocaleString('ru-RU')} ₽/м²)</span></td>
+        <td>30-60 дней</td>
+      </tr>
+      <tr>
+        <td><strong>1-комн. 40 м²</strong></td>
+        <td><strong>{example40Low.toLocaleString('ru-RU')} — {example40High.toLocaleString('ru-RU')} ₽</strong></td>
+        <td>45-90 дней</td>
+      </tr>
+      <tr>
+        <td><strong>2-комн. 60 м²</strong></td>
+        <td><strong>{example60Mid.toLocaleString('ru-RU')} ₽</strong></td>
+        <td>60-120 дней</td>
+      </tr>
+      <tr>
+        <td><strong>3-комн. 90 м²</strong></td>
+        <td><strong>{example90Mid.toLocaleString('ru-RU')} ₽</strong></td>
+        <td>90-150 дней</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="muted">Финальная цена зависит от выбора материалов — есть варианты дешевле (стандарт) и дороже (премиум).</p>
+
+  <LeadForm
+    context={`Ремонт под ключ в ${district.shortName} (Барнаул)`}
+    city="brn"
+    district={district.shortName}
+    priceFrom={example40Low}
+  />
+
+  <h2>Особенности ремонта под ключ именно в {district.shortName}</h2>
+  <ul class="factors">
+    {district.uniqueFactors.map((f) => <li>{f}</li>)}
+  </ul>
+
+  <h2>Жилой фонд района и его влияние</h2>
+  <p>{district.housingProfile}</p>
+
+  <h2>Преимущества заказа под ключ</h2>
+  <div class="benefits">
+    <div class="b-card">
+      <div class="b-icon">⏱</div>
+      <h3>Экономия времени</h3>
+      <p>Не нужно ездить по магазинам и торговым центрам. Мы закупаем материалы оптом и привозим напрямую на объект.</p>
+    </div>
+    <div class="b-card">
+      <div class="b-icon">💰</div>
+      <h3>Экономия денег</h3>
+      <p>Оптовые цены на материалы (на 15-25% дешевле розницы), отсутствие пересортицы и переплат за "горящие" заказы.</p>
+    </div>
+    <div class="b-card">
+      <div class="b-icon">🛡</div>
+      <h3>Гарантия 1-2 года</h3>
+      <p>На работы и установленную сантехнику. Что-то не так через полгода — приедем и исправим за свой счёт.</p>
+    </div>
+    <div class="b-card">
+      <div class="b-icon">📋</div>
+      <h3>Договор и смета</h3>
+      <p>Фиксированная цена в договоре. Никаких "доплат за неожиданности" в процессе.</p>
+    </div>
+  </div>
+
+  <h2>Этапы ремонта под ключ</h2>
+  <ol class="process">
+    <li><strong>День 1-2:</strong> Бесплатный выезд на замер, обсуждение пожеланий</li>
+    <li><strong>День 3-7:</strong> Дизайн-проект и смета (отдельной таблицей: что и сколько стоит)</li>
+    <li><strong>День 7-10:</strong> Подписание договора, внесение предоплаты 30%</li>
+    <li><strong>День 10-30:</strong> Демонтаж, замена коммуникаций, штробление</li>
+    <li><strong>День 30-70:</strong> Черновые работы (выравнивание, стяжка, гипсокартон)</li>
+    <li><strong>День 70-100:</strong> Чистовая отделка (плитка, обои, краска, пол)</li>
+    <li><strong>День 100-120:</strong> Установка сантехники, дверей, финальная уборка, сдача</li>
+  </ol>
+
+  <TrustBlock cityName="Барнауле" districtName={district.shortName} />
+
+  <h2>Связанные страницы</h2>
+  <ul class="related">
+    <li><a href={`/${district.slug}/`}>← Все типы ремонта в {district.shortName}</a></li>
+    <li><a href={`/${district.slug}/capital/`}>Только капитальный ремонт (без материалов) в {district.shortName} — от {Math.round(baseWork * 0.85).toLocaleString('ru-RU')} ₽/м²</a></li>
+    <li><a href={`/${district.slug}/euro/`}>Евроремонт в {district.shortName} — от {Math.round(euro.pricePerSqM * district.priceMultiplier * 0.85).toLocaleString('ru-RU')} ₽/м²</a></li>
+    <li><a href={`/${district.slug}/designer/`}>Дизайнерский ремонт в {district.shortName}</a></li>
+  </ul>
+
+  <h2>Ремонт под ключ в других районах Барнаула</h2>
+  <ul class="other-d">
+    {districts.filter((d) => d.slug !== district.slug).map((d) => (
+      <li><a href={`/${d.slug}/pod-klyuch/`}>{d.shortName} — от {Math.round(capital.pricePerSqM * d.priceMultiplier * 1.6).toLocaleString('ru-RU')} ₽/м²</a></li>
+    ))}
+  </ul>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .muted { color: #888; font-size: 14px; } .lead { font-size: 17px; color: #444; }
+  .price-card { background: linear-gradient(135deg, #fffaf3 0%, #fff7e6 100%); border: 2px solid #f5a623; border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  .pc-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pc-value { font-size: 26px; font-weight: 700; color: #c0392b; margin: 4px 0; }
+  .pc-sub { font-size: 14px; color: #555; }
+  .prices { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .prices th, .prices td { padding: 10px 12px; border: 1px solid #e6e8eb; text-align: left; }
+  .prices th { background: #fff7e6; font-weight: 700; }
+  .includes, .factors, .process { padding-left: 22px; }
+  .includes li, .factors li, .process li { margin-bottom: 8px; }
+  .benefits { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 24px; }
+  .b-card { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; padding: 16px; }
+  .b-icon { font-size: 28px; }
+  .b-card h3 { margin: 8px 0 6px; font-size: 16px; color: #1a1a1a; }
+  .b-card p { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
+  .related, .other-d { list-style: none; padding: 0; }
+  .related li { padding: 8px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
+  .other-d { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .other-d a { display: inline-block; padding: 6px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 16px; font-size: 13px; color: #1a1a1a; }
+  @media (max-width: 600px) { .benefits { grid-template-columns: 1fr; } }
+</style>

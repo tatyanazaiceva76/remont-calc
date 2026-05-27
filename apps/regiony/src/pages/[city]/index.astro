@@ -1,0 +1,87 @@
+---
+import Base from '~/layouts/Base.astro';
+import { cities } from '~/data/all-cities';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return cities.map((c) => ({ params: { city: c.slug }, props: { city: c } }));
+}
+const { city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = `Ремонт квартир в ${city.cityNameGen} — цены по районам 2026`;
+const description = `Стоимость ремонта в ${city.cityNameGen}: косметический, капитальный, евроремонт. По районам.`;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'LocalBusiness',
+  name: `Ремонт в ${city.cityNameGen}`, url: `https://${SITE_CONFIG.domain}/${city.slug}/`,
+  description, areaServed: { '@type': 'City', name: city.cityName },
+  address: { '@type': 'PostalAddress', addressLocality: city.cityName, addressCountry: 'RU' },
+  geo: { '@type': 'GeoCoordinates', latitude: city.geo.lat, longitude: city.geo.lon }
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}
+      cityName={city.cityName} geoRegion={city.geo.regionCode} geoLat={city.geo.lat} geoLon={city.geo.lon}>
+  <nav class="bc"><a href="/">Регионы</a> › <span>{city.cityName}</span></nav>
+  <h1>{city.emoji} Ремонт квартир в {city.cityNameGen}</h1>
+  <p class="lead">Цены по {city.districts.length} районам {city.cityNameGen}. Базовая ставка косметики — {city.repairTypes[0].pricePerSqM.toLocaleString('ru-RU')} ₽/м².</p>
+
+  <h2>Типы ремонта</h2>
+  <div class="types">
+    {city.repairTypes.map((t) => (
+      <div class="type-card">
+        <h3>{t.name}</h3>
+        <p class="price">{t.pricePerSqM.toLocaleString('ru-RU')} ₽/м²</p>
+        <p>{t.description}</p>
+        <p class="duration">⏱ {t.durationDays}</p>
+      </div>
+    ))}
+  </div>
+
+  <h2>Районы {city.cityNameGen}</h2>
+  <ul class="districts">
+    {city.districts.map((d) => (
+      <li>
+        <a href={`/${city.slug}/${d.slug}/`}>
+          <h3>{d.shortName} <span class="mult">×{d.priceMultiplier.toFixed(2)}</span></h3>
+          <p>{d.name}</p>
+          <p class="brief">{d.intro.slice(0, 110)}...</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Другие города в каталоге</h2>
+  <ul class="other-d">
+    {cities.filter((c) => c.slug !== city.slug).slice(0, 12).map((c) => (
+      <li><a href={`/${c.slug}/`}>{c.emoji} {c.cityName}</a></li>
+    ))}
+  </ul>
+
+  <p class="back-cta">
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>Калькуляторы</a> ·
+    <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>Цены РФ</a> ·
+    <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>Советы</a>
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .types { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 32px; }
+  .type-card { background: #f3e8ff; border: 1px solid #d4b3f5; border-radius: 8px; padding: 14px 16px; }
+  .type-card h3 { margin: 0 0 8px; font-size: 16px; color: #6b3aa0; }
+  .type-card .price { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 4px 0 8px; }
+  .type-card p { font-size: 13px; color: #555; margin: 4px 0; line-height: 1.5; }
+  .type-card .duration { font-size: 12px; color: #888; }
+  .districts { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 16px 0 32px; }
+  .districts a { display: block; padding: 12px 14px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; color: #1a1a1a; text-decoration: none; }
+  .districts a:hover { background: #f3e8ff; border-color: #6b3aa0; }
+  .districts h3 { font-size: 17px; margin: 0 0 4px; color: #6b3aa0; display: flex; justify-content: space-between; align-items: baseline; }
+  .districts .mult { font-size: 12px; color: #888; font-weight: 400; }
+  .districts p { font-size: 13px; color: #555; margin: 0 0 4px; }
+  .districts .brief { font-size: 12px; color: #888; }
+  .other-d { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .other-d a { display: inline-block; padding: 6px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 16px; font-size: 13px; color: #1a1a1a; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+  @media (max-width: 600px) { .types, .districts { grid-template-columns: 1fr; } }
+</style>

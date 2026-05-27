@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fasad.kalkremont.ru/sitemap.xml
+Host: fasad.kalkremont.ru

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://spb.kalkremont.ru/sitemap.xml
+Host: spb.kalkremont.ru

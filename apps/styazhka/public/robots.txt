@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://styazhka.kalkremont.ru/sitemap.xml
+Host: styazhka.kalkremont.ru

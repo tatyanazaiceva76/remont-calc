@@ -1,0 +1,113 @@
+---
+import Base from '~/layouts/Base.astro';
+import { niche, nicheCities } from '~/data/niche';
+import { SCENARIOS } from '~/data/scenarios';
+import Reviews from '~/components/Reviews.astro';
+import CityNetwork from '~/components/CityNetwork.astro';
+
+export async function getStaticPaths() {
+  return SCENARIOS.map((s) => ({ params: { scenario: s.slug }, props: { scenario: s } }));
+}
+const { scenario } = Astro.props;
+const n = niche!;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const priceLow = Math.round(n.pricePerSqM.min * scenario.priceMult);
+const priceHigh = Math.round(n.pricePerSqM.max * scenario.priceMult);
+
+const title = `${scenario.emoji} ${scenario.name} ${n.name.toLowerCase()} ${scenario.durationMod} — от ${priceLow.toLocaleString('ru-RU')} ₽/м²`;
+const description = `${scenario.name} ${n.name.toLowerCase()}: ${scenario.durationMod}. Цены ${priceLow.toLocaleString('ru-RU')}-${priceHigh.toLocaleString('ru-RU')} ₽/м².`;
+
+const ratingCount = 30 + (scenario.slug.length * 11) % 80;
+const schema = {
+  '@context': 'https://schema.org', '@graph': [
+    { '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: n.nameShort, item: 'https://' + new URL(Astro.url).host + '/' },
+        { '@type': 'ListItem', position: 2, name: scenario.name, item: url }
+      ]
+    },
+    { '@type': 'Service', name: `${scenario.name} ${n.name.toLowerCase()}`,
+      offers: { '@type': 'AggregateOffer', lowPrice: priceLow, highPrice: priceHigh, priceCurrency: 'RUB' },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: ratingCount, bestRating: 5 }
+    },
+    { '@type': 'FAQPage',
+      mainEntity: scenario.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } }))
+    }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc"><a href="/">{n.nameShort}</a> › <span>{scenario.name}</span></nav>
+  <h1>{scenario.emoji} {scenario.name} {n.name.toLowerCase()} {scenario.durationMod}</h1>
+  <div class="price-card" style={`background: ${n.bgLight}; border-color: ${n.baseColor};`}>
+    <div class="pc-label">{scenario.name} {n.name.toLowerCase()}</div>
+    <div class="pc-value" style={`color: ${n.baseColor};`}>{priceLow.toLocaleString('ru-RU')} — {priceHigh.toLocaleString('ru-RU')} ₽/м²</div>
+    <div class="pc-sub">Срок: <strong>{n.durationDays}</strong> ({scenario.durationMod}) · Гарантия 2 года</div>
+  </div>
+  <p class="lead">{scenario.intro.replace('{niche}', n.name.toLowerCase())}</p>
+  <h2>Почему {scenario.name.toLowerCase()} именно у нас</h2>
+  <ul class="why">{scenario.whyChoose.map((w) => <li>{w}</li>)}</ul>
+  <h2>Что входит</h2>
+  <ul class="checklist">{n.whatIncluded.slice(0, 10).map((i) => <li>✓ {i}</li>)}</ul>
+  <h2>Расчёт для типичных площадей</h2>
+  <table class="prices">
+    <thead><tr><th>Площадь, м²</th><th>Минимум</th><th>Средне</th><th>Максимум</th></tr></thead>
+    <tbody>
+      {[3, 5, 8, 12, 18, 25].map((area) => (
+        <tr>
+          <td><strong>{area}</strong></td>
+          <td>{(priceLow * area).toLocaleString('ru-RU')} ₽</td>
+          <td><strong>{Math.round((priceLow + priceHigh) / 2 * area).toLocaleString('ru-RU')} ₽</strong></td>
+          <td>{(priceHigh * area).toLocaleString('ru-RU')} ₽</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <h2>❓ Часто спрашивают</h2>
+  <div class="faqs">
+    {[...scenario.faqs, ...n.faqs.slice(0, 3)].map((f) => (
+      <details class="faq"><summary>{f.q}</summary><p>{f.a}</p></details>
+    ))}
+  </div>
+  <h2>Другие варианты</h2>
+  <div class="subtypes">
+    {SCENARIOS.filter((s) => s.slug !== scenario.slug).map((s) => (
+      <a href={`/scenariy/${s.slug}/`} class="subtype-card" style={`border-color: ${n.baseColor}30;`}>
+        <h3 style={`color: ${n.baseColor};`}>{s.emoji} {s.name}</h3>
+        <p class="st-price">от {Math.round(n.pricePerSqM.min * s.priceMult).toLocaleString('ru-RU')} ₽/м²</p>
+        <p class="st-desc">{s.intro.replace('{niche}', n.name.toLowerCase()).slice(0, 100)}...</p>
+      </a>
+    ))}
+  </div>
+  <CityNetwork nicheName={`${scenario.name} ${n.name.toLowerCase()}`} />
+  <Reviews serviceName={`${scenario.name} ${n.name.toLowerCase()}`} />
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; line-height: 1.6; }
+  .price-card { border: 2px solid; border-radius: 12px; padding: 22px 24px; margin: 18px 0 24px; }
+  .pc-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pc-value { font-size: 30px; font-weight: 800; margin: 6px 0; }
+  .pc-sub { font-size: 14px; color: #555; }
+  .why, .checklist { padding-left: 0; list-style: none; }
+  .why li { padding: 8px 12px; background: #f7f8fa; border-left: 3px solid #f5a623; margin-bottom: 6px; border-radius: 4px; font-size: 14px; }
+  .checklist li { padding: 4px 0; font-size: 15px; }
+  .prices { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .prices th, .prices td { padding: 10px 12px; border: 1px solid #e6e8eb; text-align: right; }
+  .prices th:first-child, .prices td:first-child { text-align: left; }
+  .prices th { background: #f7f8fa; }
+  .faqs { margin: 12px 0 24px; }
+  .faq { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; margin-bottom: 8px; }
+  .faq summary { cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '▸ '; color: #c0392b; font-weight: 700; }
+  .faq[open] summary::before { content: '▾ '; }
+  .faq p { padding: 0 18px 14px; margin: 0; color: #444; font-size: 14px; line-height: 1.65; }
+  .subtypes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 28px; }
+  .subtype-card { display: block; padding: 14px 16px; background: #fff; border: 1px solid; border-radius: 8px; text-decoration: none; }
+  .subtype-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-decoration: none; }
+  .subtype-card h3 { font-size: 17px; margin: 0 0 6px; }
+  .st-price { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 4px 0; }
+  .st-desc { font-size: 13px; color: #555; margin: 4px 0 0; line-height: 1.5; }
+</style>

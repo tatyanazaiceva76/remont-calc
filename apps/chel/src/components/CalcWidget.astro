@@ -1,0 +1,266 @@
+---
+// Интерактивный mini-калькулятор для district/city страниц.
+// Клиент вводит площадь + выбирает тип → видит мгновенный расчёт.
+// Сильно увеличивает время на странице + готовит к LeadForm.
+
+interface RepairType {
+  key: string;
+  name: string;
+  ruShort: string;
+  pricePerSqM: number;
+  durationDays: string;
+}
+
+interface Props {
+  /** Множитель цены района (например 1.4 для ЦАО). Если не задан — 1.0 */
+  multiplier?: number;
+  /** Типы ремонта с базовыми ценами */
+  types: RepairType[];
+  /** Локация (для title + LeadForm context) */
+  locationName: string;
+}
+
+const { multiplier = 1.0, types, locationName } = Astro.props;
+const widgetId = `cw-${Math.random().toString(36).slice(2, 8)}`;
+
+// Сериализуем для JS
+const typesData = JSON.stringify(types.map((t) => ({
+  key: t.key,
+  name: t.name,
+  ruShort: t.ruShort,
+  basePrice: Math.round(t.pricePerSqM * multiplier),
+  durationDays: t.durationDays
+})));
+---
+<section class="calc-widget" id={widgetId} data-types={typesData} data-location={locationName}>
+  <h2>🧮 Калькулятор стоимости для {locationName}</h2>
+  <p class="cw-sub">Введите площадь и выберите тип ремонта — получите цену за 2 секунды.</p>
+
+  <div class="cw-grid">
+    <div class="cw-input">
+      <label>Площадь квартиры</label>
+      <div class="cw-area-row">
+        <input type="range" min="20" max="200" value="55" step="5" class="cw-slider" />
+        <div class="cw-area-display">
+          <input type="number" value="55" min="15" max="500" step="1" class="cw-area-input" /><span>м²</span>
+        </div>
+      </div>
+      <div class="cw-presets">
+        <button type="button" data-area="25">Студия</button>
+        <button type="button" data-area="40">1-комн</button>
+        <button type="button" data-area="60">2-комн</button>
+        <button type="button" data-area="85">3-комн</button>
+        <button type="button" data-area="120">4-комн+</button>
+      </div>
+    </div>
+
+    <div class="cw-input">
+      <label>Тип ремонта</label>
+      <div class="cw-types">
+        {types.map((t, i) => (
+          <button type="button" data-type-key={t.key} class={i === 1 ? 'active' : ''}>
+            <strong>{t.ruShort}</strong>
+            <small>{Math.round(t.pricePerSqM * multiplier).toLocaleString('ru-RU')} ₽/м²</small>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="cw-result">
+    <div class="cw-result-main">
+      <div class="cw-result-label">Стоимость работ для <span class="cw-loc">{locationName}</span></div>
+      <div class="cw-result-value">
+        <span class="cw-min">—</span> — <span class="cw-max">—</span> ₽
+      </div>
+      <div class="cw-result-sub">
+        Средняя <strong class="cw-avg">—</strong> ₽ · <strong class="cw-perm2">—</strong> ₽/м² · срок <strong class="cw-days">—</strong>
+      </div>
+    </div>
+    <a href="#lead-form-target" class="cw-cta">📋 Получить точную смету</a>
+  </div>
+
+  <p class="cw-disclaimer">Расчёт примерный, только работы (без материалов). Точная смета — после замера.</p>
+</section>
+
+<style>
+  .calc-widget {
+    background: linear-gradient(135deg, #fff7e6 0%, #fef0ce 100%);
+    border: 2px solid #f5a623;
+    border-radius: 14px;
+    padding: 24px;
+    margin: 28px 0;
+  }
+  .calc-widget h2 { margin: 0 0 6px; font-size: 22px; color: #1a1a1a; }
+  .cw-sub { font-size: 14px; color: #555; margin: 0 0 18px; }
+  .cw-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; margin-bottom: 18px; }
+  .cw-input label {
+    display: block; font-size: 12px; color: #777;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    font-weight: 700; margin-bottom: 8px;
+  }
+  .cw-area-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .cw-slider {
+    flex: 1; height: 6px; -webkit-appearance: none; appearance: none;
+    background: #e6e8eb; border-radius: 3px; outline: none;
+  }
+  .cw-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 22px; height: 22px; background: #f5a623; border: 0;
+    border-radius: 50%; cursor: pointer;
+    box-shadow: 0 2px 6px rgba(245,166,35,0.5);
+  }
+  .cw-slider::-moz-range-thumb { width: 22px; height: 22px; background: #f5a623; border: 0; border-radius: 50%; cursor: pointer; }
+  .cw-area-display {
+    display: flex; align-items: center; gap: 4px;
+    background: #fff; border: 1px solid #d4d4d4;
+    border-radius: 6px; padding: 6px 10px;
+    min-width: 90px;
+  }
+  .cw-area-input {
+    width: 50px; border: 0; outline: 0; font-size: 16px;
+    font-weight: 700; color: #1a1a1a; text-align: right;
+    background: transparent; font-family: inherit;
+  }
+  .cw-area-display span { color: #888; font-size: 14px; }
+  .cw-presets {
+    display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px;
+  }
+  .cw-presets button {
+    flex: 1; min-width: 60px;
+    padding: 6px 8px; background: #fff;
+    border: 1px solid #e6cfa3; border-radius: 6px;
+    font-size: 11px; cursor: pointer; color: #c0392b;
+    font-weight: 600;
+  }
+  .cw-presets button:hover { background: #fff7e6; border-color: #f5a623; }
+  .cw-types {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+  }
+  .cw-types button {
+    background: #fff; border: 1px solid #d4d4d4;
+    border-radius: 8px; padding: 10px 12px;
+    text-align: left; cursor: pointer;
+    font-family: inherit;
+  }
+  .cw-types button:hover { border-color: #f5a623; }
+  .cw-types button.active {
+    background: #c0392b; border-color: #c0392b; color: #fff;
+  }
+  .cw-types button.active strong, .cw-types button.active small { color: #fff; }
+  .cw-types button strong { display: block; font-size: 13px; color: #1a1a1a; margin-bottom: 2px; }
+  .cw-types button small { font-size: 11px; color: #888; }
+
+  .cw-result {
+    background: #fff; border-radius: 10px;
+    padding: 18px 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap;
+    box-shadow: 0 4px 16px rgba(245,166,35,0.15);
+  }
+  .cw-result-label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cw-result-value { font-size: 28px; font-weight: 800; color: #c0392b; margin: 4px 0; line-height: 1.1; }
+  .cw-result-sub { font-size: 13px; color: #555; }
+  .cw-result-sub strong { color: #1a1a1a; }
+  .cw-cta {
+    background: #25d366; color: #fff;
+    padding: 12px 22px; border-radius: 8px;
+    font-weight: 700; font-size: 15px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .cw-cta:hover { background: #1cae53; text-decoration: none; }
+  .cw-disclaimer { font-size: 12px; color: #888; margin: 8px 0 0; text-align: center; }
+  @media (max-width: 700px) {
+    .cw-grid { grid-template-columns: 1fr; }
+    .cw-types { grid-template-columns: 1fr 1fr; }
+    .cw-result { flex-direction: column; align-items: stretch; text-align: center; }
+    .cw-cta { text-align: center; }
+  }
+</style>
+
+<script define:vars={{ widgetId }}>
+  (function() {
+    const root = document.getElementById(widgetId);
+    if (!root) return;
+    const types = JSON.parse(root.dataset.types);
+    const loc = root.dataset.location;
+
+    const slider = root.querySelector('.cw-slider');
+    const numInput = root.querySelector('.cw-area-input');
+    const typeBtns = root.querySelectorAll('.cw-types button');
+    const presets = root.querySelectorAll('.cw-presets button');
+
+    let area = 55;
+    let typeKey = typeBtns[1]?.dataset.typeKey || types[1]?.key || types[0].key;
+
+    function fmt(n) {
+      return Math.round(n).toLocaleString('ru-RU');
+    }
+
+    function render() {
+      const t = types.find((x) => x.key === typeKey) || types[0];
+      const baseCost = t.basePrice * area;
+      const min = Math.round(baseCost * 0.85);
+      const max = Math.round(baseCost * 1.3);
+      const avg = Math.round(baseCost);
+
+      root.querySelector('.cw-min').textContent = fmt(min);
+      root.querySelector('.cw-max').textContent = fmt(max);
+      root.querySelector('.cw-avg').textContent = fmt(avg);
+      root.querySelector('.cw-perm2').textContent = fmt(t.basePrice);
+      root.querySelector('.cw-days').textContent = t.durationDays;
+    }
+
+    function updateArea(v) {
+      area = Math.max(15, Math.min(500, parseInt(v) || 55));
+      slider.value = area;
+      numInput.value = area;
+      render();
+    }
+
+    slider.addEventListener('input', (e) => updateArea(e.target.value));
+    numInput.addEventListener('input', (e) => updateArea(e.target.value));
+    numInput.addEventListener('blur', (e) => updateArea(e.target.value));
+
+    presets.forEach((btn) => {
+      btn.addEventListener('click', () => updateArea(btn.dataset.area));
+    });
+
+    typeBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        typeKey = btn.dataset.typeKey;
+        typeBtns.forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+        // Metrika goal
+        try { if (window.ym) window.ym(109345156, 'reachGoal', 'calc-widget-type-changed', { type: typeKey }); } catch (_) {}
+      });
+    });
+
+    // Metrika: первое взаимодействие
+    let firstInteraction = false;
+    function trackFirst() {
+      if (firstInteraction) return;
+      firstInteraction = true;
+      try { if (window.ym) window.ym(109345156, 'reachGoal', 'calc-widget-engagement', { location: loc }); } catch (_) {}
+    }
+    [slider, numInput, ...presets, ...typeBtns].forEach((el) => {
+      el?.addEventListener('input', trackFirst, { once: true });
+      el?.addEventListener('click', trackFirst, { once: true });
+    });
+
+    // CTA click → плавный скролл к lead-form
+    const cta = root.querySelector('.cw-cta');
+    cta?.addEventListener('click', (e) => {
+      const target = document.querySelector('.lead-form');
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        try { if (window.ym) window.ym(109345156, 'reachGoal', 'calc-widget-cta-click', { location: loc }); } catch (_) {}
+      }
+    });
+
+    render();
+  })();
+</script>

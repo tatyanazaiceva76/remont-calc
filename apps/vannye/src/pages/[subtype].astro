@@ -1,0 +1,48 @@
+---
+import Base from '~/layouts/Base.astro';
+import Reviews from '~/components/Reviews.astro';
+import CityNetwork from '~/components/CityNetwork.astro';
+import { niche } from '~/data/niche';
+export async function getStaticPaths() {
+  const n = niche!;
+  return n.subTypes.map((s) => ({ params: { subtype: s.slug }, props: { subtype: s } }));
+}
+const n = niche!;
+const { subtype } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const priceLow = Math.round(n.pricePerSqM.min * subtype.priceMult);
+const priceHigh = Math.round(n.pricePerSqM.max * subtype.priceMult);
+const title = `${n.name} ${subtype.name.toLowerCase()} — от ${priceLow.toLocaleString('ru-RU')} ₽/м² ⭐ 4.8/5`;
+const description = `${n.name} ${subtype.name.toLowerCase()}: цены ${priceLow.toLocaleString('ru-RU')}-${priceHigh.toLocaleString('ru-RU')} ₽/м². ${subtype.description}`;
+const schema = { '@context': 'https://schema.org', '@type': 'Service', name: `${n.name} ${subtype.name}`,
+  offers: { '@type': 'AggregateOffer', lowPrice: priceLow, highPrice: priceHigh, priceCurrency: 'RUB' },
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: 80, bestRating: 5 } };
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc"><a href="/">{n.name}</a> › <span>{subtype.name}</span></nav>
+  <h1>{n.emoji} {n.name} {subtype.name.toLowerCase()}</h1>
+  <div class="pc" style={`background: ${n.bgLight}; border-color: ${n.baseColor};`}>
+    <div class="pl">Стоимость</div>
+    <div class="pv" style={`color: ${n.baseColor};`}>{priceLow.toLocaleString('ru-RU')} — {priceHigh.toLocaleString('ru-RU')} ₽/м²</div>
+    <div class="ps">Срок: <strong>{n.durationDays}</strong></div>
+  </div>
+  <p class="lead">{subtype.description}</p>
+  <h2>Что входит</h2>
+  <ul>{n.whatIncluded.map((i) => <li>✓ {i}</li>)}</ul>
+  <h2>Другие варианты</h2>
+  <ul>{n.subTypes.filter((s) => s.slug !== subtype.slug).map((s) => (
+    <li><a href={`/${s.slug}/`}>{s.name} — от {Math.round(n.pricePerSqM.min * s.priceMult).toLocaleString('ru-RU')} ₽/м²</a></li>
+  ))}</ul>
+
+  <CityNetwork nicheName={n.name} />
+  <Reviews serviceName={`${n.name} ${subtype.name.toLowerCase()}`} />
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .pc { border: 2px solid; border-radius: 12px; padding: 22px 24px; margin: 18px 0; }
+  .pl { font-size: 13px; color: #888; }
+  .pv { font-size: 30px; font-weight: 800; }
+  .ps { font-size: 14px; color: #555; }
+  ul { padding-left: 22px; } li { margin-bottom: 6px; }
+</style>

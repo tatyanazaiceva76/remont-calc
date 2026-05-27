@@ -1,0 +1,152 @@
+---
+import Base from '~/layouts/Base.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { roomConfigs } from '~/data/rooms';
+import { SITE_CONFIG } from '~/config';
+import LeadForm from '~/components/LeadForm.astro';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const d of districts) {
+    for (const t of repairTypes) {
+      for (const r of roomConfigs) {
+        paths.push({
+          params: { district: d.slug, type: t.key, rooms: r.slug },
+          props: { district: d, type: t, rooms: r }
+        });
+      }
+    }
+  }
+  return paths;
+}
+const { district, type, rooms } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const base = type.pricePerSqM * district.priceMultiplier;
+const low = Math.round(base * 0.85);
+const high = Math.round(base * 1.3);
+const minPrice = Math.round(base * rooms.sqMin);
+const maxPrice = Math.round(base * rooms.sqMax * 1.15);
+const typicalPrice = Math.round(base * rooms.sqTypical);
+
+const title = `${type.name} ${rooms.name} квартиры в ${district.shortName} (СПб) — от ${minPrice.toLocaleString('ru-RU')} ₽`;
+const description = `${type.name} ${rooms.longName} в ${district.shortName} районе Санкт-Петербурга (${rooms.rangeName} м²). Стоимость работ от ${minPrice.toLocaleString('ru-RU')} до ${maxPrice.toLocaleString('ru-RU')} ₽. Сроки ${type.durationDays}.`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Санкт-Петербург', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: district.shortName, item: `https://${SITE_CONFIG.domain}/${district.slug}/` },
+    { '@type': 'ListItem', position: 3, name: type.name, item: `https://${SITE_CONFIG.domain}/${district.slug}/${type.key}/` },
+    { '@type': 'ListItem', position: 4, name: rooms.name, item: url }
+  ]
+};
+const offerSchema = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: `${type.name} ${rooms.longName} в ${district.shortName} (СПб)`,
+  serviceType: type.name,
+  areaServed: { '@type': 'AdministrativeArea', name: district.name },
+  offers: {
+    '@type': 'AggregateOffer',
+    lowPrice: minPrice,
+    highPrice: maxPrice,
+    priceCurrency: 'RUB',
+    offerCount: 3
+  },
+  description, url
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, offerSchema] };
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc">
+    <a href="/">СПб</a> ›
+    <a href={`/${district.slug}/`}>{district.shortName}</a> ›
+    <a href={`/${district.slug}/${type.key}/`}>{type.ruShort}</a> ›
+    <span>{rooms.name}</span>
+  </nav>
+  <h1>{type.name} {rooms.longName} в {district.shortName}</h1>
+  <p class="muted">{district.name} · {rooms.name} ({rooms.rangeName} м²) · {type.ruShort.toLowerCase()}</p>
+
+  <div class="price-card">
+    <div class="pc-label">Стоимость работ для {rooms.longName} ({rooms.rangeName} м²)</div>
+    <div class="pc-value">{minPrice.toLocaleString('ru-RU')} — {maxPrice.toLocaleString('ru-RU')} ₽</div>
+    <div class="pc-sub">Типичная (≈{rooms.sqTypical} м²): <strong>{typicalPrice.toLocaleString('ru-RU')} ₽</strong> · Срок: {type.durationDays}</div>
+  </div>
+
+  <p class="lead">{rooms.description}</p>
+
+  <h2>Что важно для {type.ruShort.toLowerCase()}а {rooms.longName} в {district.shortName}</h2>
+  <ul class="specifics">
+    {rooms.specifics.map((s) => <li>{s}</li>)}
+  </ul>
+
+  <h2>Типичные планировки {rooms.longName} в районе</h2>
+  <p>В {district.shortName} {rooms.longName} встречаются преимущественно в таких форматах:</p>
+  <ul class="layouts">
+    {rooms.layouts.map((l) => <li>{l}</li>)}
+  </ul>
+  <p class="muted">{district.housingProfile}</p>
+
+  <h2>Что входит в {type.ruShort.toLowerCase()} в этой квартире</h2>
+  <ul class="includes">
+    {type.includes.map((i) => <li>{i}</li>)}
+  </ul>
+
+  <h2>Особенности района {district.shortName}</h2>
+  <ul class="factors">
+    {district.uniqueFactors.slice(0, 4).map((f) => <li>{f}</li>)}
+  </ul>
+
+  <h2>Расчёт цены для конкретных площадей</h2>
+  <table class="prices">
+    <thead><tr><th>Площадь</th><th>Стоимость работ</th><th>В пересчёте на м²</th></tr></thead>
+    <tbody>
+      <tr><td>{rooms.sqMin} м² (минимум)</td><td><strong>{Math.round(base * rooms.sqMin).toLocaleString('ru-RU')} ₽</strong></td><td>{Math.round(base).toLocaleString('ru-RU')} ₽/м²</td></tr>
+      <tr><td>{rooms.sqTypical} м² (типичная)</td><td><strong>{typicalPrice.toLocaleString('ru-RU')} ₽</strong></td><td>{Math.round(base).toLocaleString('ru-RU')} ₽/м²</td></tr>
+      <tr><td>{rooms.sqMax} м² (максимум)</td><td><strong>{Math.round(base * rooms.sqMax).toLocaleString('ru-RU')} ₽</strong></td><td>{Math.round(base).toLocaleString('ru-RU')} ₽/м²</td></tr>
+    </tbody>
+  </table>
+
+  <LeadForm context={`${type.name} ${rooms.longName} в ${district.shortName}`} priceFrom={minPrice} whatsapp={SITE_CONFIG.whatsapp} />
+  <p class="muted">Только стоимость работ. Материалы — дополнительно (обычно +50-100% к работам).</p>
+
+  <h2>Связанные страницы</h2>
+  <ul class="related">
+    <li><a href={`/${district.slug}/${type.key}/`}>← {type.name} в {district.shortName} — общая страница</a></li>
+    {roomConfigs.filter((r) => r.slug !== rooms.slug).map((r) => (
+      <li><a href={`/${district.slug}/${type.key}/${r.slug}/`}>{type.ruShort} {r.name} квартиры в {district.shortName} — от {Math.round(base * r.sqMin).toLocaleString('ru-RU')} ₽</a></li>
+    ))}
+  </ul>
+
+  <h2>Другой тип ремонта той же площади</h2>
+  <ul class="related">
+    {repairTypes.filter((t) => t.key !== type.key).map((t) => {
+      const otherBase = t.pricePerSqM * district.priceMultiplier;
+      return (
+        <li><a href={`/${district.slug}/${t.key}/${rooms.slug}/`}>{t.name} {rooms.longName} в {district.shortName} — от {Math.round(otherBase * rooms.sqMin).toLocaleString('ru-RU')} ₽</a></li>
+      );
+    })}
+  </ul>
+
+  <p class="back-cta">
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>Калькуляторы материалов</a> ·
+    <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>Гайды по ремонту</a> ·
+    <a href={`https://wa.me/${SITE_CONFIG.whatsapp}`}>WhatsApp для расчёта</a>
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .muted { color: #888; font-size: 14px; } .lead { font-size: 17px; color: #444; }
+  .price-card { background: linear-gradient(135deg, #f0f8ff 0%, #e8f4ff 100%); border: 2px solid #4a90d9; border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  .pc-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pc-value { font-size: 26px; font-weight: 700; color: #1a5490; margin: 4px 0; }
+  .pc-sub { font-size: 14px; color: #555; }
+  .specifics, .layouts, .includes, .factors { padding-left: 22px; }
+  .specifics li, .layouts li, .includes li, .factors li { margin-bottom: 6px; }
+  .prices { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .prices th, .prices td { padding: 10px 12px; border: 1px solid #e6e8eb; text-align: left; }
+  .prices th { background: #e8f4ff; font-weight: 700; }
+  .related { list-style: none; padding: 0; }
+  .related li { padding: 8px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+</style>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rnd.kalkremont.ru/sitemap.xml
+Host: rnd.kalkremont.ru

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://balkony.kalkremont.ru/sitemap.xml
+Host: balkony.kalkremont.ru

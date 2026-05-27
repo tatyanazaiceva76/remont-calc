@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ekb.kalkremont.ru/sitemap.xml
+Host: ekb.kalkremont.ru

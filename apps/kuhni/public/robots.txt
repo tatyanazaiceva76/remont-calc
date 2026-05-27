@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kuhni.kalkremont.ru/sitemap.xml
+Host: kuhni.kalkremont.ru

@@ -1,0 +1,77 @@
+---
+import Base from '~/layouts/Base.astro';
+import { guides } from '~/data/guides';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Советы по ремонту — практические гайды от мастеров';
+const description = 'Глубокие практические руководства по ремонту квартиры: электрика, сантехника, отделка, окна, полы. Пошагово.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'WebSite',
+  name: SITE_CONFIG.siteName, url: `https://${SITE_CONFIG.domain}/`,
+  inLanguage: 'ru-RU', description
+};
+
+const cats: Record<string, { name: string; icon: string }> = {
+  electric: { name: 'Электрика', icon: '⚡' },
+  plumbing: { name: 'Сантехника', icon: '🚿' },
+  wall: { name: 'Стены и отделка', icon: '🧱' },
+  floor: { name: 'Полы', icon: '🪵' },
+  window: { name: 'Окна', icon: '🪟' },
+  door: { name: 'Двери', icon: '🚪' },
+  special: { name: 'Особые задачи', icon: '🔧' }
+};
+
+const byCategory = guides.reduce((acc, g) => {
+  (acc[g.category] = acc[g.category] || []).push(g);
+  return acc;
+}, {} as Record<string, typeof guides>);
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>📚 Советы по ремонту</h1>
+  <p class="lead">
+    Подробные практические руководства от опытных мастеров. Конкретные инструкции:
+    как сделать, какие инструменты, типичные ошибки, нормы и СНиП.
+  </p>
+
+  {Object.entries(byCategory).map(([cat, list]) => (
+    <section>
+      <h2>{cats[cat]?.icon} {cats[cat]?.name}</h2>
+      <ul class="guides-list">
+        {list.map((g) => (
+          <li>
+            <a href={`/${g.slug}/`}>
+              <h3>{g.h1}</h3>
+              <p>{g.intro.slice(0, 150)}...</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <h2>Калькуляторы для ремонта</h2>
+  <p>
+    Для точных расчётов материалов используйте калькуляторы основного сайта
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>{SITE_CONFIG.parentDomain}</a>:
+    обои, ламинат, краска, плитка, штукатурка, утеплитель.
+  </p>
+  <p>
+    Цены на ремонт квартиры по 30 городам России — на
+    <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>price.{SITE_CONFIG.parentDomain}</a>.
+  </p>
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .guides-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 32px; }
+  .guides-list a {
+    display: block; padding: 16px 18px;
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px;
+    color: #1a1a1a; text-decoration: none;
+  }
+  .guides-list a:hover { background: #f3e8ff; border-color: #6c2bd9; }
+  .guides-list h3 { font-size: 16px; margin: 0 0 6px; color: #6c2bd9; }
+  .guides-list p { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
+  @media (max-width: 540px) { .guides-list { grid-template-columns: 1fr; } }
+</style>

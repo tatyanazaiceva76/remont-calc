@@ -1,0 +1,220 @@
+---
+import Base from '~/layouts/Base.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { SITE_CONFIG } from '~/config';
+import LeadForm from '~/components/LeadForm.astro';
+
+const url = new URL('/preyskurant/', Astro.site).href;
+const title = `Прайс-лист на ремонт квартир в ${SITE_CONFIG.cityName} 2026 — полная таблица цен`;
+const description = `Прайс-лист на ремонтные работы в ${SITE_CONFIG.cityName}: косметический, капитальный, евро, дизайнерский. Цены по районам, материалам, работам. PDF-смета бесплатно.`;
+
+// Базовые расценки на типичные работы (в Москве)
+const baseRates = [
+  { category: '🏗 Демонтажные работы', items: [
+    { name: 'Снос перегородки (кирпич)', unit: 'м²', price: 600 },
+    { name: 'Снос гипсокартонной перегородки', unit: 'м²', price: 300 },
+    { name: 'Демонтаж напольной плитки', unit: 'м²', price: 350 },
+    { name: 'Демонтаж настенной плитки', unit: 'м²', price: 400 },
+    { name: 'Демонтаж обоев', unit: 'м²', price: 80 },
+    { name: 'Демонтаж стяжки', unit: 'м²', price: 600 },
+    { name: 'Демонтаж паркета/ламината', unit: 'м²', price: 150 },
+    { name: 'Демонтаж двери с коробкой', unit: 'шт', price: 800 },
+    { name: 'Демонтаж унитаза/раковины', unit: 'шт', price: 1200 },
+    { name: 'Демонтаж ванны', unit: 'шт', price: 2500 },
+    { name: 'Вывоз мусора Газелью', unit: 'ходка', price: 6000 }
+  ]},
+  { category: '🔨 Черновые работы', items: [
+    { name: 'Возведение перегородки (кирпич)', unit: 'м²', price: 1800 },
+    { name: 'Возведение перегородки (ГКЛ)', unit: 'м²', price: 900 },
+    { name: 'Штукатурка стен по маякам', unit: 'м²', price: 700 },
+    { name: 'Шпаклёвка под обои', unit: 'м²', price: 250 },
+    { name: 'Шпаклёвка под покраску', unit: 'м²', price: 450 },
+    { name: 'Грунтовка стен', unit: 'м²', price: 80 },
+    { name: 'Стяжка цементно-песчаная (50мм)', unit: 'м²', price: 800 },
+    { name: 'Наливной пол', unit: 'м²', price: 550 },
+    { name: 'Гидроизоляция санузла', unit: 'м²', price: 400 }
+  ]},
+  { category: '⚡ Электромонтажные работы', items: [
+    { name: 'Штробление кирпич', unit: 'м.п.', price: 300 },
+    { name: 'Штробление бетон', unit: 'м.п.', price: 550 },
+    { name: 'Прокладка кабеля до 2.5 мм²', unit: 'м.п.', price: 80 },
+    { name: 'Установка розетки/выключателя', unit: 'шт', price: 350 },
+    { name: 'Установка подрозетника', unit: 'шт', price: 250 },
+    { name: 'Сборка щитка 12 модулей', unit: 'шт', price: 6000 },
+    { name: 'Подключение люстры', unit: 'шт', price: 1000 },
+    { name: 'Подключение точечного светильника', unit: 'шт', price: 400 }
+  ]},
+  { category: '🔧 Сантехнические работы', items: [
+    { name: 'Замена стояков (горячая/холодная)', unit: 'стояк', price: 12000 },
+    { name: 'Замена канализационного стояка', unit: 'стояк', price: 8000 },
+    { name: 'Разводка труб от коллектора', unit: 'точка', price: 3500 },
+    { name: 'Установка унитаза', unit: 'шт', price: 2500 },
+    { name: 'Установка ванны', unit: 'шт', price: 6000 },
+    { name: 'Установка душевой кабины', unit: 'шт', price: 8000 },
+    { name: 'Установка раковины со смесителем', unit: 'шт', price: 2500 },
+    { name: 'Установка полотенцесушителя', unit: 'шт', price: 4000 },
+    { name: 'Установка фильтра/счётчика', unit: 'шт', price: 1500 },
+    { name: 'Опрессовка системы', unit: 'кв', price: 3000 }
+  ]},
+  { category: '🎨 Отделочные работы', items: [
+    { name: 'Поклейка обоев (флизелин)', unit: 'м²', price: 350 },
+    { name: 'Поклейка обоев (винил)', unit: 'м²', price: 400 },
+    { name: 'Покраска стен (2 слоя)', unit: 'м²', price: 280 },
+    { name: 'Покраска потолка', unit: 'м²', price: 250 },
+    { name: 'Укладка плитки на пол', unit: 'м²', price: 1300 },
+    { name: 'Укладка плитки на стены', unit: 'м²', price: 1500 },
+    { name: 'Затирка швов плитки', unit: 'м²', price: 250 },
+    { name: 'Укладка ламината', unit: 'м²', price: 350 },
+    { name: 'Укладка линолеума', unit: 'м²', price: 200 },
+    { name: 'Установка плинтуса', unit: 'м.п.', price: 150 },
+    { name: 'Натяжной потолок ПВХ', unit: 'м²', price: 800 },
+    { name: 'Натяжной потолок тканевый', unit: 'м²', price: 1500 }
+  ]},
+  { category: '🚪 Двери, окна', items: [
+    { name: 'Установка межкомнатной двери', unit: 'шт', price: 5000 },
+    { name: 'Установка стальной входной двери', unit: 'шт', price: 7000 },
+    { name: 'Установка наличников', unit: 'м.п.', price: 250 },
+    { name: 'Установка добора', unit: 'м.п.', price: 300 },
+    { name: 'Установка пластикового окна', unit: 'м²', price: 2500 },
+    { name: 'Установка подоконника', unit: 'м.п.', price: 1200 },
+    { name: 'Установка откосов', unit: 'м.п.', price: 1500 }
+  ]}
+];
+
+const moskvaMultiplier = 0.82;
+const cityRates = baseRates.map((cat) => ({
+  ...cat,
+  items: cat.items.map((it) => ({ ...it, cityPrice: Math.round(it.price * moskvaMultiplier) }))
+}));
+
+const schema = {
+  '@context': 'https://schema.org', '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: SITE_CONFIG.cityName, item: `https://${SITE_CONFIG.domain}/` },
+        { '@type': 'ListItem', position: 2, name: 'Прайс-лист', item: url }
+      ]
+    },
+    {
+      '@type': 'PriceSpecification',
+      name: `Прайс-лист на ремонт в ${SITE_CONFIG.cityName}`,
+      priceCurrency: 'RUB',
+      validFrom: new Date().toISOString().slice(0, 10)
+    }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc"><a href="/">{SITE_CONFIG.cityName}</a> › <span>Прайс-лист</span></nav>
+
+  <h1>📋 Прайс-лист на ремонт квартир в {SITE_CONFIG.cityName} — 2026</h1>
+  <p class="lead">
+    Полный прайс-лист на все типы ремонтных работ в {SITE_CONFIG.cityName}. Цены указаны за работы (без материалов).
+    Окончательная стоимость зависит от района, состояния квартиры и выбранных материалов.
+    <strong>Расчёт сметы — за 5 минут.</strong>
+  </p>
+
+  <LeadForm
+    context={`Прайс-лист на ремонт в ${SITE_CONFIG.cityName}`}
+    city="tyumen"
+    priceFrom={50000}
+  />
+
+  <h2>Итоговая стоимость ремонта (под ключ)</h2>
+  <table class="summary">
+    <thead><tr><th>Тип ремонта</th><th>Цена за м²</th><th>1-комн (40 м²)</th><th>2-комн (60 м²)</th><th>3-комн (90 м²)</th><th>Срок</th></tr></thead>
+    <tbody>
+      {repairTypes.map((t) => {
+        const p = t.pricePerSqM;
+        return (
+          <tr>
+            <td><strong>{t.name}</strong></td>
+            <td><strong>{p.toLocaleString('ru-RU')}</strong> ₽</td>
+            <td>{(p * 40).toLocaleString('ru-RU')} ₽</td>
+            <td>{(p * 60).toLocaleString('ru-RU')} ₽</td>
+            <td>{(p * 90).toLocaleString('ru-RU')} ₽</td>
+            <td>{t.durationDays}</td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+  <p class="muted">* Указаны цены за работы в {SITE_CONFIG.cityName}. Материалы — отдельно (обычно +50-100% к работам).</p>
+
+  <h2>📊 Прайс по конкретным работам</h2>
+
+  {cityRates.map((cat) => (
+    <section class="cat">
+      <h3>{cat.category}</h3>
+      <table class="rates">
+        <thead><tr><th>Работа</th><th>Ед.</th><th>Цена</th></tr></thead>
+        <tbody>
+          {cat.items.map((it) => (
+            <tr>
+              <td>{it.name}</td>
+              <td>{it.unit}</td>
+              <td><strong>{it.cityPrice.toLocaleString('ru-RU')} ₽</strong></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
+  ))}
+
+  <h2>📍 Цены по округам {SITE_CONFIG.cityName}</h2>
+  <p class="muted">Стоимость зависит от района (множитель к базовой ставке).</p>
+  <div class="districts-grid">
+    {districts.map((d) => (
+      <a href={`/${d.slug}/`} class="district-card">
+        <strong>{d.shortName}</strong>
+        <span>×{d.priceMultiplier.toFixed(2)} · от {Math.round(repairTypes[0].pricePerSqM * d.priceMultiplier).toLocaleString('ru-RU')} ₽/м²</span>
+      </a>
+    ))}
+  </div>
+
+  <h2>💡 Что влияет на финальную цену</h2>
+  <ul class="factors">
+    <li><strong>Площадь квартиры:</strong> большие квартиры — экономия 5-10% на м² за счёт объёма</li>
+    <li><strong>Состояние коммуникаций:</strong> старая электрика/трубы = обязательная замена (+30%)</li>
+    <li><strong>Сложность планировки:</strong> перенос мокрых точек, сложные потолки</li>
+    <li><strong>Класс материалов:</strong> от бюджетного до премиум-сегмента</li>
+    <li><strong>Срок:</strong> срочный ремонт (за выходные) — +30-40% к цене</li>
+    <li><strong>Сезон:</strong> зимой скидки 10-15%, лето — пиковый сезон</li>
+  </ul>
+
+  <h2>📞 Как получить точную смету</h2>
+  <ol class="how">
+    <li>Заполните форму выше (или WhatsApp)</li>
+    <li>Мастер свяжется в течение 30 минут</li>
+    <li>Бесплатный замер в день обращения или на следующий</li>
+    <li>Готовая смета в течение 24 часов после замера</li>
+    <li>Договор с фиксированной ценой</li>
+  </ol>
+
+  <p class="back-cta"><a href="/">← Все типы ремонта в {SITE_CONFIG.cityName}</a></p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; line-height: 1.6; }
+  .muted { color: #888; font-size: 14px; }
+  .summary, .rates { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .summary th, .summary td, .rates th, .rates td { padding: 10px 12px; border: 1px solid #e6e8eb; }
+  .summary th, .rates th { background: #f7f8fa; text-align: left; font-weight: 700; }
+  .summary td:first-child, .rates td:first-child { text-align: left; }
+  .summary td, .rates td { text-align: right; }
+  .summary td:first-child, .rates td:first-child { text-align: left; }
+  .cat { margin: 24px 0; background: #fff; border: 1px solid #e6e8eb; border-radius: 8px; padding: 16px 18px; }
+  .cat h3 { margin: 0 0 10px; color: #c0392b; font-size: 17px; }
+  .districts-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 14px 0 24px; }
+  .district-card { display: block; padding: 10px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; text-decoration: none; color: #1a1a1a; }
+  .district-card:hover { background: #fff7e6; border-color: #f5a623; text-decoration: none; }
+  .district-card strong { display: block; color: #0a5cce; font-size: 13px; margin-bottom: 2px; }
+  .district-card span { font-size: 11px; color: #888; }
+  .factors { padding-left: 22px; }
+  .factors li { margin-bottom: 8px; line-height: 1.6; }
+  .how { padding-left: 22px; }
+  .how li { margin-bottom: 6px; line-height: 1.6; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+  @media (max-width: 700px) { .districts-grid { grid-template-columns: 1fr 1fr; } }
+</style>

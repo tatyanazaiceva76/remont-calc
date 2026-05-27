@@ -4,6 +4,7 @@ import Metrika from '~/components/Metrika.astro';
 import StickyCta from '~/components/StickyCta.astro';
 import ExitPopup from '~/components/ExitPopup.astro';
 import AiChat from '~/components/AiChat.astro';
+import PartnerNetwork from '~/components/PartnerNetwork.astro';
 import TopBanner from '~/components/TopBanner.astro';
 
 interface Props {
@@ -125,6 +126,7 @@ const webPageSchema = {
 
     <main class="container">
       <slot />
+      <PartnerNetwork />
     </main>
 
     <StickyCta />

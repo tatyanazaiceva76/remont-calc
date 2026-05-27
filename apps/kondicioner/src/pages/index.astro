@@ -1,0 +1,83 @@
+---
+import Base from '~/layouts/Base.astro';
+import Reviews from '~/components/Reviews.astro';
+import CityNetwork from '~/components/CityNetwork.astro';
+import { niche, nicheCities } from '~/data/niche';
+import { SITE_CONFIG } from '~/config';
+const n = niche!;
+const url = new URL('/', Astro.site).href;
+const title = `${n.name} — цены 2026 от ${n.pricePerSqM.min.toLocaleString('ru-RU')} ₽/м² ⭐ 4.8/5`;
+const description = `${n.name}: цены ${n.pricePerSqM.min.toLocaleString('ru-RU')}-${n.pricePerSqM.max.toLocaleString('ru-RU')} ₽/м². Срок ${n.durationDays}. Бесплатный замер, гарантия 2 года.`;
+const schema = {
+  '@context': 'https://schema.org', '@graph': [
+    { '@type': 'Service', name: n.name, description: n.intro,
+      offers: { '@type': 'AggregateOffer', lowPrice: n.pricePerSqM.min, highPrice: n.pricePerSqM.max, priceCurrency: 'RUB' },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: 195, bestRating: 5 } },
+    { '@type': 'FAQPage', mainEntity: n.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>{n.emoji} {n.name}</h1>
+  <p class="lead">{n.intro}</p>
+  <div class="pc" style={`background: ${n.bgLight}; border-color: ${n.baseColor};`}>
+    <div class="pl">Цена</div>
+    <div class="pv" style={`color: ${n.baseColor};`}>{n.pricePerSqM.min.toLocaleString('ru-RU')} — {n.pricePerSqM.max.toLocaleString('ru-RU')} ₽/м²</div>
+    <div class="ps">Срок: <strong>{n.durationDays}</strong> · Гарантия <strong>2 года</strong></div>
+  </div>
+  <h2>Что входит</h2>
+  <ul>{n.whatIncluded.map((i) => <li>✓ {i}</li>)}</ul>
+  <h2>📋 Варианты</h2>
+  <div class="grid">
+    {n.subTypes.map((s) => (
+      <a href={`/${s.slug}/`} class="card" style={`border-color: ${n.baseColor}30;`}>
+        <h3 style={`color: ${n.baseColor};`}>{s.name}</h3>
+        <p class="p">от {Math.round(n.pricePerSqM.min * s.priceMult).toLocaleString('ru-RU')} ₽/м²</p>
+        <p class="d">{s.description}</p>
+      </a>
+    ))}
+  </div>
+  <h2>🌍 По городам России</h2>
+  <div class="grid g4">
+    {nicheCities.map((c) => (
+      <a href={`/v-${c.slug}/`} class="city">
+        <strong>{c.nameNom}</strong>
+        <span>от {Math.round(n.pricePerSqM.min * c.priceMult).toLocaleString('ru-RU')} ₽/м²</span>
+      </a>
+    ))}
+  </div>
+  <h2>Стоимость материалов</h2>
+  <ul>{n.materials.map((m) => <li>{m}</li>)}</ul>
+  <h2>От чего зависит цена</h2>
+  <ol>{n.factors.map((f) => <li>{f}</li>)}</ol>
+  <h2>❓ Часто спрашивают</h2>
+  {n.faqs.map((f) => (<details class="faq"><summary>{f.q}</summary><p>{f.a}</p></details>))}
+
+  <CityNetwork nicheName={n.name} />
+  <Reviews serviceName={n.name} />
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .pc { border: 2px solid; border-radius: 12px; padding: 22px 24px; margin: 18px 0; }
+  .pl { font-size: 13px; color: #888; text-transform: uppercase; }
+  .pv { font-size: 30px; font-weight: 800; margin: 6px 0; }
+  .ps { font-size: 14px; color: #555; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0; }
+  .grid.g4 { grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+  .card { display: block; padding: 14px 16px; background: #fff; border: 1px solid; border-radius: 8px; text-decoration: none; }
+  .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .card h3 { font-size: 17px; margin: 0 0 6px; }
+  .card .p { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 4px 0; }
+  .card .d { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
+  .city { padding: 10px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; text-decoration: none; color: #1a1a1a; }
+  .city:hover { background: #fff7e6; }
+  .city strong { display: block; color: #0a5cce; font-size: 13px; }
+  .city span { font-size: 11px; color: #888; }
+  ul, ol { padding-left: 22px; }
+  li { margin-bottom: 6px; }
+  .faq { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; margin-bottom: 8px; padding: 0; }
+  .faq summary { cursor: pointer; padding: 14px 18px; font-weight: 600; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq p { padding: 0 18px 14px; margin: 0; color: #444; }
+  @media (max-width: 700px) { .grid, .grid.g4 { grid-template-columns: 1fr 1fr; } }
+</style>

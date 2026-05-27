@@ -1,0 +1,114 @@
+---
+import Base from '~/layouts/Base.astro';
+import { products } from '~/data/brands';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return products.map((p) => ({ params: { slug: p.slug }, props: { product: p } }));
+}
+const { product } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: product.brand, item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 3, name: product.h1, item: url }
+  ]
+};
+const productSchema = {
+  '@context': 'https://schema.org', '@type': 'Product',
+  name: `${product.brand} ${product.productName}`,
+  description: product.description,
+  brand: { '@type': 'Brand', name: product.brand },
+  category: product.category,
+  url
+};
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: product.faqs.map((f) => ({
+    '@type': 'Question', name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a }
+  }))
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, productSchema, faqSchema] };
+
+const related = products.filter((p) => p.slug !== product.slug && p.category === product.category).slice(0, 4);
+---
+<Base title={product.title} description={product.description} canonical={url} schema={schema}>
+  <nav class="bc"><a href="/">Главная</a> › <span>{product.brand}</span> › <span>{product.productName}</span></nav>
+
+  <article>
+    <h1>{product.h1}</h1>
+    <p class="lead">{product.intro}</p>
+
+    <h2>Характеристики</h2>
+    <table class="specs">
+      <tbody>
+        {product.specs.map((s) => (
+          <tr><th>{s.label}</th><td>{s.value}</td></tr>
+        ))}
+      </tbody>
+    </table>
+
+    <h2>Применение</h2>
+    <p>{product.application}</p>
+
+    <h2>Плюсы</h2>
+    <ul class="pros">{product.pros.map((p) => <li>{p}</li>)}</ul>
+
+    <h2>Минусы</h2>
+    <ul class="cons">{product.cons.map((c) => <li>{c}</li>)}</ul>
+
+    <h2>Частые вопросы</h2>
+    {product.faqs.map((f) => (
+      <details class="faq-item">
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </article>
+
+  {related.length > 0 && (
+    <section class="related">
+      <h2>Похожие продукты</h2>
+      <ul class="rl">
+        {related.map((p) => <li><a href={`/${p.slug}/`}>{p.brand} {p.productName}</a></li>)}
+      </ul>
+    </section>
+  )}
+
+  <p class="back-cta">
+    <a href="/">← Все бренды</a> ·
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>Калькуляторы</a> ·
+    <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>Цены</a> ·
+    <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>Советы</a>
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; }
+  .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  .specs { width: 100%; border-collapse: collapse; margin: 12px 0 24px; font-size: 14px; }
+  .specs th, .specs td { padding: 8px 12px; border: 1px solid #e6e8eb; text-align: left; }
+  .specs th { background: #f7f8fa; width: 40%; font-weight: 600; color: #333; }
+  .pros li::marker { content: '✓ '; color: #2a9d57; font-weight: 700; }
+  .cons li::marker { content: '✗ '; color: #c44; font-weight: 700; }
+  ul.pros, ul.cons { padding-left: 20px; }
+  ul.pros li, ul.cons li { margin-bottom: 6px; }
+  .faq-item {
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px;
+    margin-bottom: 8px; padding: 0;
+  }
+  .faq-item summary {
+    cursor: pointer; padding: 12px 16px; font-weight: 600; font-size: 15px;
+    list-style: none; padding-right: 36px;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item p { padding: 0 16px 14px; margin: 0; color: #444; font-size: 14px; }
+  .related { margin: 40px 0; padding-top: 24px; border-top: 1px solid #e6e8eb; }
+  .rl { list-style: none; padding: 0; }
+  .rl li { margin-bottom: 8px; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+</style>

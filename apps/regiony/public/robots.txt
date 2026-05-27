@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://regiony.kalkremont.ru/sitemap.xml
+Host: regiony.kalkremont.ru

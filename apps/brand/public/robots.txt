@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brand.kalkremont.ru/sitemap.xml
+Host: brand.kalkremont.ru

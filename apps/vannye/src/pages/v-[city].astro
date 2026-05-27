@@ -1,0 +1,51 @@
+---
+import Base from '~/layouts/Base.astro';
+import Reviews from '~/components/Reviews.astro';
+import CityNetwork from '~/components/CityNetwork.astro';
+import { niche, nicheCities } from '~/data/niche';
+export async function getStaticPaths() {
+  return nicheCities.map((c) => ({ params: { city: c.slug }, props: { city: c } }));
+}
+const n = niche!;
+const { city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const priceLow = Math.round(n.pricePerSqM.min * city.priceMult);
+const priceHigh = Math.round(n.pricePerSqM.max * city.priceMult);
+const title = `${n.name} в ${city.name} 2026 — от ${priceLow.toLocaleString('ru-RU')} ₽/м² ⭐ 4.8/5`;
+const description = `${n.name} в ${city.name} (${city.population}). Цены ${priceLow.toLocaleString('ru-RU')}-${priceHigh.toLocaleString('ru-RU')} ₽/м². Срок ${n.durationDays}.`;
+const schema = { '@context': 'https://schema.org', '@type': 'LocalBusiness',
+  name: `${n.name} в ${city.nameGen}`, areaServed: { '@type': 'City', name: city.nameNom },
+  offers: { '@type': 'AggregateOffer', lowPrice: priceLow, highPrice: priceHigh, priceCurrency: 'RUB' },
+  aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: 75, bestRating: 5 } };
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc"><a href="/">{n.name}</a> › <span>в {city.name}</span></nav>
+  <h1>{n.emoji} {n.name} в {city.name}</h1>
+  <p class="muted">{city.nameNom} · {city.population}</p>
+  <div class="pc" style={`background: ${n.bgLight}; border-color: ${n.baseColor};`}>
+    <div class="pl">Цена в {city.name}</div>
+    <div class="pv" style={`color: ${n.baseColor};`}>{priceLow.toLocaleString('ru-RU')} — {priceHigh.toLocaleString('ru-RU')} ₽/м²</div>
+    <div class="ps">Срок: <strong>{n.durationDays}</strong></div>
+  </div>
+  <p class="lead">{n.intro}</p>
+  <h2>Что входит</h2>
+  <ul>{n.whatIncluded.slice(0, 8).map((i) => <li>✓ {i}</li>)}</ul>
+  <h2>В других городах</h2>
+  <ul>{nicheCities.filter((c) => c.slug !== city.slug).map((c) => (
+    <li><a href={`/v-${c.slug}/`}>{c.nameNom} — от {Math.round(n.pricePerSqM.min * c.priceMult).toLocaleString('ru-RU')} ₽/м²</a></li>
+  ))}</ul>
+  <p class="back-cta"><a href={city.href}>🏠 Все типы ремонта в {city.name}</a></p>
+
+  <CityNetwork nicheName={n.name} />
+  <Reviews serviceName={n.name} cityName={city.name} />
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .muted { color: #888; } .lead { font-size: 17px; color: #444; }
+  .pc { border: 2px solid; border-radius: 12px; padding: 22px 24px; margin: 18px 0; }
+  .pl { font-size: 13px; color: #888; }
+  .pv { font-size: 30px; font-weight: 800; }
+  .ps { font-size: 14px; color: #555; }
+  ul { padding-left: 22px; } li { margin-bottom: 6px; }
+  .back-cta { margin-top: 32px; text-align: center; }
+</style>

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ufa.kalkremont.ru/sitemap.xml
+Host: ufa.kalkremont.ru

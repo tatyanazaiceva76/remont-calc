@@ -1,0 +1,48 @@
+---
+// Перелинковка городов сети — встраивается в footer каждого city-subdomain.
+// Помогает SEO (внутренние ссылки между хостами) и UX (пользователь видит куда уйти).
+interface Props {
+  currentSlug: string;  // 'moskva' / 'spb' / ...
+}
+const { currentSlug } = Astro.props;
+
+const cities = [
+  { slug: 'moskva', name: 'Москва', emoji: '🏛' },
+  { slug: 'spb', name: 'Санкт-Петербург', emoji: '⚓' },
+  { slug: 'ekb', name: 'Екатеринбург', emoji: '⛏' },
+  { slug: 'kzn', name: 'Казань', emoji: '🕌' },
+  { slug: 'nsk', name: 'Новосибирск', emoji: '🌲' },
+  { slug: 'nn', name: 'Нижний Новгород', emoji: '🌉' },
+  { slug: 'krd', name: 'Краснодар', emoji: '🌻' },
+  { slug: 'chel', name: 'Челябинск', emoji: '⚙' },
+  { slug: 'ufa', name: 'Уфа', emoji: '🌅' },
+  { slug: 'sam', name: 'Самара', emoji: '🚀' },
+  { slug: 'rnd', name: 'Ростов-на-Дону', emoji: '🌾' },
+  { slug: 'vrn', name: 'Воронеж', emoji: '🍂' },
+  { slug: 'perm', name: 'Пермь', emoji: '⛰' },
+  { slug: 'vlg', name: 'Волгоград', emoji: '🌟' },
+  { slug: 'tyumen', name: 'Тюмень', emoji: '🏛' },
+  { slug: 'brn', name: 'Барнаул', emoji: '🌾' }
+];
+const others = cities.filter((c) => c.slug !== currentSlug);
+---
+<section class="city-net">
+  <h3>🌐 Ремонт в других городах России</h3>
+  <ul>
+    {others.map((c) => (
+      <li><a href={`https://${c.slug}.kalkremont.ru/`}>{c.emoji} {c.name}</a></li>
+    ))}
+    <li><a href="https://www.kalkremont.ru/regiony/">+ 17 городов в каталоге</a></li>
+  </ul>
+</section>
+<style>
+  .city-net { padding: 20px 0; border-top: 1px solid #e6e8eb; margin-top: 24px; }
+  .city-net h3 { font-size: 14px; color: #555; margin: 0 0 10px; font-weight: 600; }
+  .city-net ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .city-net li a {
+    display: inline-block; padding: 5px 11px;
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 14px;
+    font-size: 12px; color: #555; text-decoration: none;
+  }
+  .city-net li a:hover { background: #fff7e6; border-color: #f5a623; color: #c0392b; text-decoration: none; }
+</style>

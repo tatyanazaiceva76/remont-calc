@@ -1,0 +1,130 @@
+---
+// Сравнение текущего района с топ-3 другими районами того же города.
+// Даёт internal-linking буст и помогает пользователю сразу понять "наш район дорогой или нет".
+
+interface District {
+  slug: string;
+  name: string;
+  shortName: string;
+  priceMultiplier: number;
+  intro: string;
+}
+
+interface RepairType {
+  key: string;
+  name: string;
+  pricePerSqM: number;
+}
+
+interface Props {
+  currentDistrict: District;
+  allDistricts: District[];
+  repairTypes: RepairType[];
+  cityName: string;       // "Москва" / "СПб" / "Екатеринбург"
+}
+
+const { currentDistrict, allDistricts, repairTypes, cityName } = Astro.props;
+const others = allDistricts.filter((d) => d.slug !== currentDistrict.slug);
+
+// Берём топ-3: самый дешёвый (для контраста), самый дорогой, и один средний
+const sorted = [...others].sort((a, b) => a.priceMultiplier - b.priceMultiplier);
+const cheapest = sorted[0];
+const expensive = sorted[sorted.length - 1];
+const middle = sorted[Math.floor(sorted.length / 2)];
+const compareList = [cheapest, middle, expensive].filter((d): d is District => !!d);
+
+// Для каждого района — расчёт капитала
+const capital = repairTypes.find((t) => t.key === 'capital');
+function rateFor(d: District) {
+  if (!capital) return 0;
+  return Math.round(capital.pricePerSqM * d.priceMultiplier);
+}
+const currentRate = rateFor(currentDistrict);
+---
+<section class="dist-compare">
+  <h2>📊 {currentDistrict.shortName} vs другие районы {cityName}</h2>
+  <p class="muted">Сравнение средней цены капитального ремонта в районах {cityName}. Помогает оценить — выгоден ли ваш район.</p>
+
+  <div class="compare-row current">
+    <div class="cr-label">
+      <strong>{currentDistrict.shortName}</strong>
+      <small>текущий район</small>
+    </div>
+    <div class="cr-bar"><div class="cr-fill" style={`width: ${Math.min(100, currentDistrict.priceMultiplier * 70)}%`}></div></div>
+    <div class="cr-price"><strong>{currentRate.toLocaleString('ru-RU')}</strong> ₽/м²</div>
+  </div>
+
+  {compareList.map((d) => (
+    <a href={`/${d.slug}/capital/`} class="compare-row">
+      <div class="cr-label">
+        <strong>{d.shortName}</strong>
+        <small>
+          {d.priceMultiplier < currentDistrict.priceMultiplier
+            ? `на ${Math.round((1 - d.priceMultiplier / currentDistrict.priceMultiplier) * 100)}% дешевле`
+            : d.priceMultiplier > currentDistrict.priceMultiplier
+            ? `на ${Math.round((d.priceMultiplier / currentDistrict.priceMultiplier - 1) * 100)}% дороже`
+            : 'столько же'}
+        </small>
+      </div>
+      <div class="cr-bar"><div class="cr-fill" style={`width: ${Math.min(100, d.priceMultiplier * 70)}%`}></div></div>
+      <div class="cr-price"><strong>{rateFor(d).toLocaleString('ru-RU')}</strong> ₽/м²</div>
+    </a>
+  ))}
+
+  <p class="compare-help muted">
+    💡 Цены — для типового капитального ремонта (без материалов).
+    Для точного расчёта по вашему району — заполните форму выше.
+  </p>
+</section>
+<style>
+  .dist-compare {
+    background: #fff;
+    border: 1px solid #e6e8eb;
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin: 24px 0;
+  }
+  .dist-compare h2 { font-size: 18px; margin: 0 0 4px; color: #1a1a1a; }
+  .muted { color: #888; font-size: 13px; margin: 0 0 14px; }
+  .compare-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 100px;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 4px;
+  }
+  .compare-row:hover { background: #f7f8fa; text-decoration: none; }
+  .compare-row.current { background: #fff7e6; border: 1px solid #f5a623; }
+  .compare-row.current:hover { background: #fff7e6; }
+  .cr-label strong { display: block; font-size: 14px; color: #1a1a1a; }
+  .cr-label small { font-size: 11px; color: #666; }
+  .compare-row.current .cr-label small { color: #c0392b; font-weight: 600; }
+  .cr-bar {
+    height: 12px;
+    background: #f0f1f3;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .cr-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4caf64, #f5a623 50%, #c0392b 100%);
+    border-radius: 6px;
+    transition: width 0.3s;
+  }
+  .cr-price {
+    text-align: right;
+    font-size: 14px;
+    color: #1a1a1a;
+  }
+  .compare-help { margin: 12px 0 0; font-size: 12px; }
+  @media (max-width: 600px) {
+    .compare-row { grid-template-columns: 100px 1fr 80px; gap: 6px; }
+    .cr-label strong { font-size: 12px; }
+    .cr-label small { font-size: 10px; }
+    .cr-price { font-size: 12px; }
+  }
+</style>

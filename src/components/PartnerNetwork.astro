@@ -1,0 +1,55 @@
+---
+// Partner Network footer — ссылки на 10 новых доменов сети.
+// Передаёт PageRank с трастового kalkremont.ru на новые домены → ускоряет sandbox release.
+// Не выглядит как linkfarm — оформлено как "Наши проекты для специализированных услуг".
+
+const NETWORK = [
+  { domain: 'ipoteka-remont.ru', name: 'Ипотека на ремонт', emoji: '🏦', desc: 'Кредит и ипотека на ремонт от 8%' },
+  { domain: 'kuhni-zakaz-online.ru', name: 'Кухни на заказ', emoji: '🍳', desc: 'Кухни от производителя, замер бесплатно' },
+  { domain: 'dom-stroy-online.ru', name: 'Загородные дома', emoji: '🏡', desc: 'Строительство домов под ключ' },
+  { domain: 'natyazhnoi-master24.ru', name: 'Натяжные потолки', emoji: '✨', desc: 'Монтаж за 1 день, гарантия 15 лет' },
+  { domain: 'okna-pvh-online.ru', name: 'Окна ПВХ', emoji: '🪟', desc: 'Профили KBE, Rehau, VEKA' },
+  { domain: 'kupeshkafy24.ru', name: 'Шкафы-купе', emoji: '🚪', desc: 'На заказ, замер за 1 день' },
+  { domain: 'dveri-stalnye24.ru', name: 'Стальные двери', emoji: '🔒', desc: 'Входные двери, установка 4 часа' },
+  { domain: 'perevodkvartiry.ru', name: 'Перепланировка', emoji: '📐', desc: 'Согласование под ключ' },
+  { domain: 'dizayn-interyera-online.ru', name: 'Дизайн интерьера', emoji: '🎨', desc: 'Проект + авторский надзор' },
+  { domain: 'kamin-zakaz24.ru', name: 'Камины и печи', emoji: '🔥', desc: 'Дровяные, газовые, электро' }
+];
+---
+<section class="partner-network">
+  <h2>🤝 Специализированные проекты нашей сети</h2>
+  <p class="muted">Дополнительные услуги от наших партнёров — экспертов в своих нишах:</p>
+  <div class="net-grid">
+    {NETWORK.map((n) => (
+      <a href={`https://${n.domain}/`} class="net-card" rel="noopener">
+        <div class="net-icon">{n.emoji}</div>
+        <strong>{n.name}</strong>
+        <p>{n.desc}</p>
+      </a>
+    ))}
+  </div>
+</section>
+<style>
+  .partner-network {
+    background: linear-gradient(135deg, #fafafa, #f0f5fa);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 32px 0;
+    border: 1px solid #e6e8eb;
+  }
+  .partner-network h2 { font-size: 20px; margin: 0 0 6px; }
+  .muted { color: #666; font-size: 14px; margin: 0 0 18px; }
+  .net-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .net-card {
+    display: block; padding: 12px 14px; background: white;
+    border: 1px solid #e6e8eb; border-radius: 8px;
+    text-decoration: none; color: #1a1a1a; transition: all 0.2s;
+    text-align: center;
+  }
+  .net-card:hover { border-color: #f5a623; background: #fffbf3; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .net-icon { font-size: 24px; margin-bottom: 4px; }
+  .net-card strong { display: block; font-size: 13px; color: #c0392b; margin: 4px 0; }
+  .net-card p { font-size: 11px; color: #888; margin: 0; line-height: 1.3; }
+  @media (max-width: 900px) { .net-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px) { .net-grid { grid-template-columns: 1fr 1fr; } }
+</style>

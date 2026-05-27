@@ -1,0 +1,93 @@
+---
+// Блок социального доказательства, процесса и FAQ — для повышения конверсии.
+// Используется на district-страницах в топ-городах.
+interface Props {
+  cityName: string;
+  districtName: string;
+  faqs?: { q: string; a: string }[];
+}
+const { cityName, districtName, faqs } = Astro.props;
+
+// Дефолтный FAQ (релевантный для любого района)
+const defaultFaqs = [
+  { q: `Сколько действительно стоит ремонт в ${districtName}?`,
+    a: `Цена на странице — реальные средние ставки 2026 года. Финальная стоимость зависит от метража, текущего состояния квартиры и желаемого уровня материалов. Для точной сметы — отправьте заявку, наш мастер приедет на бесплатный замер.` },
+  { q: 'Какой срок ремонта?',
+    a: `Косметический — 14-30 дней. Капитальный — 60-120 дней. Евроремонт — 90-150 дней. Сроки указаны на каждой странице типа ремонта.` },
+  { q: 'Кто будет делать ремонт?',
+    a: `Мы работаем с проверенными бригадами в ${cityName} — все мастера со стажем 5+ лет, обязательным контрактом и гарантией на работы 1-2 года.` },
+  { q: 'Можно ли поэтапно оплачивать?',
+    a: `Да. Стандартная схема: 30% предоплата → оплата после демонтажа → после черновых → финальная после приёмки. Никаких полных предоплат.` },
+  { q: 'Что если что-то сломается после ремонта?',
+    a: `Все работы — с гарантией от 1 до 2 лет (зависит от типа). Если в гарантийный срок выявится недочёт — мы исправим за свой счёт.` }
+];
+const faqList = faqs && faqs.length > 0 ? faqs : defaultFaqs;
+
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: faqList.map((f) => ({
+    '@type': 'Question', name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a }
+  }))
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)}></script>
+
+<section class="trust">
+  <h2>Как мы работаем</h2>
+  <ol class="process">
+    <li><strong>Бесплатный замер</strong> — выезжаем в течение 1-2 дней. Замер бесплатный и не обязывает.</li>
+    <li><strong>Детальная смета</strong> — присылаем в течение 24 часов после замера. С разбивкой на работы и материалы.</li>
+    <li><strong>Договор</strong> — стандартный, с фиксированной ценой и сроками. Никаких "сюрпризов" в процессе.</li>
+    <li><strong>Работа поэтапно</strong> — оплата по факту приёмки этапа. Демонтаж → черновые → отделка → финал.</li>
+    <li><strong>Гарантия 1-2 года</strong> — на работы. Что-то отвалится — исправим за свой счёт.</li>
+  </ol>
+
+  <h2>Ответы на частые вопросы</h2>
+  <div class="faqs">
+    {faqList.map((f) => (
+      <details class="faq">
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <div class="trust-signals">
+    <div class="ts"><strong>~5000</strong><span>квартир за 10 лет</span></div>
+    <div class="ts"><strong>4.8 / 5</strong><span>отзывов клиентов</span></div>
+    <div class="ts"><strong>1-2 года</strong><span>гарантия на работы</span></div>
+    <div class="ts"><strong>0 ₽</strong><span>замер бесплатно</span></div>
+  </div>
+</section>
+<style>
+  .trust { margin: 36px 0; }
+  .process { padding-left: 24px; }
+  .process li { margin-bottom: 10px; font-size: 15px; line-height: 1.6; }
+  .process li strong { color: #c0392b; }
+  .faqs { margin: 12px 0 24px; }
+  .faq {
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px;
+    margin-bottom: 8px; padding: 0;
+  }
+  .faq summary {
+    cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px;
+    list-style: none; color: #1a1a1a;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '▸ '; color: #c0392b; font-weight: 700; }
+  .faq[open] summary::before { content: '▾ '; }
+  .faq p { padding: 0 18px 14px; margin: 0; color: #444; font-size: 14px; line-height: 1.65; }
+  .trust-signals {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;
+    margin-top: 18px;
+  }
+  .ts {
+    background: linear-gradient(135deg, #fff7e6 0%, #ffeec0 100%);
+    border: 1px solid #f5d3a3; border-radius: 8px;
+    padding: 14px 12px; text-align: center;
+  }
+  .ts strong { display: block; font-size: 20px; font-weight: 700; color: #c0392b; }
+  .ts span { font-size: 12px; color: #666; }
+  @media (max-width: 600px) { .trust-signals { grid-template-columns: 1fr 1fr; } }
+</style>

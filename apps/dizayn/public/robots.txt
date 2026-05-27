@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dizayn.kalkremont.ru/sitemap.xml
+Host: dizayn.kalkremont.ru

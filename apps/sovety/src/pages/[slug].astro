@@ -1,0 +1,104 @@
+---
+import Base from '~/layouts/Base.astro';
+import { guides } from '~/data/guides';
+import { SITE_CONFIG } from '~/config';
+
+export async function getStaticPaths() {
+  return guides.map((g) => ({ params: { slug: g.slug }, props: { guide: g } }));
+}
+const { guide } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: guide.h1, item: url }
+  ]
+};
+const articleSchema = {
+  '@context': 'https://schema.org', '@type': 'Article',
+  headline: guide.h1, description: guide.description,
+  inLanguage: 'ru-RU', url
+};
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: guide.faqs.map((f) => ({
+    '@type': 'Question', name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a }
+  }))
+};
+// HowTo schema: показывает в выдаче пошаговую инструкцию
+const howToSchema = {
+  '@context': 'https://schema.org', '@type': 'HowTo',
+  name: guide.h1,
+  description: guide.intro,
+  step: guide.sections.map((s, i) => ({
+    '@type': 'HowToStep',
+    position: i + 1,
+    name: s.h2,
+    text: (s.paragraphs?.[0] || s.h2).slice(0, 300)
+  }))
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, articleSchema, faqSchema, howToSchema] };
+
+const related = guides.filter((g) => g.slug !== guide.slug && g.category === guide.category).slice(0, 4);
+---
+<Base title={guide.title} description={guide.description} canonical={url} schema={schema}>
+  <nav class="bc"><a href="/">Главная</a> › <span>{guide.h1}</span></nav>
+
+  <article>
+    <h1>{guide.h1}</h1>
+    <p class="lead">{guide.intro}</p>
+
+    {guide.sections.map((s) => (
+      <section>
+        <h2>{s.h2}</h2>
+        {s.paragraphs.map((p) => <p set:html={p.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')} />)}
+        {s.list && <ul>{s.list.map((li) => <li>{li}</li>)}</ul>}
+      </section>
+    ))}
+
+    <h2>Частые вопросы</h2>
+    {guide.faqs.map((f) => (
+      <details class="faq-item">
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </article>
+
+  {related.length > 0 && (
+    <section class="related">
+      <h2>Похожие гайды</h2>
+      <ul class="rl">
+        {related.map((g) => <li><a href={`/${g.slug}/`}>{g.h1}</a></li>)}
+      </ul>
+    </section>
+  )}
+
+  <p class="back-cta">
+    <a href="/">← Все гайды</a> · <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>Калькуляторы</a> · <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>Цены</a>
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; }
+  .bc a { color: #555; }
+  .lead { font-size: 17px; color: #444; }
+  article h2 { font-size: 22px; margin-top: 32px; }
+  article p { line-height: 1.65; }
+  .faq-item {
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px;
+    margin-bottom: 8px; padding: 0;
+  }
+  .faq-item summary {
+    cursor: pointer; padding: 12px 16px; font-weight: 600; font-size: 15px;
+    list-style: none; padding-right: 36px;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item p { padding: 0 16px 14px; margin: 0; color: #444; font-size: 14px; }
+  .related { margin: 40px 0; padding-top: 24px; border-top: 1px solid #e6e8eb; }
+  .rl { list-style: none; padding: 0; }
+  .rl li { margin-bottom: 8px; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+</style>

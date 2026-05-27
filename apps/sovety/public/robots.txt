@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sovety.kalkremont.ru/sitemap.xml
+Host: sovety.kalkremont.ru

@@ -1,0 +1,80 @@
+---
+import Base from '~/layouts/Base.astro';
+import { products } from '~/data/brands';
+import { SITE_CONFIG } from '~/config';
+
+const title = 'Бренды стройматериалов — каталог продуктов для ремонта';
+const description = 'Подробный обзор брендов и продуктов для ремонта: Bosch, Makita, Fischer, Soudal, 3M. Характеристики, расход, цены 2026.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'CollectionPage',
+  name: SITE_CONFIG.siteName, url: `https://${SITE_CONFIG.domain}/`,
+  inLanguage: 'ru-RU', description
+};
+
+const catLabels: Record<string, { name: string; icon: string }> = {
+  tool: { name: 'Инструмент', icon: '🔨' },
+  fastener: { name: 'Крепёж', icon: '🔩' },
+  sealant: { name: 'Герметики', icon: '🧴' },
+  tape: { name: 'Малярная лента', icon: '🎨' },
+  'paint-tool': { name: 'Малярные инструменты', icon: '🖌' },
+  putty: { name: 'Шпаклёвки', icon: '🪣' },
+  cleaning: { name: 'Уборка', icon: '🧹' }
+};
+
+const byCategory = products.reduce((acc, p) => {
+  (acc[p.category] = acc[p.category] || []).push(p);
+  return acc;
+}, {} as Record<string, typeof products>);
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>🏷 Бренды стройматериалов</h1>
+  <p class="lead">
+    Каталог проверенных продуктов для квартирного ремонта. Реальные характеристики,
+    цены 2026, плюсы и минусы. Никакой рекламы — только опыт мастеров.
+  </p>
+
+  {Object.entries(byCategory).map(([cat, list]) => (
+    <section>
+      <h2>{catLabels[cat]?.icon} {catLabels[cat]?.name}</h2>
+      <ul class="brand-list">
+        {list.map((p) => (
+          <li>
+            <a href={`/${p.slug}/`}>
+              <h3>{p.brand} {p.productName}</h3>
+              <p>{p.intro.slice(0, 130)}...</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <h2>Калькуляторы и цены</h2>
+  <p>
+    Для расчёта расхода материалов — калькуляторы на
+    <a href={`https://www.${SITE_CONFIG.parentDomain}/`}>{SITE_CONFIG.parentDomain}</a>.
+  </p>
+  <p>
+    Цены на ремонт квартиры по городам России —
+    <a href={`https://price.${SITE_CONFIG.parentDomain}/`}>price.{SITE_CONFIG.parentDomain}</a>.
+  </p>
+  <p>
+    Практические гайды по ремонту —
+    <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>sovety.{SITE_CONFIG.parentDomain}</a>.
+  </p>
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .brand-list { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0 32px; }
+  .brand-list a {
+    display: block; padding: 16px 18px;
+    background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px;
+    color: #1a1a1a; text-decoration: none;
+  }
+  .brand-list a:hover { background: #e9f3ff; border-color: #0a5cce; }
+  .brand-list h3 { font-size: 16px; margin: 0 0 6px; color: #0a5cce; }
+  .brand-list p { font-size: 13px; color: #555; margin: 0; line-height: 1.5; }
+  @media (max-width: 540px) { .brand-list { grid-template-columns: 1fr; } }
+</style>

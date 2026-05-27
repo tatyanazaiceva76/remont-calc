@@ -1,0 +1,65 @@
+---
+import Base from '~/layouts/Base.astro';
+import { cities } from '~/data/all-cities';
+
+const title = 'Ремонт квартир в регионах России — цены по городам и районам 2026';
+const description = 'Цены на ремонт квартир в 17 городах России: Ижевск, Иркутск, Хабаровск, Владивосток, Кемерово, Ярославль и др.';
+const url = new URL('/', Astro.site).href;
+
+const schema = {
+  '@context': 'https://schema.org', '@type': 'WebSite',
+  name: 'Ремонт в регионах России', url, inLanguage: 'ru-RU', description
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>🌐 Ремонт квартир в регионах России</h1>
+  <p class="lead">
+    Цены на ремонт квартир по 17 городам России. Для каждого города — разбивка по районам,
+    типу жилья и сроки работ. Реальные средние ставки 2026.
+  </p>
+
+  <h2>Города в каталоге</h2>
+  <ul class="cities">
+    {cities.map((c) => (
+      <li>
+        <a href={`/${c.slug}/`}>
+          <h3>{c.emoji} {c.cityName}</h3>
+          <p class="districts-count">{c.districts.length} районов · от {c.repairTypes[0].pricePerSqM.toLocaleString('ru-RU')} ₽/м²</p>
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <h2>Города в отдельных субдоменах</h2>
+  <p>Для топ-городов России — отдельные сайты с расширенным контентом:</p>
+  <ul class="other-d">
+    <li><a href="https://moskva.kalkremont.ru/">Москва (12 округов)</a></li>
+    <li><a href="https://spb.kalkremont.ru/">Санкт-Петербург (15 районов)</a></li>
+    <li><a href="https://ekb.kalkremont.ru/">Екатеринбург</a></li>
+    <li><a href="https://kzn.kalkremont.ru/">Казань</a></li>
+    <li><a href="https://nsk.kalkremont.ru/">Новосибирск</a></li>
+    <li><a href="https://nn.kalkremont.ru/">Нижний Новгород</a></li>
+    <li><a href="https://krd.kalkremont.ru/">Краснодар</a></li>
+    <li><a href="https://chel.kalkremont.ru/">Челябинск</a></li>
+    <li><a href="https://ufa.kalkremont.ru/">Уфа</a></li>
+    <li><a href="https://sam.kalkremont.ru/">Самара</a></li>
+    <li><a href="https://rnd.kalkremont.ru/">Ростов-на-Дону</a></li>
+    <li><a href="https://vrn.kalkremont.ru/">Воронеж</a></li>
+    <li><a href="https://perm.kalkremont.ru/">Пермь</a></li>
+    <li><a href="https://vlg.kalkremont.ru/">Волгоград</a></li>
+    <li><a href="https://tyumen.kalkremont.ru/">Тюмень</a></li>
+    <li><a href="https://brn.kalkremont.ru/">Барнаул</a></li>
+  </ul>
+</Base>
+<style>
+  .lead { font-size: 17px; color: #444; }
+  .cities { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 16px 0 32px; }
+  .cities a { display: block; padding: 14px 16px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; color: #1a1a1a; text-decoration: none; }
+  .cities a:hover { background: #f3e8ff; border-color: #6b3aa0; }
+  .cities h3 { font-size: 17px; margin: 0 0 6px; color: #6b3aa0; }
+  .cities .districts-count { font-size: 13px; color: #555; margin: 0; }
+  .other-d { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .other-d a { display: inline-block; padding: 6px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 16px; font-size: 13px; color: #1a1a1a; }
+  @media (max-width: 700px) { .cities { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 480px) { .cities { grid-template-columns: 1fr; } }
+</style>

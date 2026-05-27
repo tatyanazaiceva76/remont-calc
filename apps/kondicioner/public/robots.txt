@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kondicioner.kalkremont.ru/sitemap.xml
+Host: kondicioner.kalkremont.ru

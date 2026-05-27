@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://chel.kalkremont.ru/sitemap.xml
+Host: chel.kalkremont.ru

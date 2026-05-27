@@ -1,0 +1,152 @@
+---
+import Base from '~/layouts/Base.astro';
+import { districts, repairTypes } from '~/data/districts';
+import { scenarios } from '~/data/scenarios';
+import { SITE_CONFIG } from '~/config';
+import LeadForm from '~/components/LeadForm.astro';
+
+const scenario = scenarios.find((s) => s.slug === 'remont-pered-prodazhey')!;
+
+export async function getStaticPaths() {
+  return districts.map((d) => ({ params: { district: d.slug }, props: { district: d } }));
+}
+const { district } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const capital = repairTypes.find((t) => t.key === 'capital')!;
+const baseWork = capital.pricePerSqM * district.priceMultiplier * scenario.priceMult;
+const low = Math.round(baseWork * 0.85);
+const high = Math.round(baseWork * 1.25);
+const example40 = Math.round(baseWork * 40);
+const example60 = Math.round(baseWork * 60);
+const example90 = Math.round(baseWork * 90);
+
+const title = `${scenario.name} в ${district.shortName} ${scenario.intent} — от ${low.toLocaleString('ru-RU')} ₽/м²`;
+const description = `${scenario.name} в ${district.shortName} районе Самары за 20-30 дней. Параллельные бригады, работа в 2 смены. Цена ${low.toLocaleString('ru-RU')}-${high.toLocaleString('ru-RU')} ₽/м².`;
+
+const breadcrumbs = {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Самара', item: `https://${SITE_CONFIG.domain}/` },
+    { '@type': 'ListItem', position: 2, name: scenario.name, item: `https://${SITE_CONFIG.domain}/remont-pered-prodazhey/` },
+    { '@type': 'ListItem', position: 3, name: district.shortName, item: url }
+  ]
+};
+const serviceSchema = {
+  '@context': 'https://schema.org', '@type': 'Service',
+  name: `${scenario.name} в ${district.shortName} (Самара)`,
+  serviceType: scenario.name,
+  areaServed: { '@type': 'AdministrativeArea', name: district.name },
+  offers: { '@type': 'AggregateOffer', lowPrice: low, highPrice: high, priceCurrency: 'RUB' },
+  description
+};
+const faqSchema = {
+  '@context': 'https://schema.org', '@type': 'FAQPage',
+  mainEntity: scenario.faqs.map((f) => ({
+    '@type': 'Question', name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a }
+  }))
+};
+const schema = { '@context': 'https://schema.org', '@graph': [breadcrumbs, serviceSchema, faqSchema] };
+
+const otherScenarios = scenarios.filter((s) => s.slug !== scenario.slug);
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc">
+    <a href="/">Самара</a> ›
+    <span>{scenario.name}</span> ›
+    <span>{district.shortName}</span>
+  </nav>
+
+  <h1>{scenario.emoji} {scenario.name} в {district.shortName} — {scenario.intent}</h1>
+  <p class="muted">{district.name} · цены 2026 · {scenario.durationDays}</p>
+
+  <div class="price-card">
+    <div class="pc-label">{scenario.name} в {district.shortName}</div>
+    <div class="pc-value">{low.toLocaleString('ru-RU')} — {high.toLocaleString('ru-RU')} ₽/м²</div>
+    <div class="pc-sub">Срок: {scenario.durationDays}</div>
+  </div>
+
+  <p class="lead">{scenario.intro}</p>
+
+  <h2>Почему мы для этой задачи</h2>
+  <ul class="why">{scenario.whyUs.map((w) => <li>{w}</li>)}</ul>
+
+  <h2>Расчёт на типичные квартиры в {district.shortName}</h2>
+  <table class="prices">
+    <thead><tr><th>Площадь</th><th>Стоимость</th><th>Срок</th></tr></thead>
+    <tbody>
+      <tr><td>1-комн. 40 м²</td><td><strong>{example40.toLocaleString('ru-RU')} ₽</strong></td><td>{scenario.durationDays}</td></tr>
+      <tr><td>2-комн. 60 м²</td><td><strong>{example60.toLocaleString('ru-RU')} ₽</strong></td><td>{scenario.durationDays}</td></tr>
+      <tr><td>3-комн. 90 м²</td><td><strong>{example90.toLocaleString('ru-RU')} ₽</strong></td><td>{scenario.durationDays}</td></tr>
+    </tbody>
+  </table>
+
+  <LeadForm
+    context={`${scenario.name} в ${district.shortName} (Самара)`}
+    city="sam"
+    district={district.shortName}
+    priceFrom={example40}
+  />
+
+  <h2>Что входит</h2>
+  <ul class="includes">{scenario.whatIncluded.map((i) => <li>{i}</li>)}</ul>
+
+  <h2>Этапы работ</h2>
+  <ol class="process">{scenario.process.map((p) => <li>{p}</li>)}</ol>
+
+  <h2>Особенности района {district.shortName}</h2>
+  <p>{district.housingProfile}</p>
+  <ul class="factors">{district.uniqueFactors.slice(0, 4).map((f) => <li>{f}</li>)}</ul>
+
+  <h2>❓ Часто спрашивают про {scenario.name.toLowerCase()}</h2>
+  <div class="faqs">
+    {scenario.faqs.map((f) => (
+      <details class="faq">
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <h2>{scenario.name} в других районах Самары</h2>
+  <ul class="other-d">
+    {districts.filter((d) => d.slug !== district.slug).map((d) => (
+      <li><a href={`/remont-pered-prodazhey/${d.slug}/`}>{d.shortName} — от {Math.round(capital.pricePerSqM * d.priceMultiplier * scenario.priceMult * 0.85).toLocaleString('ru-RU')} ₽/м²</a></li>
+    ))}
+  </ul>
+
+  <h2>Связанные сценарии</h2>
+  <ul class="related">
+    <li><a href={`/${district.slug}/`}>← Все типы ремонта в {district.shortName}</a></li>
+    <li><a href={`/${district.slug}/pod-klyuch/`}>Стандартный ремонт под ключ в {district.shortName}</a></li>
+    {otherScenarios.map((s) => (
+      <li><a href={`/${s.slug}/${district.slug}/`}>{s.emoji} {s.name} в {district.shortName}</a></li>
+    ))}
+  </ul>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .muted { color: #888; font-size: 14px; }
+  .lead { font-size: 17px; color: #444; }
+  .price-card { background: linear-gradient(135deg, #fffaf3 0%, #fff7e6 100%); border: 2px solid #f5a623; border-radius: 10px; padding: 18px 22px; margin: 18px 0; }
+  .pc-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pc-value { font-size: 26px; font-weight: 700; color: #c0392b; margin: 4px 0; }
+  .pc-sub { font-size: 14px; color: #555; }
+  .why, .includes, .factors, .process { padding-left: 22px; }
+  .why li, .includes li, .factors li, .process li { margin-bottom: 8px; }
+  .prices { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .prices th, .prices td { padding: 10px 12px; border: 1px solid #e6e8eb; text-align: left; }
+  .prices th { background: #fff7e6; font-weight: 700; }
+  .faqs { margin: 12px 0 24px; }
+  .faq { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; margin-bottom: 8px; }
+  .faq summary { cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px; list-style: none; color: #1a1a1a; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '▸ '; color: #c0392b; font-weight: 700; }
+  .faq[open] summary::before { content: '▾ '; }
+  .faq p { padding: 0 18px 14px; margin: 0; color: #444; font-size: 14px; line-height: 1.65; }
+  .related, .other-d { list-style: none; padding: 0; }
+  .related li { padding: 8px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; margin-bottom: 6px; font-size: 14px; }
+  .other-d { display: flex; flex-wrap: wrap; gap: 8px; }
+  .other-d a { display: inline-block; padding: 6px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 16px; font-size: 13px; color: #1a1a1a; }
+</style>

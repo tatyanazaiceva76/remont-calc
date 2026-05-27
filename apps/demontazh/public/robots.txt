@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://demontazh.kalkremont.ru/sitemap.xml
+Host: demontazh.kalkremont.ru
