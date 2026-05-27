@@ -1,0 +1,82 @@
+name: Auto IndexNow on push
+
+# При каждом push в main: пингуем главные страницы всех 11 доменов в Yandex+Bing IndexNow.
+# Кейс: новый код = новый контент = надо переиндексировать.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'apps/**'
+      - 'functions/**'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Ping IndexNow для всех 11 главных доменов
+        env:
+          INDEXNOW_KEY: ${{ secrets.INDEXNOW_KEY }}
+        run: |
+          bun -e "
+          const KEY = process.env.INDEXNOW_KEY;
+          const DOMAINS = [
+            'www.kalkremont.ru',
+            'ipoteka-remont.ru', 'kuhni-zakaz-online.ru', 'dom-stroy-online.ru',
+            'natyazhnoi-master24.ru', 'okna-pvh-online.ru', 'kupeshkafy24.ru',
+            'dveri-stalnye24.ru', 'perevodkvartiry.ru', 'dizayn-interyera-online.ru',
+            'kamin-zakaz24.ru'
+          ];
+          let ok = 0;
+          for (const d of DOMAINS) {
+            for (const engine of ['yandex.com', 'www.bing.com']) {
+              const r = await fetch('https://' + engine + '/indexnow', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json; charset=utf-8' },
+                body: JSON.stringify({
+                  host: d, key: KEY,
+                  keyLocation: 'https://' + d + '/indexnow_' + KEY + '.txt',
+                  urlList: ['https://' + d + '/']
+                })
+              });
+              if (r.status === 200 || r.status === 202) ok++;
+            }
+          }
+          console.log('IndexNow pings: ' + ok + '/' + (DOMAINS.length * 2));
+          "
+
+      - name: Submit sitemap в Yandex (через webmaster API)
+        env:
+          YANDEX_OAUTH_TOKEN: ${{ secrets.YANDEX_OAUTH_TOKEN }}
+          YANDEX_WEBMASTER_USER_ID: ${{ secrets.YANDEX_WEBMASTER_USER_ID }}
+        run: |
+          bun -e "
+          const TOKEN = process.env.YANDEX_OAUTH_TOKEN;
+          const USER = process.env.YANDEX_WEBMASTER_USER_ID;
+          if (!TOKEN || !USER) { console.log('Yandex credentials missing'); process.exit(0); }
+          const DOMAINS = [
+            'www.kalkremont.ru', 'kalkremont.ru',
+            'ipoteka-remont.ru', 'kuhni-zakaz-online.ru', 'dom-stroy-online.ru',
+            'natyazhnoi-master24.ru', 'okna-pvh-online.ru', 'kupeshkafy24.ru',
+            'dveri-stalnye24.ru', 'perevodkvartiry.ru', 'dizayn-interyera-online.ru',
+            'kamin-zakaz24.ru'
+          ];
+          let ok = 0;
+          for (const d of DOMAINS) {
+            const id = 'https:' + d + ':443';
+            const r = await fetch('https://api.webmaster.yandex.net/v4/user/' + USER + '/hosts/' + id + '/user-added-sitemaps', {
+              method: 'POST',
+              headers: { Authorization: 'OAuth ' + TOKEN, 'Content-Type': 'application/json' },
+              body: JSON.stringify({ url: 'https://' + d + '/sitemap.xml' })
+            });
+            if (r.status === 201 || r.status === 200) ok++;
+          }
+          console.log('Sitemap submits: ' + ok + '/' + DOMAINS.length);
+          "

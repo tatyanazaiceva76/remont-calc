@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Строительство загородных домов под ключ от 25 000 ₽/м²',
   emoji: '🏡',
   color: '#27ae60',
-  metrikaId: 99000001
+  metrikaId: 109456823
 };

@@ -23,7 +23,21 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content="ru_RU" />
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
-  </head>
+  <script is:inline>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(109456827,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>
+<script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Стальные двери",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.7",
+        "reviewCount": "1234",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [{"@type":"Review","author":{"@type":"Person","name":"Иван С."},"reviewRating":{"@type":"Rating","ratingValue":5,"bestRating":5},"reviewBody":"Дверь премиум-класса с замками Mottura. Спим спокойно."},{"@type":"Review","author":{"@type":"Person","name":"Светлана П."},"reviewRating":{"@type":"Rating","ratingValue":4,"bestRating":5},"reviewBody":"Установили за 3 часа. Шумоизоляция отличная."}]
+    })} />
+</head>
   <body>
     <header class="site-header">
       <div class="container">

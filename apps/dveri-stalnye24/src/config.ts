@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Входные стальные двери от 12 000 ₽ — производство и установка',
   emoji: '🚪',
   color: '#34495e',
-  metrikaId: 99000001
+  metrikaId: 109456827
 };

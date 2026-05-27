@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Согласование перепланировки квартиры от 30 000 ₽ под ключ',
   emoji: '📐',
   color: '#16a085',
-  metrikaId: 99000001
+  metrikaId: 109456828
 };

@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Камины и печи на дровах от 80 000 ₽ — монтаж под ключ',
   emoji: '🔥',
   color: '#d35400',
-  metrikaId: 99000001
+  metrikaId: 109456830
 };

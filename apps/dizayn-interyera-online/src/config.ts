@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Дизайн интерьера квартиры от 1 500 ₽/м² — авторский надзор',
   emoji: '🎨',
   color: '#e74c3c',
-  metrikaId: 99000001
+  metrikaId: 109456829
 };

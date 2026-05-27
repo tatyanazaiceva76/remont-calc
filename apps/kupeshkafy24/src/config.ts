@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Шкафы-купе на заказ от 18 000 ₽ — замер бесплатно',
   emoji: '🚪',
   color: '#9b59b6',
-  metrikaId: 99000001
+  metrikaId: 109456826
 };

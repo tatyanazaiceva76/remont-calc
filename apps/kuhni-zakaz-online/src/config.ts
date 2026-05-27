@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Кухни на заказ от производителя — бесплатный замер и дизайн',
   emoji: '🍳',
   color: '#e67e22',
-  metrikaId: 99000001
+  metrikaId: 109456822
 };

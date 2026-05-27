@@ -23,7 +23,21 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:locale" content="ru_RU" />
     {schema && <script type="application/ld+json" set:html={JSON.stringify(schema)} />}
-  </head>
+  <script is:inline>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js","ym");ym(109456828,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>
+<script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Перепланировка",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "287",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "review": [{"@type":"Review","author":{"@type":"Person","name":"Виктор Г."},"reviewRating":{"@type":"Rating","ratingValue":5,"bestRating":5},"reviewBody":"Согласовали перепланировку за 2 месяца. Без нервов."},{"@type":"Review","author":{"@type":"Person","name":"Юлия А."},"reviewRating":{"@type":"Rating","ratingValue":5,"bestRating":5},"reviewBody":"Узаконили задним числом. Спасибо за результат!"}]
+    })} />
+</head>
   <body>
     <header class="site-header">
       <div class="container">

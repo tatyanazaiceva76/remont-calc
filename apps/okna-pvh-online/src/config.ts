@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Пластиковые окна от 8 000 ₽ — производство и монтаж',
   emoji: '🪟',
   color: '#2980b9',
-  metrikaId: 99000001
+  metrikaId: 109456825
 };

@@ -4,5 +4,5 @@ export const SITE_CONFIG = {
   tagline: 'Натяжные потолки от 350 ₽/м² — монтаж за 1 день',
   emoji: '✨',
   color: '#3498db',
-  metrikaId: 99000001
+  metrikaId: 109456824
 };
