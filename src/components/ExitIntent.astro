@@ -2,8 +2,6 @@
 // Exit-intent popup — показывается когда юзер двигает мышь к закрытию вкладки.
 // Цель: поймать уходящего юзера, предложить leadgen.
 // Показывается 1 раз в сессии (sessionStorage).
-// Замени WHATSAPP перед публичным использованием.
-const WHATSAPP = '79991234567';
 ---
 <div id="exit-intent" class="exit-intent" hidden>
   <div class="ei-backdrop" data-close></div>
@@ -13,9 +11,8 @@ const WHATSAPP = '79991234567';
     <h2>Уходите? Возьмите смету бесплатно</h2>
     <p>Опытные мастера составят расчёт под вашу квартиру за 1-2 дня. Сравните 3-5 предложений и выберите лучшее.</p>
     <div class="ei-actions">
-      <a href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Здравствуйте! Хочу получить смету на ремонт.')}`}
          target="_blank" rel="nofollow noopener" class="ei-btn ei-primary">
-        💬 Получить смету в WhatsApp
+        📞 Перезвоните мне
       </a>
       <button class="ei-btn ei-secondary" data-close>Спасибо, не надо</button>
     </div>

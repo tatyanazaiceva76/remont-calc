@@ -1,0 +1,17 @@
+# Cloudflare Pages config для проекта remont-calc.
+# Биндинги привязываются к Pages Function (functions/api/*).
+#
+# ВАЖНО: после создания D1 базы — вставь её ID в database_id ниже.
+# Создать БД: wrangler d1 create kalkremont-leads (или через CF Dashboard)
+#
+name = "remont-calc"
+pages_build_output_dir = "dist"
+compatibility_date = "2025-10-01"
+
+[[d1_databases]]
+binding = "DB"                          # доступно как env.DB в functions/api/*.ts
+database_name = "kalkremont-leads"
+database_id = "7cd87a86-0d94-4c07-afd8-6c920464de16"    # ← подставь сюда uuid базы после создания
+
+[ai]
+binding = "AI"                          # доступно как env.AI для Workers AI (Llama)

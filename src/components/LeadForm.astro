@@ -1,203 +1,71 @@
 ---
-// Форма заявки. Работает через mailto: (без бэкенда).
-// Юзер заполняет → нажимает Submit → открывается его почтовый клиент
-// с пред-заполненным письмом на наш email.
-//
-// Когда будет настроен Telegram-бот или Formspree —
-// просто поменять onSubmit на fetch.
-import { SITE_CONFIG } from '~/config';
-
+// Лид-форма с отправкой в /api/lead (D1 + Telegram уведомление).
+// БЕЗ WhatsApp — только нормальная форма + telegram-уведомление менеджеру.
 interface Props {
+  source?: string;
   title?: string;
-  description?: string;
-  source?: string; // источник заявки, попадает в текст письма
+  subtitle?: string;
+  cta?: string;
 }
-const { title = 'Получить смету на ремонт', description = 'Опишите задачу — пришлём расчёт по email или ссылки на проверенных мастеров', source = 'unknown' } = Astro.props;
-
-// Замени на свою почту перед публичным использованием
-const CONTACT_EMAIL = 'hello@' + SITE_CONFIG.domain;
-
-// Замени на свой WhatsApp (формат: 79991234567)
-const WHATSAPP = '79991234567';
+const {
+  source = 'unknown',
+  title = '🎯 Получить расчёт',
+  subtitle = 'Заполните форму — пришлём расчёт за 30 минут',
+  cta = 'Получить расчёт →'
+} = Astro.props;
 ---
-<section class="lead-form-block">
-  <div class="lead-header">
-    <h2>{title}</h2>
-    <p>{description}</p>
-  </div>
-
-  <form id="lead-form" class="lead-form" data-source={source} data-email={CONTACT_EMAIL}>
-    <div class="form-row">
-      <label>
-        <span>Ваше имя</span>
-        <input type="text" name="name" placeholder="Иван" required />
-      </label>
-      <label>
-        <span>Телефон или email</span>
-        <input type="text" name="contact" placeholder="+7 (___) ___-__-__ или email" required />
-      </label>
-    </div>
-    <div class="form-row">
-      <label>
-        <span>Площадь квартиры, м²</span>
-        <input type="number" name="area" min="10" max="500" placeholder="50" />
-      </label>
-      <label>
-        <span>Тип ремонта</span>
-        <select name="type">
-          <option value="">— выберите —</option>
-          <option value="cosmetic">Косметический</option>
-          <option value="capital">Капитальный</option>
-          <option value="euro">Евроремонт</option>
-          <option value="designer">Дизайнерский</option>
-          <option value="unknown">Ещё не определился</option>
-        </select>
-      </label>
-    </div>
-    <label class="full">
-      <span>Комментарий (необязательно)</span>
-      <textarea name="comment" rows="3" placeholder="Любая дополнительная информация: сроки, бюджет, регион, особые пожелания"></textarea>
-    </label>
-
-    <div class="form-actions">
-      <button type="submit" class="btn-primary">📧 Отправить заявку</button>
-      <a href={`https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Здравствуйте! Хочу узнать про ремонт. Источник: ' + source)}`}
-         target="_blank" rel="nofollow noopener" class="btn-whatsapp">
-        💬 Написать в WhatsApp
-      </a>
-    </div>
-    <p class="form-hint">
-      Нажимая «Отправить», вы соглашаетесь с <a href="/politika/">политикой конфиденциальности</a>.
-      Мы не передаём данные третьим лицам.
-    </p>
+<section class="lead-form" data-source={source}>
+  <h2>{title}</h2>
+  <p class="lf-sub">{subtitle}</p>
+  <form id={`lf-${source}`} class="lf">
+    <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+    <input type="text" name="name" placeholder="Как к вам обращаться" />
+    <button type="submit">{cta}</button>
+    <p class="lf-note">⏱ Перезвоним в течение 30 минут · 🔒 Без спама</p>
   </form>
-
-  <div id="lead-success" class="lead-success" hidden>
-    <h3>✓ Спасибо!</h3>
-    <p>Заявка отправлена. Откройте свой почтовый клиент и подтвердите отправку. Свяжемся в течение 24 часов.</p>
+  <div class="lf-success" style="display:none">
+    <p><strong>✅ Заявка принята!</strong></p>
+    <p>Менеджер перезвонит в течение 30 минут.</p>
   </div>
 </section>
 
-<script is:inline>
-  (function () {
-    const form = document.getElementById('lead-form');
-    if (!form) return;
-    const successEl = document.getElementById('lead-success');
-
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const fd = new FormData(form);
-      const email = form.getAttribute('data-email');
-      const source = form.getAttribute('data-source');
-
-      const subject = encodeURIComponent('Заявка с kalkremont.ru');
-      const body = encodeURIComponent(
-        'Имя: ' + (fd.get('name') || '—') + '\n' +
-        'Контакт: ' + (fd.get('contact') || '—') + '\n' +
-        'Площадь: ' + (fd.get('area') || '—') + ' м²\n' +
-        'Тип ремонта: ' + (fd.get('type') || '—') + '\n' +
-        'Комментарий: ' + (fd.get('comment') || '—') + '\n\n' +
-        'Источник: ' + source + '\n' +
-        'URL: ' + window.location.href
-      );
-      window.location.href = 'mailto:' + email + '?subject=' + subject + '&body=' + body;
-
-      // Показать "спасибо"
-      form.hidden = true;
-      if (successEl) successEl.hidden = false;
-
-      // Метрика — событие
-      if (typeof ym === 'function') {
-        try {
-          ym(109345156, 'reachGoal', 'lead_form_submit', { source: source });
-        } catch (e) {}
-      }
-    });
-  })();
-</script>
-
 <style>
-  .lead-form-block {
-    background: linear-gradient(135deg, #0a5cce 0%, #1565c0 100%);
-    color: #fff;
-    padding: 28px;
-    border-radius: 12px;
-    margin: 32px 0;
-  }
-  .lead-header h2 { color: #fff; margin: 0 0 8px; font-size: 22px; }
-  .lead-header p { color: #d4e3f8; margin: 0 0 20px; font-size: 15px; }
-  .lead-form {
-    background: #fff;
-    border-radius: 8px;
-    padding: 22px;
-    color: #1a1a1a;
-  }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; margin-bottom: 12px; }
-  .lead-form label { display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #555; }
-  .lead-form label.full { display: block; margin-bottom: 12px; }
-  .lead-form label.full span { display: block; margin-bottom: 4px; }
-  .lead-form input, .lead-form select, .lead-form textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #c8ccd0;
-    border-radius: 6px;
-    font-size: 15px;
-    background: #fff;
-    box-sizing: border-box;
-    font-family: inherit;
-  }
-  .lead-form input:focus, .lead-form select:focus, .lead-form textarea:focus {
-    outline: 2px solid #0a5cce;
-    border-color: #0a5cce;
-  }
-  .lead-form textarea { resize: vertical; min-height: 60px; }
-  .form-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-    flex-wrap: wrap;
-  }
-  .btn-primary, .btn-whatsapp {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-weight: 600;
-    font-size: 15px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    flex: 1;
-    justify-content: center;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
-    color: #2d1f00;
-  }
-  .btn-primary:hover { transform: translateY(-1px); }
-  .btn-whatsapp {
-    background: #25d366;
-    color: #fff;
-  }
-  .btn-whatsapp:hover { background: #1da855; text-decoration: none; }
-  .form-hint {
-    font-size: 12px;
-    color: #888;
-    margin: 12px 0 0;
-  }
-  .form-hint a { color: #0a5cce; }
-  .lead-success {
-    background: #fff;
-    padding: 24px;
-    border-radius: 8px;
-    text-align: center;
-    color: #1a1a1a;
-  }
-  .lead-success h3 { color: #16933b; margin: 0 0 8px; }
-  .lead-success p { color: #555; margin: 0; }
-  @media (max-width: 540px) {
-    .form-row { grid-template-columns: 1fr; }
-    .form-actions { flex-direction: column; }
-  }
+  .lead-form { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.06); margin: 24px 0; max-width: 500px; }
+  .lead-form h2 { margin: 0 0 6px; font-size: 22px; }
+  .lf-sub { margin: 0 0 16px; color: #666; font-size: 14px; }
+  .lf { display: flex; flex-direction: column; gap: 10px; }
+  .lf input { padding: 14px 16px; border: 2px solid #e6e8eb; border-radius: 8px; font-size: 16px; }
+  .lf input:focus { border-color: #c0392b; outline: none; }
+  .lf button { padding: 14px; background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .lf-note { font-size: 12px; color: #888; text-align: center; margin: 8px 0 0; }
+  .lf-success { padding: 20px; background: #d4edda; border-radius: 8px; text-align: center; color: #155724; }
 </style>
+
+<script is:inline define:vars={{ source }}>
+  document.getElementById('lf-' + source)?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const wrapper = form.closest('.lead-form');
+    const data = new FormData(form);
+    fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: data.get('phone'),
+        name: data.get('name'),
+        source: source,
+        page: location.pathname,
+        url: location.href,
+        host: location.hostname,
+        referrer: document.referrer || null,
+        ts: Date.now()
+      })
+    }).then(function(r) { return r.json(); }).then(function() {
+      form.style.display = 'none';
+      wrapper.querySelector('.lf-success').style.display = 'block';
+      if (window.ym) window.ym(99000000, 'reachGoal', 'lead-submit');
+    }).catch(function() {
+      alert('Ошибка отправки. Попробуйте ещё раз.');
+    });
+  });
+</script>

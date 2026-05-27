@@ -1,0 +1,199 @@
+---
+// Лид-форма: данные → fetch на /api/lead (CF Pages Function) → Telegram bot.
+// Endpoint всегда живёт на www.kalkremont.ru (там Pages Functions),
+// чтобы не дублировать функцию на каждый субдомен.
+//
+// Использование: <LeadForm context="Капремонт 2-комн в Купчино" priceFrom={1200000} />
+interface Props {
+  context: string;            // что считать (в TG-сообщение)
+  city?: string;              // moskva / spb / ekb …
+  district?: string;
+  priceFrom?: number;
+  metrikaId?: number;
+}
+const { context, city, district, priceFrom, metrikaId } = Astro.props;
+const formId = `lf-${Math.random().toString(36).slice(2, 8)}`;
+const API_URL = 'https://www.kalkremont.ru/api/lead';
+---
+<section class="lead-form" id={formId}>
+  <div class="lf-inner">
+    <h3>💬 Получите точный расчёт за 5 минут</h3>
+    <p class="lf-sub">
+      <strong>{context}</strong>
+      {priceFrom && ` — от ${priceFrom.toLocaleString('ru-RU')} ₽`}
+    </p>
+    <p class="lf-text">
+      Отправьте площадь и пожелания — пришлём подробный расчёт со сметой,
+      фото похожих объектов и сроками. <strong>Бесплатно, без обязательств.</strong>
+    </p>
+    <form class="lf-form"
+          data-form-id={formId}
+          data-context={context}
+          data-city={city || ''}
+          data-district={district || ''}>
+      <div class="lf-row">
+        <label>Площадь, м²</label>
+        <input type="number" name="area" min="15" max="500" placeholder="60" required />
+      </div>
+      <div class="lf-row">
+        <label>Имя</label>
+        <input type="text" name="name" placeholder="Иван" required />
+      </div>
+      <div class="lf-row">
+        <label>Телефон</label>
+        <input type="tel" name="phone" placeholder="+7 999 123-45-67" required />
+      </div>
+      <div class="lf-row">
+        <label class="lf-textarea-label">Пожелания (опционально)</label>
+        <textarea name="notes" rows="2" placeholder="Например: ванная под плитку, кухня объединить с гостиной"></textarea>
+      </div>
+      <!-- honeypot: настоящие юзеры не заполнят -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off" class="lf-hp" aria-hidden="true" />
+      <button type="submit" class="lf-btn">📩 Отправить заявку</button>
+      <p class="lf-policy">
+        Нажимая «Отправить», вы соглашаетесь с
+        <a href="https://www.kalkremont.ru/politika/" target="_blank">политикой конфиденциальности</a>.
+      </p>
+    </form>
+    <div class="lf-success" hidden>
+      <h4>✅ Заявка отправлена!</h4>
+      <p>Мы получили вашу заявку. Свяжемся в течение <strong>30 минут</strong> в рабочее время (9:00-21:00 МСК).</p>
+      <p class="lf-success-sub">Если очень срочно — напишите напрямую в .</p>
+    </div>
+    <div class="lf-error" hidden>
+      <p><strong>❌ Что-то пошло не так.</strong> Попробуйте ещё раз 
+    </div>
+  </div>
+</section>
+<style>
+  .lead-form {
+    background: linear-gradient(135deg, #fff7e6 0%, #ffeec0 100%);
+    border: 2px solid #f5a623;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .lf-inner h3 { margin: 0 0 6px; font-size: 22px; color: #1a1a1a; }
+  .lf-sub { font-size: 16px; color: #555; margin: 0 0 8px; }
+  .lf-text { font-size: 14px; color: #444; margin: 0 0 16px; }
+  .lf-form { display: grid; gap: 12px; }
+  .lf-row label { display: block; font-size: 13px; color: #555; margin-bottom: 4px; font-weight: 600; }
+  .lf-row input, .lf-row textarea {
+    width: 100%; padding: 10px 14px; border: 1px solid #d4d4d4;
+    border-radius: 6px; font-size: 15px; background: #fff;
+    font-family: inherit;
+  }
+  .lf-row input:focus, .lf-row textarea:focus { outline: none; border-color: #f5a623; box-shadow: 0 0 0 3px rgba(245,166,35,0.15); }
+  .lf-hp {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important; height: 1px !important;
+    opacity: 0;
+  }
+  .lf-btn {
+    background: #25d366; color: #fff;
+    padding: 14px 24px; border: 0; border-radius: 8px;
+    font-size: 16px; font-weight: 700; cursor: pointer;
+    margin-top: 6px;
+  }
+  .lf-btn:hover { background: #1cae53; }
+  .lf-btn:active { transform: translateY(1px); }
+  .lf-btn[disabled] { background: #999; cursor: wait; }
+  .lf-policy { font-size: 12px; color: #888; margin: 8px 0 0; text-align: center; }
+  .lf-policy a { color: #888; text-decoration: underline; }
+  .lf-success { background: #e8f5ec; border: 1px solid #2a9d57; border-radius: 8px; padding: 16px 18px; }
+  .lf-success h4 { margin: 0 0 6px; color: #2a9d57; }
+  .lf-success p { margin: 0 0 6px; font-size: 14px; color: #333; }
+  .lf-success-sub { font-size: 13px; color: #555; }
+  .lf-success-sub a { color: #25d366; font-weight: 600; }
+  .lf-error { background: #fef2f0; border: 1px solid #c0392b; border-radius: 8px; padding: 12px 14px; margin-top: 10px; }
+  .lf-error p { margin: 0; font-size: 14px; color: #c0392b; }
+  .lf-error a { color: #c0392b; font-weight: 600; }
+</style>
+<script define:vars={{ formId, API_URL }}>
+  (function () {
+    const root = document.getElementById(formId);
+    if (!root) return;
+    const form = root.querySelector('.lf-form');
+    const success = root.querySelector('.lf-success');
+    const errorBox = root.querySelector('.lf-error');
+    const btn = form?.querySelector('.lf-btn');
+    if (!form || !success || !btn) return;
+
+    // Заполняем data-wa-link на случай fallback'а
+    const waLinks = root.querySelectorAll('[data-wa-link]');
+    waLinks.forEach((a) => {
+    });
+
+    // Парсим UTM из URL
+    const utm = {};
+    try {
+      const params = new URLSearchParams(window.location.search);
+      for (const [k, v] of params) {
+        if (k.startsWith('utm_')) utm[k] = v;
+      }
+    } catch (_) {}
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBox.hidden = true;
+
+      // Honeypot: если заполнено — это бот, тихо "успех"
+      const hp = form.querySelector('input[name="website"]');
+      if (hp && hp.value) {
+        form.hidden = true;
+        success.hidden = false;
+        return;
+      }
+
+      const fd = new FormData(form);
+      const payload = {
+        context: form.dataset.context || '',
+        city: form.dataset.city || '',
+        district: form.dataset.district || '',
+        area: fd.get('area') || '',
+        name: fd.get('name') || '',
+        phone: fd.get('phone') || '',
+        notes: fd.get('notes') || '',
+        utm,
+        page: window.location.href,
+        referrer: document.referrer || ''
+      };
+
+      btn.disabled = true;
+      btn.textContent = '⏳ Отправляем…';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (res.ok && data.ok) {
+          form.hidden = true;
+          success.hidden = false;
+          // Metrika goal
+          try {
+            if (typeof window !== 'undefined' && window.ym) {
+              window.ym(109345156, 'reachGoal', 'lead-form-submit', {
+                context: payload.context,
+                city: payload.city,
+                area: payload.area
+              });
+            }
+          } catch (_) {}
+        } else {
+          btn.disabled = false;
+          btn.textContent = '📩 Отправить заявку';
+          errorBox.hidden = false;
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = '📩 Отправить заявку';
+        errorBox.hidden = false;
+      }
+    });
+  })();
+</script>
