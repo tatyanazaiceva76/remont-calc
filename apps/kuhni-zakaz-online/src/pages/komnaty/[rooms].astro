@@ -1,0 +1,38 @@
+---
+import Base from '~/layouts/Base.astro';
+const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05},{"slug":"nn","name":"Нижнем Новгороде","nameNom":"Нижний Новгород","priceMult":0.95},{"slug":"chel","name":"Челябинске","nameNom":"Челябинск","priceMult":0.85},{"slug":"ufa","name":"Уфе","nameNom":"Уфа","priceMult":0.95},{"slug":"sam","name":"Самаре","nameNom":"Самара","priceMult":0.95}];
+
+export function getStaticPaths() {
+  const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+  return rooms.map((r) => ({ params: { rooms: String(r.num) }, props: { room: r } }));
+}
+
+const { room } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<Base title={`Кухни на заказ ${room.name} квартиры`} description={'Кухни на заказ ' + room.name + ' (~' + room.area + ' м²) — выберите город.'} canonical={url}>
+  <nav class="bc"><a href="/">Кухни на заказ</a> › <a href="/komnaty/">Комнаты</a> › <span>{room.name}</span></nav>
+  <h1>{room.emoji} Кухни на заказ {room.name} квартиры</h1>
+  <p class="lead">Средняя площадь: {room.area} м². Выберите город для расчёта.</p>
+
+  <section>
+    <h2>🏙 Выберите город</h2>
+    <div class="grid">
+      {cities.map((c) => (
+        <a href={`/komnaty/${room.num}/v-${c.slug}/`} class="c">
+          <strong>{c.nameNom}</strong>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .bc{font-size:13px;color:#888;}
+  .lead{padding:16px;background:white;border-left:4px solid #e67e22;}
+  .grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+  .c{padding:10px;background:white;border:1px solid #e6e8eb;border-radius:6px;text-decoration:none;text-align:center;}
+  .c:hover{border-color:#e67e22;}
+  .c strong{color:#e67e22;font-size:13px;}
+  @media (max-width:700px){.grid{grid-template-columns:1fr 1fr 1fr;}}
+</style>

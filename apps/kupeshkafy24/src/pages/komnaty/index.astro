@@ -1,0 +1,24 @@
+---
+import Base from '~/layouts/Base.astro';
+const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+---
+<Base title="Шкафы-купе по комнатности" description="Шкафы-купе студия / 1-комн / 2-комн / 3-комн / большая квартира.">
+  <h1>🏘 Шкафы-купе по типу квартиры</h1>
+  <div class="grid">
+    {rooms.map((r) => (
+      <a href={`/komnaty/${r.num}/`} class="card">
+        <span class="e">{r.emoji}</span>
+        <strong>{r.name}</strong>
+        <p>~{r.area} м²</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .card{display:block;padding:16px;background:white;border:1px solid #e6e8eb;border-radius:10px;text-decoration:none;color:#1a1a1a;text-align:center;}
+  .card:hover{border-color:#9b59b6;}
+  .e{font-size:32px;display:block;}
+  .card strong{display:block;color:#9b59b6;margin:6px 0;}
+  @media (max-width:600px){.grid{grid-template-columns:1fr 1fr;}}
+</style>

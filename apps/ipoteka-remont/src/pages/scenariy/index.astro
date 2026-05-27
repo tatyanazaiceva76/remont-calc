@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const scenarios = [{"slug":"srochno","name":"Срочный","emoji":"⚡","priceMult":1.4,"desc":"Завершение за 7-14 дней"},{"slug":"ekonom","name":"Эконом","emoji":"💰","priceMult":0.7,"desc":"Минимальный бюджет, базовые материалы"},{"slug":"standart","name":"Стандарт","emoji":"✅","priceMult":1,"desc":"Оптимальное соотношение цена/качество"},{"slug":"premium","name":"Премиум","emoji":"✨","priceMult":2,"desc":"Топовые материалы и сервис"}];
+---
+<Base title="Сценарии ипотеки на ремонт" description="Выберите сценарий: срочный, эконом, стандарт, премиум.">
+  <h1>📋 Сценарии ипотеки на ремонт</h1>
+  <div class="grid">
+    {scenarios.map((s) => (
+      <a href={`/scenariy/${s.slug}/`} class="card">
+        <span class="e">{s.emoji}</span>
+        <strong>{s.name}</strong>
+        <p>{s.desc}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .card{display:block;padding:16px;background:white;border:1px solid #e6e8eb;border-radius:10px;text-decoration:none;color:#1a1a1a;}
+  .card:hover{border-color:#1abc9c;}
+  .e{font-size:32px;display:block;}
+  .card strong{display:block;color:#1abc9c;margin:6px 0;}
+  .card p{font-size:13px;color:#666;margin:0;}
+  @media (max-width: 600px){.grid{grid-template-columns:1fr;}}
+</style>

@@ -1,0 +1,48 @@
+---
+import Base from '~/layouts/Base.astro';
+const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+const cities = [{"slug":"moskva","name":"Москве и области","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"СПб и Ленобласти","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05}];
+
+export function getStaticPaths() {
+  const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+  const cities = [{"slug":"moskva","name":"Москве и области","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"СПб и Ленобласти","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05}];
+  const paths = [];
+  for (const r of rooms) for (const c of cities) {
+    paths.push({ params: { rooms: String(r.num), city: c.slug }, props: { room: r, city: c } });
+  }
+  return paths;
+}
+
+const { room, city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const services = [{"slug":"drovianye","name":"Дровяные камины","price":"от 80 000 ₽","description":"Чугунные топки, печи длительного горения, аромат дров"},{"slug":"gazovye","name":"Газовые камины","price":"от 60 000 ₽","description":"Без дымохода, имитация пламени, простой монтаж"},{"slug":"elektrokamin","name":"Электрокамины","price":"от 15 000 ₽","description":"Без вытяжки, для квартиры, эффект пламени"},{"slug":"biokamin","name":"Биокамины","price":"от 25 000 ₽","description":"На биоэтаноле, без дыма и дымохода"},{"slug":"dymokhody","name":"Дымоходы и монтаж","price":"от 30 000 ₽","description":"Нержавейка, сэндвич, керамика. Под ключ."}];
+
+const basePrice = parseInt((services[0].price.match(/\d+/)||['10000'])[0]) * 1000;
+const finalPrice = Math.round(basePrice * city.priceMult * (room.area / 50));
+
+const title = 'Камины и печи ' + room.name + ' квартиры в ' + city.name + ' — ' + finalPrice.toLocaleString('ru-RU') + ' ₽';
+const description = 'Камины и печи ' + room.name + ' квартиры (~' + room.area + ' м²) в ' + city.name + '. Бесплатный замер и расчёт.';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Камины и печи</a> › <a href="/komnaty/">Комнаты</a> › <a href={`/komnaty/${room.num}/`}>{room.name}</a> › <span>в {city.name}</span></nav>
+  <h1>{room.emoji} Камины и печи {room.name} квартиры в {city.name}</h1>
+  <p class="lead">{room.name.charAt(0).toUpperCase() + room.name.slice(1)} ({room.area} м²) в {city.name}. Цена: <strong>{finalPrice.toLocaleString('ru-RU')} ₽</strong>.</p>
+
+  <section class="cta">
+    <h2>📞 Получить расчёт для {room.name}</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'kamin-zakaz24.ru/komnaty',rooms:'{room.num}-комн',city:'{city.slug}',area:{room.area},niche:'Камины и печи',page:location.pathname,host:'kamin-zakaz24.ru'})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить расчёт →</button>
+    </form>
+  </section>
+</Base>
+<style>
+  .bc{font-size:13px;color:#888;}
+  .bc a{color:#888;}
+  .lead{padding:16px;background:white;border-left:4px solid #d35400;}
+  .lead strong{color:#d35400;}
+  .cta{background:white;padding:18px;border-radius:10px;margin-top:20px;}
+  .cta form{display:flex;gap:8px;max-width:400px;}
+  .cta input{flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;}
+  .cta button{padding:12px 18px;background:#d35400;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
+</style>

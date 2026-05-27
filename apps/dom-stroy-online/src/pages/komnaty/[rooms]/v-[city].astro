@@ -1,0 +1,48 @@
+---
+import Base from '~/layouts/Base.astro';
+const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+const cities = [{"slug":"moskva","name":"Подмосковье","nameNom":"Подмосковье","priceMult":1.4},{"slug":"spb","name":"Ленобласти","nameNom":"Ленобласть","priceMult":1.3},{"slug":"ekb","name":"Свердловской области","nameNom":"Свердловская обл.","priceMult":1},{"slug":"kzn","name":"Татарстане","nameNom":"Татарстан","priceMult":1},{"slug":"nsk","name":"Новосибирской области","nameNom":"Новосибирская обл.","priceMult":0.95},{"slug":"krd","name":"Краснодарском крае","nameNom":"Краснодарский край","priceMult":1.1}];
+
+export function getStaticPaths() {
+  const rooms = [{"num":1,"name":"студия","emoji":"🏠","area":25},{"num":2,"name":"1-комнатная","emoji":"🏘","area":35},{"num":3,"name":"2-комнатная","emoji":"🏘","area":55},{"num":4,"name":"3-комнатная","emoji":"🏢","area":80},{"num":5,"name":"большая","emoji":"🏛","area":120}];
+  const cities = [{"slug":"moskva","name":"Подмосковье","nameNom":"Подмосковье","priceMult":1.4},{"slug":"spb","name":"Ленобласти","nameNom":"Ленобласть","priceMult":1.3},{"slug":"ekb","name":"Свердловской области","nameNom":"Свердловская обл.","priceMult":1},{"slug":"kzn","name":"Татарстане","nameNom":"Татарстан","priceMult":1},{"slug":"nsk","name":"Новосибирской области","nameNom":"Новосибирская обл.","priceMult":0.95},{"slug":"krd","name":"Краснодарском крае","nameNom":"Краснодарский край","priceMult":1.1}];
+  const paths = [];
+  for (const r of rooms) for (const c of cities) {
+    paths.push({ params: { rooms: String(r.num), city: c.slug }, props: { room: r, city: c } });
+  }
+  return paths;
+}
+
+const { room, city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const services = [{"slug":"karkasnye","name":"Каркасные дома","price":"от 25 000 ₽/м²","description":"Быстрая постройка 2-3 месяца, тёплые, цена 1.5 млн на 60 м²"},{"slug":"gazobeton","name":"Дома из газобетона","price":"от 35 000 ₽/м²","description":"Тёплые, долговечные, 4-6 месяцев"},{"slug":"kirpichnye","name":"Кирпичные дома","price":"от 55 000 ₽/м²","description":"Премиум, 8-12 месяцев, срок службы 150+ лет"},{"slug":"iz-brusa","name":"Дома из бруса","price":"от 30 000 ₽/м²","description":"Экологичные, аромат дерева, требуют усадки 1 год"}];
+
+const basePrice = parseInt((services[0].price.match(/\d+/)||['10000'])[0]) * 1000;
+const finalPrice = Math.round(basePrice * city.priceMult * (room.area / 50));
+
+const title = 'Загородные дома ' + room.name + ' квартиры в ' + city.name + ' — ' + finalPrice.toLocaleString('ru-RU') + ' ₽';
+const description = 'Загородные дома ' + room.name + ' квартиры (~' + room.area + ' м²) в ' + city.name + '. Бесплатный замер и расчёт.';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Загородные дома</a> › <a href="/komnaty/">Комнаты</a> › <a href={`/komnaty/${room.num}/`}>{room.name}</a> › <span>в {city.name}</span></nav>
+  <h1>{room.emoji} Загородные дома {room.name} квартиры в {city.name}</h1>
+  <p class="lead">{room.name.charAt(0).toUpperCase() + room.name.slice(1)} ({room.area} м²) в {city.name}. Цена: <strong>{finalPrice.toLocaleString('ru-RU')} ₽</strong>.</p>
+
+  <section class="cta">
+    <h2>📞 Получить расчёт для {room.name}</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'dom-stroy-online.ru/komnaty',rooms:'{room.num}-комн',city:'{city.slug}',area:{room.area},niche:'Загородные дома',page:location.pathname,host:'dom-stroy-online.ru'})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить расчёт →</button>
+    </form>
+  </section>
+</Base>
+<style>
+  .bc{font-size:13px;color:#888;}
+  .bc a{color:#888;}
+  .lead{padding:16px;background:white;border-left:4px solid #27ae60;}
+  .lead strong{color:#27ae60;}
+  .cta{background:white;padding:18px;border-radius:10px;margin-top:20px;}
+  .cta form{display:flex;gap:8px;max-width:400px;}
+  .cta input{flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;}
+  .cta button{padding:12px 18px;background:#27ae60;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
+</style>

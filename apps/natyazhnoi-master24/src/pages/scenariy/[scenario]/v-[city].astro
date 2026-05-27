@@ -1,0 +1,80 @@
+---
+import Base from '~/layouts/Base.astro';
+const scenarios = [{"slug":"srochno","name":"Срочный","emoji":"⚡","priceMult":1.4,"desc":"Завершение за 7-14 дней"},{"slug":"ekonom","name":"Эконом","emoji":"💰","priceMult":0.7,"desc":"Минимальный бюджет, базовые материалы"},{"slug":"standart","name":"Стандарт","emoji":"✅","priceMult":1,"desc":"Оптимальное соотношение цена/качество"},{"slug":"premium","name":"Премиум","emoji":"✨","priceMult":2,"desc":"Топовые материалы и сервис"}];
+const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05},{"slug":"nn","name":"Нижнем Новгороде","nameNom":"Нижний Новгород","priceMult":0.95},{"slug":"chel","name":"Челябинске","nameNom":"Челябинск","priceMult":0.85},{"slug":"ufa","name":"Уфе","nameNom":"Уфа","priceMult":0.95},{"slug":"sam","name":"Самаре","nameNom":"Самара","priceMult":0.95}];
+
+export function getStaticPaths() {
+  const scenarios = [{"slug":"srochno","name":"Срочный","emoji":"⚡","priceMult":1.4,"desc":"Завершение за 7-14 дней"},{"slug":"ekonom","name":"Эконом","emoji":"💰","priceMult":0.7,"desc":"Минимальный бюджет, базовые материалы"},{"slug":"standart","name":"Стандарт","emoji":"✅","priceMult":1,"desc":"Оптимальное соотношение цена/качество"},{"slug":"premium","name":"Премиум","emoji":"✨","priceMult":2,"desc":"Топовые материалы и сервис"}];
+  const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05},{"slug":"nn","name":"Нижнем Новгороде","nameNom":"Нижний Новгород","priceMult":0.95},{"slug":"chel","name":"Челябинске","nameNom":"Челябинск","priceMult":0.85},{"slug":"ufa","name":"Уфе","nameNom":"Уфа","priceMult":0.95},{"slug":"sam","name":"Самаре","nameNom":"Самара","priceMult":0.95}];
+  const paths = [];
+  for (const s of scenarios) for (const c of cities) {
+    paths.push({ params: { scenario: s.slug, city: c.slug }, props: { sc: s, city: c } });
+  }
+  return paths;
+}
+
+const { sc, city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+const services = [{"slug":"glyanec","name":"Глянцевые потолки","price":"от 450 ₽/м²","description":"Отражают свет, визуально расширяют комнату"},{"slug":"mat","name":"Матовые потолки","price":"от 350 ₽/м²","description":"Классика, выглядит как окрашенный потолок"},{"slug":"satin","name":"Сатиновые потолки","price":"от 400 ₽/м²","description":"Нежный жемчужный отблеск, премиум"},{"slug":"mnogourovnevye","name":"Многоуровневые","price":"от 1200 ₽/м²","description":"2-3 уровня, с подсветкой, дизайнерские"},{"slug":"fotopechat","name":"С фотопечатью","price":"от 1500 ₽/м²","description":"Любое изображение, звёздное небо, лофт"}];
+
+// Цены адаптированные под сценарий и город
+const basePrice = parseInt((services[0].price.match(/\d+/)||['10000'])[0]) * 1000;
+const finalPrice = Math.round(basePrice * sc.priceMult * city.priceMult);
+
+const title = sc.name + ' натяжные потолки в ' + city.name + ' — от ' + finalPrice.toLocaleString('ru-RU') + ' ₽';
+const description = sc.desc + ' в ' + city.name + '. ' + 'Натяжные потолки от 350 ₽/м² — монтаж за 1 день';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Натяжные потолки</a> › <a href="/scenariy/">Сценарии</a> › <a href={`/scenariy/${sc.slug}/`}>{sc.name}</a> › <span>в {city.name}</span></nav>
+  <h1>{sc.emoji} {sc.name} натяжные потолки в {city.name}</h1>
+  <p class="lead">{sc.desc} в {city.name}. Цена: <strong>от {finalPrice.toLocaleString('ru-RU')} ₽</strong>.</p>
+
+  <section class="price">
+    <h2>💰 Цены {sc.name.toLowerCase()} в {city.name}</h2>
+    <div class="prices">
+      <div><span>Эконом</span><strong>{Math.round(finalPrice * 0.7).toLocaleString('ru-RU')} ₽</strong></div>
+      <div><span>Стандарт</span><strong>{finalPrice.toLocaleString('ru-RU')} ₽</strong></div>
+      <div><span>Премиум</span><strong>{Math.round(finalPrice * 1.5).toLocaleString('ru-RU')} ₽</strong></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>📞 Получить расчёт</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'natyazhnoi-master24.ru/scenariy',scenario:'{sc.slug}',city:'{city.slug}',niche:'Натяжные потолки',page:location.pathname,host:'natyazhnoi-master24.ru'})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить расчёт →</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>🛒 Другие услуги в {city.name}</h2>
+    <div class="services">
+      {services.map((s) => (
+        <a href={`/uslugi/${s.slug}/v-{city.slug}/`} class="svc">
+          <strong>{s.name}</strong>
+          <span>{s.price}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .bc{font-size:13px;color:#888;}
+  .bc a{color:#888;}
+  .lead{padding:16px;background:white;border-left:4px solid #3498db;}
+  .lead strong{color:#3498db;}
+  .price{background:linear-gradient(135deg,#fff7e6,#ffe9c8);padding:20px;border-radius:12px;margin:20px 0;}
+  .prices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .prices > div{background:white;padding:12px;border-radius:8px;text-align:center;}
+  .prices span{font-size:11px;color:#888;display:block;}
+  .prices strong{font-size:18px;color:#3498db;display:block;}
+  .cta{background:white;padding:18px;border-radius:10px;}
+  .cta form{display:flex;gap:8px;max-width:400px;}
+  .cta input{flex:1;padding:12px;border:1.5px solid #ddd;border-radius:8px;}
+  .cta button{padding:12px 18px;background:#3498db;color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;}
+  .services{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .svc{display:block;padding:12px;background:white;border:1px solid #e6e8eb;border-radius:8px;text-decoration:none;color:#1a1a1a;}
+  .svc:hover{border-color:#3498db;}
+  .svc strong{color:#3498db;display:block;}
+  @media (max-width:700px){.prices{grid-template-columns:1fr;}.services{grid-template-columns:1fr;}}
+</style>
