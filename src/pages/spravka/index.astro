@@ -1,0 +1,29 @@
+---
+import Base from '~/layouts/Base.astro';
+import { nicheCities } from '~/data/niche-cities';
+
+const title = `Справка по ремонту квартир — FAQ по ${nicheCities.length} городам России`;
+const description = `Полная справка по ремонту квартир в ${nicheCities.length} городах России 2026: цены, этапы, документы, выбор бригады, согласования.`;
+---
+<Base title={title} description={description}>
+  <h1>📖 Справка по ремонту — FAQ по {nicheCities.length} городам</h1>
+  <p class="lead">25 главных вопросов и ответов о ремонте квартиры в каждом из {nicheCities.length} городов России. Цены 2026, этапы, выбор материалов и бригады.</p>
+
+  <div class="grid">
+    {nicheCities.map((c) => (
+      <a href={`/spravka/${c.slug}/`} class="card">
+        <strong>{c.nameNom}</strong>
+        <span>FAQ ремонт · {c.population}</span>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .lead { font-size: 16px; color: #555; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+  .card { display: block; padding: 14px 16px; background: #fff; border: 1px solid #e6e8eb; border-radius: 8px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #f5a623; background: #fffbf3; }
+  .card strong { display: block; color: #c0392b; font-size: 15px; }
+  .card span { display: block; font-size: 11px; color: #888; margin-top: 2px; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
+</style>

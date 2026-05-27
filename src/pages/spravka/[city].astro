@@ -1,0 +1,139 @@
+---
+import Base from '~/layouts/Base.astro';
+import { nicheCities } from '~/data/niche-cities';
+
+export function getStaticPaths() {
+  return nicheCities.map((city) => ({ params: { city: city.slug }, props: { city } }));
+}
+
+const { city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const minPrice = Math.round(7500 * city.priceMult);
+const maxPrice = Math.round(80000 * city.priceMult);
+const middlePrice = Math.round(18000 * city.priceMult);
+
+const title = `Ремонт в ${city.name} 2026 — FAQ: 25 ответов на главные вопросы`;
+const description = `Полная справка по ремонту квартиры в ${city.name}: цены 2026 (${minPrice}-${maxPrice} ₽/м²), этапы, согласования, сроки, выбор бригады.`;
+
+const faqs = [
+  { q: `Сколько стоит ремонт квартиры в ${city.name} в 2026?`, a: `Косметический ${Math.round(7500*city.priceMult).toLocaleString('ru-RU')}-${Math.round(15000*city.priceMult).toLocaleString('ru-RU')} ₽/м². Капитальный ${Math.round(18000*city.priceMult).toLocaleString('ru-RU')}-${Math.round(35000*city.priceMult).toLocaleString('ru-RU')} ₽/м². Дизайнерский ${Math.round(35000*city.priceMult).toLocaleString('ru-RU')}-${Math.round(80000*city.priceMult).toLocaleString('ru-RU')} ₽/м².` },
+  { q: `Сколько по времени делается ремонт в ${city.name}?`, a: `Косметический 1-комнатной — 3-5 недель. Капитальный двушки — 2-3 месяца. Трёшка с дизайном — 4-6 месяцев.` },
+  { q: `С чего начать ремонт в ${city.name}?`, a: `1) Оценка квартиры с прорабом. 2) Бюджет с резервом 15%. 3) Выбор подрядчика (договор!). 4) Согласование перепланировки если нужна. 5) Закупка стартовых материалов.` },
+  { q: `Где найти проверенную бригаду в ${city.name}?`, a: `Через Я.Карты (читать отзывы), Авито (фильтр "с гарантией"), сарафанное радио. Всегда проверять 2-3 работы вживую и подписывать договор.` },
+  { q: `Какие документы нужны для перепланировки в ${city.name}?`, a: `Проект перепланировки (30-80 тыс), технический паспорт БТИ, согласование в жилищной инспекции города. От 1 до 6 месяцев процедура.` },
+  { q: `Цены на материалы в ${city.name} отличаются от Москвы?`, a: `${city.priceMult > 1.1 ? 'Да, дороже на ' + Math.round((city.priceMult - 1) * 100) + '% из-за логистики и спроса.' : city.priceMult < 0.95 ? 'Да, дешевле на ' + Math.round((1 - city.priceMult) * 100) + '%.' : 'Незначительно — в пределах ±5%.'} Топ-бренды (Tikkurila, Quick-Step) везде одинаковы.` },
+  { q: `Можно ли делать ремонт зимой в ${city.name}?`, a: `Можно, кроме фасадных работ и стяжки в неотапливаемых помещениях. Внутренние работы — круглый год. Зимой бригады обычно дают скидку 10-15%.` },
+  { q: `Что входит в чёрновые работы?`, a: `Демонтаж, электрика, сантехника, выравнивание стен (штукатурка), стяжка пола, штробление под трубы и кабели, гидроизоляция санузла. 40-50% бюджета.` },
+  { q: `Что входит в чистовую отделку?`, a: `Покраска или обои, плитка, ламинат/паркет, плинтуса, межкомнатные двери, наличники, установка розеток и выключателей, светильники, чистовая сантехника.` },
+  { q: `Нужен ли дизайнер для ремонта в ${city.name}?`, a: `Для косметики — нет. Для капитала средней сложности — можно обойтись прорабом с опытом. Для премиум-ремонта или нестандартной планировки — да, обязательно.` },
+  { q: `Сколько стоит дизайн-проект в ${city.name}?`, a: `${Math.round(60000 * city.priceMult).toLocaleString('ru-RU')}-${Math.round(300000 * city.priceMult).toLocaleString('ru-RU')} ₽ в зависимости от объёма документации и репутации дизайнера.` },
+  { q: `Можно ли жить в квартире во время ремонта?`, a: `Косметика — можно в дальней комнате. Капитал — лучше съехать на 2-3 месяца. Иначе срок ремонта удлинится в 1.5-2 раза.` },
+  { q: `Что такое евроремонт?`, a: `Маркетинговый термин для капитального ремонта с европейскими материалами и стандартами выравнивания (отклонение по уровню ≤2 мм/м).` },
+  { q: `Какая бригада лучше — одиночка или фирма?`, a: `Бригада дешевле на 15-30%, но без гарантий. Фирма — договор, гарантия 1-3 года, страховка. Для дорогого ремонта — фирма, для косметики — бригада.` },
+  { q: `Сколько мастеров работает на ремонте?`, a: `Оптимально бригада 3-6 человек: плиточник, маляр, электрик, сантехник, прораб. Один человек делает однушку 3-4 месяца, бригада за 1.5.` },
+  { q: `Нужно ли страховать квартиру на время ремонта?`, a: `Полезно — на случай заливов соседей или повреждений своего имущества. 5-15 тыс ₽ на 6 месяцев. Многие бригады включают в стоимость.` },
+  { q: `Какая средняя смета на 50 м² в ${city.name}?`, a: `Косметика ${Math.round(450000 * city.priceMult).toLocaleString('ru-RU')}-${Math.round(900000 * city.priceMult).toLocaleString('ru-RU')} ₽. Капитал ${Math.round(900000 * city.priceMult).toLocaleString('ru-RU')}-${Math.round(2200000 * city.priceMult).toLocaleString('ru-RU')} ₽. Премиум от ${Math.round(2200000 * city.priceMult).toLocaleString('ru-RU')} ₽.` },
+  { q: `Сколько ждать материалы после заказа?`, a: `Стандартные (плитка Kerama Marazzi, краска Tikkurila) — 3-7 дней. Импорт под заказ — 4-8 недель. Мебель на заказ — 6-12 недель.` },
+  { q: `Когда лучше заказывать ремонт?`, a: `Январь-март — низкий сезон, скидки 10-20%. Май-сентябрь — высокий, очереди. Октябрь-декабрь — средний.` },
+  { q: `Можно ли разделить ремонт на этапы?`, a: `Да, по комнатам. Сначала одна — потом другая. Удлиняет общий срок на 50-100%, но позволяет жить в квартире. Перерыв между комнатами 2-4 недели.` },
+  { q: `Какие документы должна оформить бригада?`, a: `Договор подряда, смета с фиксированными ценами, акт приёмки работ по этапам. Без этого ущерб взыскать почти невозможно.` },
+  { q: `Что делать если бригада сделала плохо?`, a: `1) Зафиксировать фотографиями. 2) Письменная претензия с требованием переделать за их счёт. 3) Если игнорируют — экспертиза + суд. По договору шансы 80%+.` },
+  { q: `Какой запас бюджета нужен на непредвиденное?`, a: `Минимум 10% от сметы, оптимально 15-20%. Скрытые работы (трубы за стенами, кривизна основания) часто увеличивают объём.` },
+  { q: `Сколько отзывов нужно проверить у бригады?`, a: `Минимум 3 работы посмотреть вживую + 5-10 отзывов прочитать на разных площадках (Я.Карты, Авито, 2ГИС, Профи.ру).` },
+  { q: `Можно ли получить смету бесплатно?`, a: `Да, большинство ремонтных фирм делает бесплатный замер и смету. Это маркетинговая воронка — потом продают свои услуги. Не обязательно соглашаться.` }
+];
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://www.kalkremont.ru/' },
+    { '@type': 'ListItem', position: 2, name: 'Справка по городам', item: 'https://www.kalkremont.ru/spravka/' },
+    { '@type': 'ListItem', position: 3, name: `Ремонт в ${city.name}`, item: url }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="breadcrumb">
+    <a href="/">Главная</a> ›
+    <a href="/spravka/">Справка</a> ›
+    <span>в {city.name}</span>
+  </nav>
+
+  <h1>📖 Ремонт в {city.name} — FAQ 2026 (25 вопросов и ответов)</h1>
+  <p class="lead">
+    Полная справка по ремонту квартир в {city.name}. Цены {minPrice.toLocaleString('ru-RU')}-{maxPrice.toLocaleString('ru-RU')} ₽/м², этапы, документы, согласования, выбор бригады.
+    Население {city.population}.
+  </p>
+
+  <section class="quick-facts">
+    <div class="fact">
+      <strong>{minPrice.toLocaleString('ru-RU')}-{maxPrice.toLocaleString('ru-RU')} ₽/м²</strong>
+      <span>цены в {city.name}</span>
+    </div>
+    <div class="fact">
+      <strong>3-6 мес</strong>
+      <span>средний срок</span>
+    </div>
+    <div class="fact">
+      <strong>40+</strong>
+      <span>проверенных бригад</span>
+    </div>
+    <div class="fact">
+      <strong>{city.population}</strong>
+      <span>население</span>
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ 25 главных вопросов о ремонте в {city.name}</h2>
+    <div class="faqs">
+      {faqs.map((f, i) => (
+        <details class="faq-item" open={i < 3}>
+          <summary>{i + 1}. {f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>💡 Получить расчёт ремонта в {city.name}</h2>
+    <p>Точный расчёт стоимости ремонта для вашей квартиры в {city.name}:</p>
+    <a href={city.href} class="btn">→ Калькулятор для {city.name}</a>
+  </section>
+
+  <section style="margin-top:32px;">
+    <a href="/spravka/" style="color:#888;">← Справка по другим городам</a>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .breadcrumb { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .breadcrumb a { color: #888; text-decoration: none; }
+  .lead { font-size: 17px; color: #333; padding: 18px 22px; background: #fffaf3; border-left: 4px solid #f5a623; border-radius: 0 8px 8px 0; }
+  .quick-facts { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin: 24px 0; }
+  .fact { background: linear-gradient(135deg, #fff7e6, #ffe9c8); padding: 16px; border-radius: 12px; text-align: center; }
+  .fact strong { display: block; font-size: 20px; color: #c0392b; font-weight: 800; }
+  .fact span { display: block; font-size: 12px; color: #666; margin-top: 4px; }
+  section h2 { font-size: 22px; color: #c0392b; margin-top: 32px; }
+  .faqs { display: flex; flex-direction: column; gap: 8px; }
+  .faq-item { background: white; border: 1px solid #e6e8eb; border-radius: 8px; padding: 14px 18px; cursor: pointer; }
+  .faq-item[open] { border-color: #f5a623; background: #fffbf3; }
+  .faq-item summary { font-size: 15px; font-weight: 600; color: #1a1a1a; outline: none; }
+  .faq-item p { margin: 10px 0 0; font-size: 14px; color: #555; line-height: 1.6; }
+  .cta { background: #fff7e6; padding: 22px 24px; border-radius: 12px; margin-top: 32px; }
+  .btn { display: inline-block; padding: 12px 24px; background: #c0392b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 8px; }
+  @media (max-width: 700px) { .quick-facts { grid-template-columns: 1fr 1fr; } }
+</style>

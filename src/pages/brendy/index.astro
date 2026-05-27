@@ -1,0 +1,47 @@
+---
+import Base from '~/layouts/Base.astro';
+import { materialBrands } from '~/data/material-brands';
+
+const byCategory: Record<string, typeof materialBrands> = {};
+for (const b of materialBrands) {
+  byCategory[b.category] = byCategory[b.category] || [];
+  byCategory[b.category].push(b);
+}
+
+const title = `Бренды материалов для ремонта — обзоры ${materialBrands.length} брендов 2026`;
+const description = `Объективные обзоры топовых брендов материалов: Tikkurila, Caparol, Kerama Marazzi, Quick-Step, Tarkett и другие. Цены, плюсы, минусы.`;
+---
+<Base title={title} description={description}>
+  <h1>🏷️ Бренды материалов для ремонта</h1>
+  <p class="lead">Обзоры {materialBrands.length} топовых брендов материалов для ремонта 2026 года. Цены, преимущества, минусы, популярные линейки.</p>
+
+  {Object.entries(byCategory).map(([cat, brands]) => (
+    <section class="cat">
+      <h2>{cat === 'краска' ? '🎨' : cat === 'плитка' ? '🧱' : cat === 'ламинат' ? '🪵' : cat === 'сантехника' ? '🚿' : '📦'} {cat.charAt(0).toUpperCase() + cat.slice(1)} ({brands.length})</h2>
+      <div class="grid">
+        {brands.map((b) => (
+          <a href={`/brendy/${b.slug}/`} class="card">
+            <strong>{b.name}</strong>
+            <span class="origin">{b.origin}</span>
+            <p>{b.shortDescription}</p>
+            <span class="price">{b.priceRange}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+</Base>
+<style>
+  .lead { font-size: 16px; color: #555; margin-bottom: 32px; }
+  .cat { margin-bottom: 40px; }
+  .cat h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 2px solid #f5a623; color: #c0392b; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .card { display: block; padding: 16px 18px; background: #fff; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; transition: all 0.2s; }
+  .card:hover { border-color: #f5a623; background: #fffbf3; transform: translateY(-3px); }
+  .card strong { display: block; color: #c0392b; font-size: 17px; }
+  .origin { display: block; font-size: 11px; color: #888; margin-top: 2px; }
+  .card p { font-size: 13px; color: #555; margin: 10px 0; line-height: 1.4; }
+  .price { font-size: 12px; color: #2980b9; font-weight: 600; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
+</style>
