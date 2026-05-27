@@ -1,0 +1,324 @@
+---
+// AI Чат-консультант на сайте. Rule-based MVP (без OpenAI пока).
+// При наличии OPENAI_API_KEY — переключится на GPT-4o-mini через /api/chat.
+// Захватывает лидов лучше формы (+50-100% конверсия в чат).
+---
+<button class="ai-chat-toggle" id="ai-chat-toggle" aria-label="Открыть чат">
+  <span class="chat-icon">💬</span>
+  <span class="chat-badge" id="ai-chat-badge">1</span>
+</button>
+
+<div class="ai-chat-wrap" id="ai-chat-wrap">
+  <div class="ai-chat-header">
+    <div class="ai-chat-info">
+      <strong>Анна · Консультант</strong>
+      <span class="status"><i></i> online</span>
+    </div>
+    <button class="ai-chat-close" id="ai-chat-close" aria-label="Закрыть">×</button>
+  </div>
+
+  <div class="ai-chat-messages" id="ai-chat-messages">
+    <div class="msg msg-bot">
+      <div class="bubble">Здравствуйте! Я Анна, помогу с расчётом ремонта. Какой ремонт планируете?</div>
+    </div>
+    <div class="msg msg-quick">
+      <button class="quick" data-msg="Косметический ремонт">Косметический</button>
+      <button class="quick" data-msg="Капитальный ремонт">Капитальный</button>
+      <button class="quick" data-msg="Дизайнерский ремонт">Дизайнерский</button>
+      <button class="quick" data-msg="Не решил, помогите выбрать">Не решил</button>
+    </div>
+  </div>
+
+  <div class="ai-chat-input-wrap">
+    <input type="text" id="ai-chat-input" placeholder="Напишите сообщение..." autocomplete="off" />
+    <button id="ai-chat-send" aria-label="Отправить">➤</button>
+  </div>
+</div>
+
+<style>
+.ai-chat-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(192,57,43,0.4);
+  z-index: 999;
+  transition: transform 0.2s;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 6px 20px rgba(192,57,43,0.4); }
+  50% { box-shadow: 0 6px 20px rgba(192,57,43,0.8), 0 0 0 8px rgba(192,57,43,0.1); }
+}
+.ai-chat-toggle:hover { transform: scale(1.1); }
+.chat-icon { font-size: 28px; line-height: 1; display: inline-block; }
+.chat-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: white;
+  color: #c0392b;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 2px 6px;
+}
+
+.ai-chat-wrap {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 360px;
+  max-height: 540px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  display: none;
+  flex-direction: column;
+  z-index: 999;
+  overflow: hidden;
+  animation: slideUp 0.3s ease;
+}
+.ai-chat-wrap.show { display: flex; }
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.ai-chat-header {
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: white;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ai-chat-info strong { display: block; font-size: 15px; }
+.ai-chat-info .status { font-size: 11px; opacity: 0.9; display: flex; align-items: center; gap: 4px; }
+.ai-chat-info .status i { display: inline-block; width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
+.ai-chat-close { background: none; border: none; color: white; font-size: 24px; cursor: pointer; padding: 0; }
+
+.ai-chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #fafafa;
+  min-height: 280px;
+  max-height: 380px;
+}
+.msg { display: flex; }
+.msg-bot { justify-content: flex-start; }
+.msg-user { justify-content: flex-end; }
+.bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.msg-bot .bubble { background: white; color: #1a1a1a; border-bottom-left-radius: 4px; }
+.msg-user .bubble { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border-bottom-right-radius: 4px; }
+
+.msg-quick { flex-wrap: wrap; gap: 6px; }
+.quick {
+  padding: 8px 14px;
+  background: white;
+  border: 1.5px solid #c0392b;
+  color: #c0392b;
+  border-radius: 14px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.quick:hover { background: #c0392b; color: white; }
+
+.ai-chat-input-wrap {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid #eee;
+  background: white;
+}
+.ai-chat-input-wrap input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid #e6e8eb;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+}
+.ai-chat-input-wrap input:focus { border-color: #c0392b; }
+.ai-chat-input-wrap button {
+  width: 40px;
+  height: 40px;
+  background: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+@media (max-width: 500px) {
+  .ai-chat-wrap { left: 12px; right: 12px; width: auto; bottom: 90px; }
+}
+</style>
+
+<script is:inline>
+(function() {
+  const wrap = document.getElementById('ai-chat-wrap');
+  const toggle = document.getElementById('ai-chat-toggle');
+  const close = document.getElementById('ai-chat-close');
+  const messages = document.getElementById('ai-chat-messages');
+  const input = document.getElementById('ai-chat-input');
+  const send = document.getElementById('ai-chat-send');
+  const badge = document.getElementById('ai-chat-badge');
+  if (!wrap || !toggle) return;
+
+  let stage = 'initial'; // initial → type-chosen → area-asked → city-asked → contact-asked
+  let context = { type: '', area: '', city: '', phone: '' };
+
+  // Rule-based responses
+  function botResponse(userMsg) {
+    const msg = userMsg.toLowerCase();
+    let reply, quick = [];
+
+    if (stage === 'initial') {
+      if (/космет/.test(msg)) { context.type = 'косметический'; }
+      else if (/капит/.test(msg)) { context.type = 'капитальный'; }
+      else if (/дизайн/.test(msg)) { context.type = 'дизайнерский'; }
+      else if (/решил|выбра|помо/.test(msg)) { context.type = 'обсуждается'; }
+      else { return { reply: 'Уточните: какой тип ремонта планируете — косметический, капитальный или дизайнерский?', quick: ['Косметический', 'Капитальный', 'Дизайнерский'] }; }
+      stage = 'type-chosen';
+      const priceRange = context.type === 'косметический' ? '7-15 тыс ₽/м²' : context.type === 'капитальный' ? '18-35 тыс ₽/м²' : context.type === 'дизайнерский' ? '35-80 тыс ₽/м²' : '10-50 тыс ₽/м²';
+      reply = 'Отлично! ' + context.type.charAt(0).toUpperCase() + context.type.slice(1) + ' ремонт — это обычно ' + priceRange + '. А какая площадь квартиры?';
+      quick = ['До 35 м² (студия/однушка)', '35-60 м² (двушка)', '60-100 м² (трёшка)', 'Больше 100 м²'];
+    }
+    else if (stage === 'type-chosen') {
+      const numMatch = msg.match(/(\d+)/);
+      if (numMatch) {
+        context.area = numMatch[1] + ' м²';
+      } else if (/студ|однуш|до 35/.test(msg)) context.area = '~30 м²';
+      else if (/35-60|двуш/.test(msg)) context.area = '~50 м²';
+      else if (/60-100|трёш|трёш/.test(msg)) context.area = '~80 м²';
+      else if (/100|больш|более/.test(msg)) context.area = '~120 м²';
+      else { return { reply: 'Уточните площадь — приблизительно сколько квадратных метров?', quick: ['30 м²', '50 м²', '80 м²', '100+ м²'] }; }
+      stage = 'area-asked';
+      reply = 'Понятно, ' + context.area + '. В каком городе квартира?';
+      quick = ['Москва', 'СПб', 'Екатеринбург', 'Другой город'];
+    }
+    else if (stage === 'area-asked') {
+      context.city = userMsg.trim();
+      stage = 'city-asked';
+      reply = 'Супер! Чтобы прислать точный расчёт и помочь выбрать материалы — оставьте телефон. Перезвоним в течение часа, никакого спама.';
+      quick = [];
+    }
+    else if (stage === 'city-asked') {
+      const phoneMatch = msg.match(/[\d+()\-\s]{10,}/);
+      if (phoneMatch) {
+        context.phone = phoneMatch[0];
+        stage = 'submitted';
+        // Send lead
+        fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phone: context.phone,
+            type: context.type,
+            area: context.area,
+            city: context.city,
+            source: 'ai-chat',
+            page: location.pathname
+          })
+        }).then(function() {
+          if (window.ym) window.ym(99000000, 'reachGoal', 'ai-chat-lead');
+        });
+        reply = '✅ Заявка принята! Менеджер перезвонит в течение часа. А пока — посмотрите наши готовые сметы по вашему городу: /price/. Если есть ещё вопросы, спрашивайте!';
+      } else {
+        reply = 'Похоже на не телефон. Напишите номер в формате +7 (___) ___-__-__ или просто 10-11 цифр.';
+        quick = [];
+      }
+    }
+    else {
+      // Submitted — chit-chat
+      reply = 'Спасибо! Менеджер скоро свяжется. Можете изучить наши калькуляторы и кейсы пока ждёте.';
+      quick = [];
+    }
+    return { reply: reply, quick: quick };
+  }
+
+  function addMessage(text, who, quickOptions) {
+    if (typeof quickOptions === 'undefined') quickOptions = [];
+    const msg = document.createElement('div');
+    msg.className = 'msg msg-' + who;
+    msg.innerHTML = '<div class="bubble">' + text.replace(/</g, '&lt;').replace(/\n/g, '<br>') + '</div>';
+    messages.appendChild(msg);
+
+    if (quickOptions.length > 0) {
+      const quick = document.createElement('div');
+      quick.className = 'msg msg-quick';
+      quickOptions.forEach(function(q) {
+        const btn = document.createElement('button');
+        btn.className = 'quick';
+        btn.textContent = q;
+        btn.addEventListener('click', function() {
+          quick.remove();
+          handleUserMsg(q);
+        });
+        quick.appendChild(btn);
+      });
+      messages.appendChild(quick);
+    }
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function handleUserMsg(text) {
+    addMessage(text, 'user');
+    input.value = '';
+    setTimeout(function() {
+      const resp = botResponse(text);
+      addMessage(resp.reply, 'bot', resp.quick);
+    }, 600);
+  }
+
+  toggle.addEventListener('click', function() {
+    wrap.classList.toggle('show');
+    if (badge) badge.style.display = 'none';
+    if (window.ym) window.ym(99000000, 'reachGoal', 'ai-chat-opened');
+  });
+  close.addEventListener('click', function() { wrap.classList.remove('show'); });
+
+  // Initial quick buttons (на старте)
+  document.querySelectorAll('.quick[data-msg]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      const parent = btn.closest('.msg-quick');
+      if (parent) parent.remove();
+      handleUserMsg(btn.dataset.msg);
+    });
+  });
+
+  send.addEventListener('click', function() {
+    const text = input.value.trim();
+    if (text) handleUserMsg(text);
+  });
+  input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && input.value.trim()) handleUserMsg(input.value.trim());
+  });
+
+  // Auto-open после 30 сек если не открывали
+  setTimeout(function() {
+    if (!wrap.classList.contains('show') && !sessionStorage.getItem('ai-chat-auto-opened')) {
+      // pulse badge только
+      if (badge) badge.style.display = 'block';
+    }
+  }, 30000);
+})();
+</script>

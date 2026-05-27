@@ -1,6 +1,8 @@
 // Сравнения "X vs Y" — высокочастотные intent-запросы.
 // Каждое сравнение = 1 URL /vs/{slug}/. Цель — захват пользователей в decision phase.
 
+import { comparisonsExtra } from './comparisons-vs-extra';
+
 export interface ComparisonVs {
   slug: string;          // "laminat-vs-parket"
   a: string;             // "Ламинат"
@@ -15,7 +17,7 @@ export interface ComparisonVs {
   faqs: { q: string; a: string }[];
 }
 
-export const comparisons: ComparisonVs[] = [
+const comparisonsBase: ComparisonVs[] = [
   {
     slug: 'laminat-vs-parket',
     a: 'Ламинат', b: 'Паркет',
@@ -334,3 +336,6 @@ export const comparisons: ComparisonVs[] = [
     ]
   }
 ];
+
+// Объединённый экспорт: base + extra = 30+
+export const comparisons: ComparisonVs[] = [...comparisonsBase, ...(comparisonsExtra as ComparisonVs[])];

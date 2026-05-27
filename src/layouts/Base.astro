@@ -3,6 +3,7 @@ import { SITE_CONFIG } from '~/config';
 import Metrika from '~/components/Metrika.astro';
 import StickyCta from '~/components/StickyCta.astro';
 import ExitPopup from '~/components/ExitPopup.astro';
+import AiChat from '~/components/AiChat.astro';
 import TopBanner from '~/components/TopBanner.astro';
 
 interface Props {
@@ -128,6 +129,7 @@ const webPageSchema = {
 
     <StickyCta />
     <ExitPopup />
+    <AiChat />
     <!-- Toast notifications загружаются в footer для социального доказательства -->
     <div id="social-toast-mount"></div>
     <script is:inline>
