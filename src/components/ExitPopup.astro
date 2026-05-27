@@ -1,0 +1,166 @@
+---
+// Exit-intent popup для desktop — последний шанс захватить лид перед уходом.
+// На mobile показываем после 10 сек на странице если scroll >= 50%.
+---
+<div class="exit-popup-overlay" id="exit-popup">
+  <div class="exit-popup">
+    <button class="exit-close" aria-label="Закрыть" id="exit-close">×</button>
+    <div class="exit-badge">🎁 Бонус</div>
+    <h3>Подождите!</h3>
+    <p class="exit-headline">Скидка 5% на ваш ремонт</p>
+    <p class="exit-text">Оставьте телефон — пришлём расчёт за 2 часа и зафиксируем скидку в смете.</p>
+    <form class="exit-form" id="exit-form">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required pattern="[0-9+()\-\s]+" minlength="10" />
+      <button type="submit">Получить расчёт со скидкой →</button>
+    </form>
+    <p class="exit-note">Без спама. Только расчёт по вашему запросу. ⏱ 2 часа</p>
+  </div>
+</div>
+
+<style>
+.exit-popup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+.exit-popup-overlay.show { display: flex; }
+.exit-popup {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 32px;
+  max-width: 440px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn {
+  from { transform: scale(0.85) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.exit-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #999;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+}
+.exit-close:hover { color: #c0392b; }
+.exit-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #f5a623, #e67e22);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.exit-popup h3 { font-size: 28px; margin: 0 0 6px; color: #1a1a1a; }
+.exit-headline { font-size: 22px; font-weight: 700; margin: 0 0 14px; color: #c0392b; }
+.exit-text { font-size: 14px; color: #555; line-height: 1.5; margin: 0 0 22px; }
+.exit-form { display: flex; flex-direction: column; gap: 10px; }
+.exit-form input[type="tel"] {
+  padding: 14px 16px;
+  border: 2px solid #e6e8eb;
+  border-radius: 8px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.exit-form input:focus { border-color: #c0392b; outline: none; }
+.exit-form button {
+  padding: 14px;
+  background: linear-gradient(135deg, #c0392b, #e74c3c);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.exit-form button:hover { transform: translateY(-1px); }
+.exit-note { font-size: 12px; color: #888; text-align: center; margin: 12px 0 0; }
+
+@media (max-width: 500px) {
+  .exit-popup { padding: 24px 22px; }
+  .exit-popup h3 { font-size: 24px; }
+  .exit-headline { font-size: 18px; }
+}
+</style>
+
+<script is:inline>
+(function() {
+  const popup = document.getElementById('exit-popup');
+  if (!popup) return;
+  const closeBtn = document.getElementById('exit-close');
+  const form = document.getElementById('exit-form');
+  if (sessionStorage.getItem('exit-popup-shown') === '1') return;
+
+  function show() {
+    if (sessionStorage.getItem('exit-popup-shown') === '1') return;
+    popup.classList.add('show');
+    sessionStorage.setItem('exit-popup-shown', '1');
+    if (window.ym) window.ym(99000000, 'reachGoal', 'exit-popup-shown');
+  }
+
+  // Desktop: exit-intent через mouseleave из top
+  if (window.innerWidth >= 800) {
+    document.addEventListener('mouseleave', function(e) {
+      if (e.clientY <= 0) show();
+    });
+  } else {
+    // Mobile: после 15 сек если scroll >= 40%
+    setTimeout(function() {
+      const scrolled = window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight);
+      if (scrolled >= 0.4) show();
+    }, 15000);
+    // Также при попытке закрыть вкладку (back button)
+    window.addEventListener('beforeunload', function() {
+      if (Math.random() < 0.3) show(); // 30% шанс показать
+    });
+  }
+
+  closeBtn && closeBtn.addEventListener('click', function() {
+    popup.classList.remove('show');
+  });
+  popup.addEventListener('click', function(e) {
+    if (e.target === popup) popup.classList.remove('show');
+  });
+
+  form && form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const phone = form.querySelector('input[name="phone"]').value;
+    fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: phone,
+        source: 'exit-popup',
+        page: location.pathname,
+        ts: Date.now()
+      })
+    }).then(function() {
+      popup.querySelector('.exit-popup').innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:60px;margin-bottom:12px;">✅</div><h3 style="color:#27ae60;margin:0 0 12px;">Заявка принята!</h3><p style="color:#555;">Перезвоним в течение 2 часов и зафиксируем скидку 5%.</p></div>';
+      if (window.ym) window.ym(99000000, 'reachGoal', 'exit-popup-submit');
+      setTimeout(function() { popup.classList.remove('show'); }, 3500);
+    }).catch(function() {
+      alert('Ошибка отправки. Попробуйте ещё раз.');
+    });
+  });
+})();
+</script>

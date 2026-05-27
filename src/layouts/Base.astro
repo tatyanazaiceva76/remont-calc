@@ -2,8 +2,7 @@
 import { SITE_CONFIG } from '~/config';
 import Metrika from '~/components/Metrika.astro';
 import StickyCta from '~/components/StickyCta.astro';
-// ExitIntent временно отключён — заменяем на нормальную лид-форму (не WhatsApp redirect)
-// import ExitIntent from '~/components/ExitIntent.astro';
+import ExitPopup from '~/components/ExitPopup.astro';
 import TopBanner from '~/components/TopBanner.astro';
 
 interface Props {
@@ -128,8 +127,7 @@ const webPageSchema = {
     </main>
 
     <StickyCta />
-    <!-- ExitIntent временно отключён -->
-    <!-- <ExitIntent /> -->
+    <ExitPopup />
 
     <footer class="site-footer">
       <div class="container">

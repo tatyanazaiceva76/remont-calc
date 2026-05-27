@@ -1,0 +1,58 @@
+---
+import Base from '~/layouts/Base.astro';
+import { glossary, glossaryShort } from '~/data/glossary';
+
+const allTerms = [
+  ...glossary.map((t) => ({ slug: t.slug, term: t.term, short: t.short, category: t.category, full: true })),
+  ...glossaryShort.map((t) => ({ slug: t.slug, term: t.term, short: t.short, category: t.category, full: false }))
+];
+
+const byCategory: Record<string, typeof allTerms> = {};
+for (const t of allTerms) {
+  byCategory[t.category] = byCategory[t.category] || [];
+  byCategory[t.category].push(t);
+}
+
+const title = `Глоссарий ремонта — ${allTerms.length}+ терминов от А до Я`;
+const description = `Полный словарь терминов ремонта квартиры 2026: ${allTerms.length}+ определений материалов, инженерии, процессов. С примерами цен и связанными калькуляторами.`;
+---
+<Base title={title} description={description}>
+  <h1>📚 Глоссарий ремонта — {allTerms.length}+ терминов</h1>
+  <p class="lead">Все понятия о ремонте квартиры в одном месте. От штукатурки до УЗО, от паркета до перепланировки. С реальными ценами 2026 и ссылками на калькуляторы.</p>
+
+  {Object.entries(byCategory).map(([cat, terms]) => (
+    <section class="cat">
+      <h2>{cat === 'отделка' ? '🎨' : cat === 'материалы' ? '🧱' : cat === 'инженерия' ? '⚡' : cat === 'процессы' ? '🔄' : '🔧'} {cat.charAt(0).toUpperCase() + cat.slice(1)} ({terms.length})</h2>
+      <div class="grid">
+        {terms.sort((a, b) => a.term.localeCompare(b.term, 'ru')).map((t) => (
+          <a href={`/slovar/${t.slug}/`} class="term-card">
+            <strong>{t.term}</strong>
+            <p>{t.short.slice(0, 120)}{t.short.length > 120 ? '…' : ''}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
+
+  <section style="margin-top:48px;background:#fffaf3;padding:20px 24px;border-radius:10px;">
+    <h2>💡 Нужен расчёт стоимости?</h2>
+    <p>В словаре собраны общие понятия. Для расчёта стоимости конкретного ремонта используйте онлайн-калькуляторы:</p>
+    <p>
+      <a href="/">→ Калькуляторы материалов</a> ·
+      <a href="https://price.kalkremont.ru/">→ Цены по 40 городам</a> ·
+      <a href="https://moskva.kalkremont.ru/">→ Ремонт в Москве</a>
+    </p>
+  </section>
+</Base>
+<style>
+  .lead { font-size: 16px; color: #555; margin-bottom: 32px; }
+  .cat { margin-bottom: 40px; }
+  .cat h2 { font-size: 22px; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #f5a623; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .term-card { display: block; padding: 14px 16px; background: #fff; border: 1px solid #e6e8eb; border-radius: 8px; text-decoration: none; color: #1a1a1a; transition: all 0.2s; }
+  .term-card:hover { border-color: #f5a623; background: #fffbf3; transform: translateY(-2px); }
+  .term-card strong { display: block; color: #c0392b; margin-bottom: 4px; font-size: 14px; }
+  .term-card p { margin: 0; font-size: 12px; color: #666; line-height: 1.4; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
+</style>
