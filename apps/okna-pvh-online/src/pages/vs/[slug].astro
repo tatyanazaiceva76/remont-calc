@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"kbe-vs-rehau-vs-veka","a":"KBE/Rehau","b":"VEKA","intro":"Сравнение топ-3 профилей: KBE, Rehau, VEKA. Какой выбрать?","criteria":[{"name":"Производитель","a":"Германия","b":"Германия"},{"name":"Камер в профиле","a":"5-7","b":"5-6"},{"name":"Цена","a":"на 10-20% дороже","b":"Стандарт"},{"name":"Гарантия","a":"10 лет","b":"5-10 лет"}],"conclusion":"KBE/Rehau — премиум. VEKA — средний сегмент, оптимальное соотношение.","whenA":["Премиум-квартира","Холодный регион"],"whenB":["Стандарт качества","Средний бюджет"]},{"slug":"odnokamernyy-vs-dvukhkamernyy-paket","a":"Однокамерный","b":"Двухкамерный","intro":"Какой стеклопакет выбрать — однокамерный или двухкамерный?","criteria":[{"name":"Стёкол","a":"2 стекла","b":"3 стекла"},{"name":"Теплоизоляция","a":"Средняя","b":"Хорошая"},{"name":"Цена","a":"Стандарт","b":"+20-30%"},{"name":"Вес","a":"Лёгкий","b":"На 50% тяжелее"}],"conclusion":"Двухкамерный — для холодных регионов. Однокамерный — для тёплых.","whenA":["Юг России","Балкон холодный"],"whenB":["Москва и севернее","Жилая комната"]}];
+
+export function getStaticPaths() {
+  const comps = [{"slug":"kbe-vs-rehau-vs-veka","a":"KBE/Rehau","b":"VEKA","intro":"Сравнение топ-3 профилей: KBE, Rehau, VEKA. Какой выбрать?","criteria":[{"name":"Производитель","a":"Германия","b":"Германия"},{"name":"Камер в профиле","a":"5-7","b":"5-6"},{"name":"Цена","a":"на 10-20% дороже","b":"Стандарт"},{"name":"Гарантия","a":"10 лет","b":"5-10 лет"}],"conclusion":"KBE/Rehau — премиум. VEKA — средний сегмент, оптимальное соотношение.","whenA":["Премиум-квартира","Холодный регион"],"whenB":["Стандарт качества","Средний бюджет"]},{"slug":"odnokamernyy-vs-dvukhkamernyy-paket","a":"Однокамерный","b":"Двухкамерный","intro":"Какой стеклопакет выбрать — однокамерный или двухкамерный?","criteria":[{"name":"Стёкол","a":"2 стекла","b":"3 стекла"},{"name":"Теплоизоляция","a":"Средняя","b":"Хорошая"},{"name":"Цена","a":"Стандарт","b":"+20-30%"},{"name":"Вес","a":"Лёгкий","b":"На 50% тяжелее"}],"conclusion":"Двухкамерный — для холодных регионов. Однокамерный — для тёплых.","whenA":["Юг России","Балкон холодный"],"whenB":["Москва и севернее","Жилая комната"]}];
+  return comps.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+
+const { c } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<Base title={`${c.a} или ${c.b} — Окна ПВХ`} description={c.intro} canonical={url}>
+  <nav class="bc"><a href="/">Окна ПВХ</a> › <a href="/vs/">Сравнения</a> › <span>{c.a} vs {c.b}</span></nav>
+  <h1>⚖️ {c.a} или {c.b}</h1>
+  <p class="lead">{c.intro}</p>
+
+  <table class="cmp">
+    <tr><th>Критерий</th><th>{c.a}</th><th>{c.b}</th></tr>
+    {c.criteria.map((cr) => (
+      <tr><td>{cr.name}</td><td>{cr.a}</td><td>{cr.b}</td></tr>
+    ))}
+  </table>
+
+  <section class="concl"><h2>🎯 Вывод</h2><p>{c.conclusion}</p></section>
+
+  <div class="when">
+    <div><h2 style="color:#2980b9;">✅ Когда {c.a}</h2><ul>{c.whenA.map((w) => <li>{w}</li>)}</ul></div>
+    <div><h2 style="color:#2980b9;">✅ Когда {c.b}</h2><ul>{c.whenB.map((w) => <li>{w}</li>)}</ul></div>
+  </div>
+
+  <section class="cta">
+    <h2>💡 Получить расчёт</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'okna-pvh-online.ru/vs',page:location.pathname})}).then(()=>{this.innerHTML='✅ Заявка принята!'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить →</button>
+    </form>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 14px; background: white; border-left: 4px solid #2980b9; }
+  .cmp { width: 100%; border-collapse: collapse; margin: 24px 0; }
+  .cmp th, .cmp td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+  .cmp th { background: #fffaf3; }
+  .concl { padding: 18px; background: #e8f4f8; border-radius: 10px; margin: 24px 0; }
+  .when { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .when ul { padding-left: 20px; }
+  .cta { background: white; padding: 20px; border-radius: 10px; margin: 24px 0; }
+  .cta form { display: flex; gap: 8px; max-width: 400px; }
+  .cta input { flex: 1; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px; }
+  .cta button { padding: 12px 20px; background: #2980b9; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  @media (max-width: 600px) { .when { grid-template-columns: 1fr; } }
+</style>

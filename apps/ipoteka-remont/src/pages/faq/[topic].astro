@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+const topics = [{"slug":"dlya-samozanyatyh","title":"Ипотека для самозанятых","questions":[{"q":"Дадут ли ипотеку самозанятому?","a":"Да, основные банки (Сбер, ВТБ, Альфа) выдают самозанятым с 2020 г. Условие: декларация о доходах за 1-2 года минимум 80-150 тыс ₽/мес."},{"q":"Какие документы нужны?","a":"Справка о постановке на учёт как самозанятый, декларация о доходах, выписка по счёту за 6-12 месяцев, паспорт."},{"q":"Ставка для самозанятых выше?","a":"Обычно на 0.5-1.5% выше чем для зарплатников. Чтобы получить ставку для зарплатников — нужно стать клиентом банка (зарплатная карта в этом банке)."}]},{"slug":"pri-plokhoy-kreditnoy-istorii","title":"Ипотека с плохой кредитной историей","questions":[{"q":"Дадут ли при просрочках?","a":"Если просрочки давно (>2-3 лет назад) — могут дать. Текущие просрочки или активные коллекторы — точно нет."},{"q":"Как улучшить кредитную историю?","a":"Закрыть текущие кредиты, погасить просрочки, оформить кредитную карту и аккуратно пользоваться 6-12 мес."}]},{"slug":"pervonachalnyy-vznos","title":"Первоначальный взнос на ипотеку","questions":[{"q":"Можно ли ипотеку без первоначального взноса?","a":"Через материнский капитал — да. Через военную ипотеку — да. В остальных случаях — минимум 10-15%."},{"q":"Как накопить на первоначальный взнос?","a":"Депозит на 1-2 года, накопительный счёт ИИС, продажа недвижимости, помощь родителей."}]}];
+
+export function getStaticPaths() {
+  const topics = [{"slug":"dlya-samozanyatyh","title":"Ипотека для самозанятых","questions":[{"q":"Дадут ли ипотеку самозанятому?","a":"Да, основные банки (Сбер, ВТБ, Альфа) выдают самозанятым с 2020 г. Условие: декларация о доходах за 1-2 года минимум 80-150 тыс ₽/мес."},{"q":"Какие документы нужны?","a":"Справка о постановке на учёт как самозанятый, декларация о доходах, выписка по счёту за 6-12 месяцев, паспорт."},{"q":"Ставка для самозанятых выше?","a":"Обычно на 0.5-1.5% выше чем для зарплатников. Чтобы получить ставку для зарплатников — нужно стать клиентом банка (зарплатная карта в этом банке)."}]},{"slug":"pri-plokhoy-kreditnoy-istorii","title":"Ипотека с плохой кредитной историей","questions":[{"q":"Дадут ли при просрочках?","a":"Если просрочки давно (>2-3 лет назад) — могут дать. Текущие просрочки или активные коллекторы — точно нет."},{"q":"Как улучшить кредитную историю?","a":"Закрыть текущие кредиты, погасить просрочки, оформить кредитную карту и аккуратно пользоваться 6-12 мес."}]},{"slug":"pervonachalnyy-vznos","title":"Первоначальный взнос на ипотеку","questions":[{"q":"Можно ли ипотеку без первоначального взноса?","a":"Через материнский капитал — да. Через военную ипотеку — да. В остальных случаях — минимум 10-15%."},{"q":"Как накопить на первоначальный взнос?","a":"Депозит на 1-2 года, накопительный счёт ИИС, продажа недвижимости, помощь родителей."}]}];
+  return topics.map((t) => ({ params: { topic: t.slug }, props: { t } }));
+}
+
+const { t } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<Base title={t.title + ' — Ипотека на ремонт'} description={t.questions[0].a.slice(0, 145)} canonical={url}>
+  <nav class="bc"><a href="/">Ипотека на ремонт</a> › <a href="/faq/">FAQ</a> › <span>{t.title}</span></nav>
+  <h1>❓ {t.title}</h1>
+  <div class="faqs">
+    {t.questions.map((q, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{q.q}</summary>
+        <p>{q.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <section class="cta">
+    <h2>💡 Задать вопрос специалисту</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'ipoteka-remont.ru/faq',topic:'{t.slug}',page:location.pathname})}).then(()=>{this.innerHTML='✅ Заявка принята!'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить ответ →</button>
+    </form>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: t.questions.map((q) => ({
+      '@type': 'Question',
+      name: q.q,
+      acceptedAnswer: { '@type': 'Answer', text: q.a }
+    }))
+  })} />
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #1abc9c; }
+  .faq p { margin: 10px 0 0; color: #555; }
+  .cta { background: white; padding: 20px; border-radius: 10px; margin: 24px 0; }
+  .cta form { display: flex; gap: 8px; max-width: 400px; }
+  .cta input { flex: 1; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px; }
+  .cta button { padding: 12px 20px; background: #1abc9c; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+</style>

@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"osnovnoy-vs-premium-paket","a":"Базовый пакет","b":"Премиум пакет","intro":"Что входит в разные пакеты дизайн-проекта?","criteria":[{"name":"Цена за м²","a":"от 1.5k ₽","b":"от 4.5k ₽"},{"name":"Чертежи","a":"Есть","b":"Есть"},{"name":"3D-визуализация","a":"Нет","b":"Все комнаты"},{"name":"Авторский надзор","a":"Нет","b":"Включён"},{"name":"Подбор материалов","a":"Нет","b":"Включён"}],"conclusion":"Базовый — для самостоятельного ремонта. Премиум — если не разбираетесь.","whenA":["Свой прораб с опытом","Бюджет ограничен"],"whenB":["Хотите без головной боли","Дорогой ремонт"]}];
+---
+<Base title="Сравнения — Дизайн интерьера" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Дизайн интерьера</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #e74c3c; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #e74c3c; }
+  .vs span { background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

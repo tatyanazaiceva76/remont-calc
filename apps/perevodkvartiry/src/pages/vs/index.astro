@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"soglasovanie-vs-uzakonenie","a":"Согласование заранее","b":"Узаконить задним числом","intro":"Что выгоднее — согласовать перепланировку до или после ремонта?","criteria":[{"name":"Цена","a":"30-100k ₽","b":"80-200k ₽"},{"name":"Срок","a":"1-4 месяца","b":"3-9 месяцев"},{"name":"Риски","a":"Минимум","b":"Могут не одобрить и заставить вернуть"}],"conclusion":"Согласование заранее — однозначно. Узаконить задним числом — рискованно.","whenA":["Планируете ремонт","Перепродажа в будущем"],"whenB":["Уже всё сломали","Нет другого выбора"]}];
+---
+<Base title="Сравнения — Перепланировка" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Перепланировка</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #16a085; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #16a085; }
+  .vs span { background: #16a085; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"ekonom-vs-premium-dver","a":"Эконом","b":"Премиум","intro":"Эконом-дверь vs премиум — стоит ли переплачивать?","criteria":[{"name":"Цена","a":"от 12k ₽","b":"от 60k ₽"},{"name":"Сталь","a":"1.2 мм","b":"2-3 мм"},{"name":"Шумоизоляция","a":"Базовая","b":"Профи"},{"name":"Замки","a":"2 базовых","b":"2-3 премиум (Mottura, Cisa)"}],"conclusion":"Эконом для съёмной/арендной. Премиум для своей на 20+ лет.","whenA":["Аренда","Бюджет минимум"],"whenB":["Своя квартира","Первый этаж/таунхаус"]}];
+---
+<Base title="Сравнения — Стальные двери" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Стальные двери</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #34495e; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #34495e; }
+  .vs span { background: #34495e; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

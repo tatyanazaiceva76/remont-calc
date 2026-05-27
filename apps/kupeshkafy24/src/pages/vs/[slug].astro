@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"aristo-vs-versal","a":"Aristo","b":"Versal","intro":"Какую систему раздвижения выбрать для шкафа-купе?","criteria":[{"name":"Производитель","a":"Россия (Италия)","b":"Россия"},{"name":"Цена за метр","a":"от 8k ₽","b":"от 4k ₽"},{"name":"Гарантия","a":"10 лет","b":"5 лет"},{"name":"Бесшумность","a":"Отличная","b":"Средняя"}],"conclusion":"Aristo — премиум, окупается тишиной и долговечностью. Versal — средний.","whenA":["Премиум-шкаф","Спальня"],"whenB":["Бюджет ограничен","Прихожая"]},{"slug":"do-potolka-vs-standart","a":"До потолка","b":"Стандартный","intro":"Шкаф до потолка или стандартной высоты — что лучше?","criteria":[{"name":"Цена","a":"+30-50%","b":"Стандарт"},{"name":"Полезный объём","a":"+50%","b":"Стандарт"},{"name":"Уборка сверху","a":"Не нужна","b":"Пыль собирается"}],"conclusion":"До потолка — однозначно лучше. Дороже но окупается.","whenA":["Хочется максимум места","Высокие потолки (2.8+)"],"whenB":["Маленький бюджет","Низкие потолки (<2.5)"]}];
+
+export function getStaticPaths() {
+  const comps = [{"slug":"aristo-vs-versal","a":"Aristo","b":"Versal","intro":"Какую систему раздвижения выбрать для шкафа-купе?","criteria":[{"name":"Производитель","a":"Россия (Италия)","b":"Россия"},{"name":"Цена за метр","a":"от 8k ₽","b":"от 4k ₽"},{"name":"Гарантия","a":"10 лет","b":"5 лет"},{"name":"Бесшумность","a":"Отличная","b":"Средняя"}],"conclusion":"Aristo — премиум, окупается тишиной и долговечностью. Versal — средний.","whenA":["Премиум-шкаф","Спальня"],"whenB":["Бюджет ограничен","Прихожая"]},{"slug":"do-potolka-vs-standart","a":"До потолка","b":"Стандартный","intro":"Шкаф до потолка или стандартной высоты — что лучше?","criteria":[{"name":"Цена","a":"+30-50%","b":"Стандарт"},{"name":"Полезный объём","a":"+50%","b":"Стандарт"},{"name":"Уборка сверху","a":"Не нужна","b":"Пыль собирается"}],"conclusion":"До потолка — однозначно лучше. Дороже но окупается.","whenA":["Хочется максимум места","Высокие потолки (2.8+)"],"whenB":["Маленький бюджет","Низкие потолки (<2.5)"]}];
+  return comps.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+
+const { c } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<Base title={`${c.a} или ${c.b} — Шкафы-купе`} description={c.intro} canonical={url}>
+  <nav class="bc"><a href="/">Шкафы-купе</a> › <a href="/vs/">Сравнения</a> › <span>{c.a} vs {c.b}</span></nav>
+  <h1>⚖️ {c.a} или {c.b}</h1>
+  <p class="lead">{c.intro}</p>
+
+  <table class="cmp">
+    <tr><th>Критерий</th><th>{c.a}</th><th>{c.b}</th></tr>
+    {c.criteria.map((cr) => (
+      <tr><td>{cr.name}</td><td>{cr.a}</td><td>{cr.b}</td></tr>
+    ))}
+  </table>
+
+  <section class="concl"><h2>🎯 Вывод</h2><p>{c.conclusion}</p></section>
+
+  <div class="when">
+    <div><h2 style="color:#9b59b6;">✅ Когда {c.a}</h2><ul>{c.whenA.map((w) => <li>{w}</li>)}</ul></div>
+    <div><h2 style="color:#2980b9;">✅ Когда {c.b}</h2><ul>{c.whenB.map((w) => <li>{w}</li>)}</ul></div>
+  </div>
+
+  <section class="cta">
+    <h2>💡 Получить расчёт</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'kupeshkafy24.ru/vs',page:location.pathname})}).then(()=>{this.innerHTML='✅ Заявка принята!'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить →</button>
+    </form>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 14px; background: white; border-left: 4px solid #9b59b6; }
+  .cmp { width: 100%; border-collapse: collapse; margin: 24px 0; }
+  .cmp th, .cmp td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+  .cmp th { background: #fffaf3; }
+  .concl { padding: 18px; background: #e8f4f8; border-radius: 10px; margin: 24px 0; }
+  .when { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .when ul { padding-left: 20px; }
+  .cta { background: white; padding: 20px; border-radius: 10px; margin: 24px 0; }
+  .cta form { display: flex; gap: 8px; max-width: 400px; }
+  .cta input { flex: 1; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px; }
+  .cta button { padding: 12px 20px; background: #9b59b6; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  @media (max-width: 600px) { .when { grid-template-columns: 1fr; } }
+</style>

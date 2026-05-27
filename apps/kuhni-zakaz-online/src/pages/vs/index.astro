@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"mdf-vs-akril-fasad","a":"МДФ","b":"Акрил","intro":"Какой фасад выбрать для кухни — МДФ или акрил? Сравнение по цене, износу, эстетике.","criteria":[{"name":"Цена за пог.м","a":"от 12k ₽","b":"от 18k ₽"},{"name":"Глянец","a":"Средний","b":"Зеркальный"},{"name":"Износ","a":"10-15 лет","b":"15-25 лет"},{"name":"Реставрация","a":"Сложно","b":"Невозможно"}],"conclusion":"МДФ — классика и универсал. Акрил — премиум-глянец и долговечность.","whenA":["Бюджет средний","Хочется матовый/полу-матовый"],"whenB":["Премиум-кухня","Хочется яркий глянец"]},{"slug":"klassika-vs-modern-kukhnya","a":"Классическая кухня","b":"Современная (модерн)","intro":"Классический стиль или современный — какую кухню выбрать?","criteria":[{"name":"Цена за пог.м","a":"от 80k ₽","b":"от 60k ₽"},{"name":"Материалы","a":"МДФ, массив","b":"Акрил, пластик, ЛДСП"},{"name":"Эстетика","a":"Богато, фрезеровка","b":"Минимализм, ровные фасады"}],"conclusion":"Классика для больших квартир. Современный — для квартир до 80 м².","whenA":["Большая квартира (>80 м²)","Классический интерьер"],"whenB":["Современный интерьер","Маленькая кухня"]},{"slug":"pryamaya-vs-uglovaya-kukhnya","a":"Прямая кухня","b":"Угловая кухня","intro":"Какая планировка кухни лучше — прямая или угловая?","criteria":[{"name":"Эргономика","a":"Слабая (хождение туда-сюда)","b":"Отличная (треугольник)"},{"name":"Площадь м²","a":"6-9 м²","b":"8-15 м²"},{"name":"Цена","a":"от 80k ₽","b":"от 120k ₽"}],"conclusion":"Угловая удобнее, но требует больше места. Прямая — компактно для узких кухонь.","whenA":["Узкие кухни до 6 м²","Студия"],"whenB":["Кухня от 8 м²","Семья 3+ человека"]}];
+---
+<Base title="Сравнения — Кухни на заказ" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Кухни на заказ</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #e67e22; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #e67e22; }
+  .vs span { background: #e67e22; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

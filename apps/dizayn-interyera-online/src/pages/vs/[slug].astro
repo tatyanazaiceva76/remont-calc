@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"osnovnoy-vs-premium-paket","a":"Базовый пакет","b":"Премиум пакет","intro":"Что входит в разные пакеты дизайн-проекта?","criteria":[{"name":"Цена за м²","a":"от 1.5k ₽","b":"от 4.5k ₽"},{"name":"Чертежи","a":"Есть","b":"Есть"},{"name":"3D-визуализация","a":"Нет","b":"Все комнаты"},{"name":"Авторский надзор","a":"Нет","b":"Включён"},{"name":"Подбор материалов","a":"Нет","b":"Включён"}],"conclusion":"Базовый — для самостоятельного ремонта. Премиум — если не разбираетесь.","whenA":["Свой прораб с опытом","Бюджет ограничен"],"whenB":["Хотите без головной боли","Дорогой ремонт"]}];
+
+export function getStaticPaths() {
+  const comps = [{"slug":"osnovnoy-vs-premium-paket","a":"Базовый пакет","b":"Премиум пакет","intro":"Что входит в разные пакеты дизайн-проекта?","criteria":[{"name":"Цена за м²","a":"от 1.5k ₽","b":"от 4.5k ₽"},{"name":"Чертежи","a":"Есть","b":"Есть"},{"name":"3D-визуализация","a":"Нет","b":"Все комнаты"},{"name":"Авторский надзор","a":"Нет","b":"Включён"},{"name":"Подбор материалов","a":"Нет","b":"Включён"}],"conclusion":"Базовый — для самостоятельного ремонта. Премиум — если не разбираетесь.","whenA":["Свой прораб с опытом","Бюджет ограничен"],"whenB":["Хотите без головной боли","Дорогой ремонт"]}];
+  return comps.map((c) => ({ params: { slug: c.slug }, props: { c } }));
+}
+
+const { c } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<Base title={`${c.a} или ${c.b} — Дизайн интерьера`} description={c.intro} canonical={url}>
+  <nav class="bc"><a href="/">Дизайн интерьера</a> › <a href="/vs/">Сравнения</a> › <span>{c.a} vs {c.b}</span></nav>
+  <h1>⚖️ {c.a} или {c.b}</h1>
+  <p class="lead">{c.intro}</p>
+
+  <table class="cmp">
+    <tr><th>Критерий</th><th>{c.a}</th><th>{c.b}</th></tr>
+    {c.criteria.map((cr) => (
+      <tr><td>{cr.name}</td><td>{cr.a}</td><td>{cr.b}</td></tr>
+    ))}
+  </table>
+
+  <section class="concl"><h2>🎯 Вывод</h2><p>{c.conclusion}</p></section>
+
+  <div class="when">
+    <div><h2 style="color:#e74c3c;">✅ Когда {c.a}</h2><ul>{c.whenA.map((w) => <li>{w}</li>)}</ul></div>
+    <div><h2 style="color:#2980b9;">✅ Когда {c.b}</h2><ul>{c.whenB.map((w) => <li>{w}</li>)}</ul></div>
+  </div>
+
+  <section class="cta">
+    <h2>💡 Получить расчёт</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'dizayn-interyera-online.ru/vs',page:location.pathname})}).then(()=>{this.innerHTML='✅ Заявка принята!'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить →</button>
+    </form>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 14px; background: white; border-left: 4px solid #e74c3c; }
+  .cmp { width: 100%; border-collapse: collapse; margin: 24px 0; }
+  .cmp th, .cmp td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+  .cmp th { background: #fffaf3; }
+  .concl { padding: 18px; background: #e8f4f8; border-radius: 10px; margin: 24px 0; }
+  .when { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .when ul { padding-left: 20px; }
+  .cta { background: white; padding: 20px; border-radius: 10px; margin: 24px 0; }
+  .cta form { display: flex; gap: 8px; max-width: 400px; }
+  .cta input { flex: 1; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px; }
+  .cta button { padding: 12px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  @media (max-width: 600px) { .when { grid-template-columns: 1fr; } }
+</style>

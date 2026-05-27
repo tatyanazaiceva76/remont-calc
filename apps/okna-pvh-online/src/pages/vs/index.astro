@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"kbe-vs-rehau-vs-veka","a":"KBE/Rehau","b":"VEKA","intro":"Сравнение топ-3 профилей: KBE, Rehau, VEKA. Какой выбрать?","criteria":[{"name":"Производитель","a":"Германия","b":"Германия"},{"name":"Камер в профиле","a":"5-7","b":"5-6"},{"name":"Цена","a":"на 10-20% дороже","b":"Стандарт"},{"name":"Гарантия","a":"10 лет","b":"5-10 лет"}],"conclusion":"KBE/Rehau — премиум. VEKA — средний сегмент, оптимальное соотношение.","whenA":["Премиум-квартира","Холодный регион"],"whenB":["Стандарт качества","Средний бюджет"]},{"slug":"odnokamernyy-vs-dvukhkamernyy-paket","a":"Однокамерный","b":"Двухкамерный","intro":"Какой стеклопакет выбрать — однокамерный или двухкамерный?","criteria":[{"name":"Стёкол","a":"2 стекла","b":"3 стекла"},{"name":"Теплоизоляция","a":"Средняя","b":"Хорошая"},{"name":"Цена","a":"Стандарт","b":"+20-30%"},{"name":"Вес","a":"Лёгкий","b":"На 50% тяжелее"}],"conclusion":"Двухкамерный — для холодных регионов. Однокамерный — для тёплых.","whenA":["Юг России","Балкон холодный"],"whenB":["Москва и севернее","Жилая комната"]}];
+---
+<Base title="Сравнения — Окна ПВХ" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Окна ПВХ</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #2980b9; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #2980b9; }
+  .vs span { background: #2980b9; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

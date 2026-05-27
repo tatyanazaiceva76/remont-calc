@@ -38,6 +38,18 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
     <main class="container"><slot /></main>
     <footer class="site-footer">
       <div class="container">
+        
+      <div class="partner-network">
+        <strong>🤝 Наша сеть проектов:</strong>
+        <div class="partners">
+          <a href="https://www.kalkremont.ru/" rel="noopener" title="Калькулятор ремонта">🏠 Калькулятор ремонта</a>
+          <a href="https://ipoteka-remont.ru/" rel="noopener" title="Ипотека на ремонт">🏦 Ипотека на ремонт</a>
+          <a href="https://kuhni-zakaz-online.ru/" rel="noopener" title="Кухни на заказ">🍳 Кухни на заказ</a>
+          <a href="https://dom-stroy-online.ru/" rel="noopener" title="Загородные дома">🏡 Загородные дома</a>
+          <a href="https://natyazhnoi-master24.ru/" rel="noopener" title="Натяжные потолки">✨ Натяжные потолки</a>
+          <a href="https://okna-pvh-online.ru/" rel="noopener" title="Окна ПВХ">🪟 Окна ПВХ</a>
+        </div>
+      </div>
         <p>© Дизайн интерьера 2026 · Все права защищены</p>
         <p><a href="/kontakty/">Контакты</a> · <a href="/politika/">Политика конфиденциальности</a></p>
       </div>
@@ -58,6 +70,11 @@ const canonicalUrl = canonical || new URL(Astro.url.pathname, Astro.site).href;
       h3 { font-size: 18px; }
       .site-footer { background: #1a1a1a; color: #ccc; padding: 24px 0; margin-top: 48px; text-align: center; font-size: 13px; }
       .site-footer a { color: #999; }
+      .partner-network { background: #2a2a2a; padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+      .partner-network strong { display: block; color: #ddd; margin-bottom: 10px; font-size: 13px; }
+      .partners { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+      .partners a { font-size: 12px; padding: 6px 12px; background: rgba(255,255,255,0.05); border-radius: 14px; color: #ccc; text-decoration: none; transition: all 0.2s; }
+      .partners a:hover { background: rgba(255,255,255,0.1); color: white; }
       @media (max-width: 600px) { .site-header .container { flex-direction: column; gap: 8px; } nav { gap: 12px; } h1 { font-size: 22px; } }
     </style>
   </body>

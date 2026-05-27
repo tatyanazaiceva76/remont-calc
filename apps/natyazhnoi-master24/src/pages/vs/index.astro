@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"glyanec-vs-mat","a":"Глянцевый","b":"Матовый","intro":"Глянцевый или матовый натяжной потолок — что лучше для квартиры?","criteria":[{"name":"Эффект освещения","a":"Отражает свет","b":"Поглощает"},{"name":"Уход","a":"Видны следы рук","b":"Не видны"},{"name":"Расширение пространства","a":"Сильное","b":"Нет"},{"name":"Цена за м²","a":"от 450 ₽","b":"от 350 ₽"}],"conclusion":"Глянец — для маленьких комнат и спален. Мат — для классических интерьеров.","whenA":["Маленькая комната","Современный интерьер"],"whenB":["Классика","Большая комната"]},{"slug":"odnourovnevyy-vs-mnogourovnevyy","a":"Одноуровневый","b":"Многоуровневый","intro":"Простой или многоуровневый потолок — сравнение цены и эффекта.","criteria":[{"name":"Цена за м²","a":"от 350 ₽","b":"от 1200 ₽"},{"name":"Срок монтажа","a":"1 день","b":"2-3 дня"},{"name":"Эффект","a":"Стандарт","b":"Дизайнерский"}],"conclusion":"Многоуровневый выглядит дороже на 200-400% но даёт wow-эффект.","whenA":["Бюджет ограничен","Стандартная комната"],"whenB":["Премиум-интерьер","Высокие потолки (>2.7 м)"]}];
+---
+<Base title="Сравнения — Натяжные потолки" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Натяжные потолки</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #3498db; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #3498db; }
+  .vs span { background: #3498db; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

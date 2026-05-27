@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"aristo-vs-versal","a":"Aristo","b":"Versal","intro":"Какую систему раздвижения выбрать для шкафа-купе?","criteria":[{"name":"Производитель","a":"Россия (Италия)","b":"Россия"},{"name":"Цена за метр","a":"от 8k ₽","b":"от 4k ₽"},{"name":"Гарантия","a":"10 лет","b":"5 лет"},{"name":"Бесшумность","a":"Отличная","b":"Средняя"}],"conclusion":"Aristo — премиум, окупается тишиной и долговечностью. Versal — средний.","whenA":["Премиум-шкаф","Спальня"],"whenB":["Бюджет ограничен","Прихожая"]},{"slug":"do-potolka-vs-standart","a":"До потолка","b":"Стандартный","intro":"Шкаф до потолка или стандартной высоты — что лучше?","criteria":[{"name":"Цена","a":"+30-50%","b":"Стандарт"},{"name":"Полезный объём","a":"+50%","b":"Стандарт"},{"name":"Уборка сверху","a":"Не нужна","b":"Пыль собирается"}],"conclusion":"До потолка — однозначно лучше. Дороже но окупается.","whenA":["Хочется максимум места","Высокие потолки (2.8+)"],"whenB":["Маленький бюджет","Низкие потолки (<2.5)"]}];
+---
+<Base title="Сравнения — Шкафы-купе" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Шкафы-купе</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #9b59b6; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #9b59b6; }
+  .vs span { background: #9b59b6; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

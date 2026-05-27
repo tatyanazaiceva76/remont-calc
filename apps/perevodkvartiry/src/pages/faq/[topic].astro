@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+const topics = [{"slug":"obyedinenie-kukhni-s-gostinoy","title":"Объединение кухни с гостиной","questions":[{"q":"Можно ли объединить кухню с комнатой?","a":"Можно, если в квартире электрическая плита. С газовой — нельзя по нормам безопасности."},{"q":"Что согласовывают?","a":"Снос ненесущей стены — да. Несущая — категорически нет. Замена стены на арку с дверями — обычно согласовывают."}]}];
+
+export function getStaticPaths() {
+  const topics = [{"slug":"obyedinenie-kukhni-s-gostinoy","title":"Объединение кухни с гостиной","questions":[{"q":"Можно ли объединить кухню с комнатой?","a":"Можно, если в квартире электрическая плита. С газовой — нельзя по нормам безопасности."},{"q":"Что согласовывают?","a":"Снос ненесущей стены — да. Несущая — категорически нет. Замена стены на арку с дверями — обычно согласовывают."}]}];
+  return topics.map((t) => ({ params: { topic: t.slug }, props: { t } }));
+}
+
+const { t } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+---
+<Base title={t.title + ' — Перепланировка'} description={t.questions[0].a.slice(0, 145)} canonical={url}>
+  <nav class="bc"><a href="/">Перепланировка</a> › <a href="/faq/">FAQ</a> › <span>{t.title}</span></nav>
+  <h1>❓ {t.title}</h1>
+  <div class="faqs">
+    {t.questions.map((q, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{q.q}</summary>
+        <p>{q.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <section class="cta">
+    <h2>💡 Задать вопрос специалисту</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,source:'perevodkvartiry.ru/faq',topic:'{t.slug}',page:location.pathname})}).then(()=>{this.innerHTML='✅ Заявка принята!'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button>Получить ответ →</button>
+    </form>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: t.questions.map((q) => ({
+      '@type': 'Question',
+      name: q.q,
+      acceptedAnswer: { '@type': 'Answer', text: q.a }
+    }))
+  })} />
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #16a085; }
+  .faq p { margin: 10px 0 0; color: #555; }
+  .cta { background: white; padding: 20px; border-radius: 10px; margin: 24px 0; }
+  .cta form { display: flex; gap: 8px; max-width: 400px; }
+  .cta input { flex: 1; padding: 12px; border: 1.5px solid #ddd; border-radius: 8px; }
+  .cta button { padding: 12px 20px; background: #16a085; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+</style>

@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"karkasnyy-vs-gazobeton","a":"Каркасный","b":"Газобетон","intro":"Что выбрать: каркасный дом или из газобетона?","criteria":[{"name":"Срок строительства","a":"2-3 месяца","b":"4-6 месяцев"},{"name":"Цена за м²","a":"от 25k ₽","b":"от 35k ₽"},{"name":"Срок службы","a":"50-80 лет","b":"80-150 лет"},{"name":"Утепление","a":"Внутри стены","b":"Внешнее + сам газоблок"}],"conclusion":"Каркас — быстро и дёшево. Газоблок — долговечнее и капитальнее.","whenA":["Дача","Бюджет до 2 млн"],"whenB":["Дом для постоянного проживания","Капитал"]}];
+---
+<Base title="Сравнения — Загородные дома" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Загородные дома</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #27ae60; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #27ae60; }
+  .vs span { background: #27ae60; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>

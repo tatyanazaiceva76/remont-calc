@@ -1,0 +1,25 @@
+---
+import Base from '~/layouts/Base.astro';
+const comps = [{"slug":"drovianoy-vs-elektrokamin","a":"Дровяной","b":"Электрокамин","intro":"Настоящий камин на дровах или электро-имитация — что выбрать?","criteria":[{"name":"Цена","a":"от 80k ₽ + дымоход 30k","b":"от 15k ₽"},{"name":"Атмосфера","a":"Настоящий огонь, дрова, аромат","b":"Имитация"},{"name":"Уход","a":"Чистка, заготовка дров","b":"Нет"},{"name":"Можно в квартире?","a":"Только если есть дымоход","b":"Везде"}],"conclusion":"Дровяной — для частных домов и атмосферы. Электро — для квартир и комфорта.","whenA":["Частный дом","Любите дрова и аромат"],"whenB":["Квартира","Хотите быстро и без хлопот"]}];
+---
+<Base title="Сравнения — Камины и печи" description="Сравнения вариантов: что лучше, на чём экономить.">
+  <h1>⚖️ Сравнения — Камины и печи</h1>
+  <div class="grid">
+    {comps.map((c) => (
+      <a href={`/vs/${c.slug}/`} class="card">
+        <div class="vs"><strong>{c.a}</strong> <span>vs</span> <strong>{c.b}</strong></div>
+        <p>{c.intro}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .card:hover { border-color: #d35400; }
+  .vs { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .vs strong { color: #d35400; }
+  .vs span { background: #d35400; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+  .card p { font-size: 13px; color: #555; margin: 0; }
+  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+</style>
