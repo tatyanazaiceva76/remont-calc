@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+
+export function getStaticPaths() {
+  const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05},{"slug":"nn","name":"Нижнем Новгороде","nameNom":"Нижний Новгород","priceMult":0.95},{"slug":"chel","name":"Челябинске","nameNom":"Челябинск","priceMult":0.85}];
+  return cities.map((c) => ({ params: { city: c.slug }, props: { city: c } }));
+}
+
+const { city } = Astro.props;
+const services = [{"slug":"standart","name":"Стандартные окна","price":"от 8 000 ₽","description":"3-камерный профиль, 1-камерный стеклопакет, эконом"},{"slug":"premium","name":"Премиум окна","price":"от 15 000 ₽","description":"5-камерный профиль, 2-камерный стеклопакет, тёплые"},{"slug":"tonirovanie","name":"Тонированные окна","price":"от 12 000 ₽","description":"Затемнение от солнца, защита от перегрева"},{"slug":"protivovzlomnye","name":"Противовзломные","price":"от 20 000 ₽","description":"Класс защиты RC2/RC3, для 1 этажа и таунхаусов"},{"slug":"energosberegayushchie","name":"Энергосберегающие","price":"от 18 000 ₽","description":"Низкоэмиссионное стекло, экономия на отоплении 30%"}];
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = 'Окна ПВХ в ' + city.name + ' 2026 — Пластиковые окна от 8 000 ₽ — производство и монтаж';
+const description = 'Окна ПВХ в ' + city.name + '. Все услуги, цены 2026, отзывы.';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Окна ПВХ</a> › <a href="/goroda/">Города</a> › <span>в {city.name}</span></nav>
+
+  <h1>🪟 Окна ПВХ в {city.name}</h1>
+  <p class="lead">Полный спектр услуг по окнам ПВХ в {city.name}. Бесплатный замер, выезд мастера.</p>
+
+  <section class="lead-form">
+    <h2>💡 Получить расчёт в {city.name}</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,city:'{city.slug}',source:'okna-pvh-online.ru',page:location.pathname})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;font-size:18px;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button type="submit">Заказать →</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги в {city.name}</h2>
+    <div class="services">
+      {services.map((s) => (
+        <a href={`/uslugi/${s.slug}/v-{city.slug}/`} class="service-card">
+          <strong>{s.name}</strong>
+          <span>{s.price}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 16px; background: white; border-left: 4px solid #2980b9; border-radius: 0 8px 8px 0; }
+  .lead-form { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+  .lead-form form { display: flex; gap: 8px; max-width: 500px; }
+  .lead-form input { flex: 1; padding: 12px; border: 1.5px solid #e6e8eb; border-radius: 8px; }
+  .lead-form button { padding: 12px 20px; background: #2980b9; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #2980b9; }
+  .service-card strong { color: #2980b9; display: block; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

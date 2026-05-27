@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kupeshkafy24.ru/sitemap.xml
+Host: kupeshkafy24.ru

@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kuhni-zakaz-online.ru/sitemap.xml
+Host: kuhni-zakaz-online.ru

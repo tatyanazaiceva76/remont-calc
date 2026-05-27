@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kamin-zakaz24.ru/sitemap.xml
+Host: kamin-zakaz24.ru

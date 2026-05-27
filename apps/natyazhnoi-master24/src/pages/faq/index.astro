@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Сколько монтируется потолок?","a":"1 день на комнату 15-20 м². Сложные многоуровневые — 2-3 дня."},{"q":"Боится ли потолок прорыва трубы?","a":"Наоборот, защищает. ПВХ выдерживает до 100 л воды (растягивается пузырём). Сливается через монтажный угол."},{"q":"Сколько служит натяжной?","a":"15-20 лет ПВХ, 10-15 лет тканевый. С гарантией 10-15 лет от установщика."}];
+---
+<Base title="FAQ натяжных потолков" description="Ответы на главные вопросы по натяжному потолку.">
+  <h1>❓ FAQ — Натяжные потолки</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #3498db; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

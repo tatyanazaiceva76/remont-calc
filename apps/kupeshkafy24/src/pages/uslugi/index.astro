@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"prikhoznaya","name":"В прихожую","price":"от 18 000 ₽","description":"С зеркалом, с антресолями, до 2.5 м высота"},{"slug":"spalnya","name":"В спальню","price":"от 25 000 ₽","description":"До потолка, с подсветкой, ящиками для белья"},{"slug":"garderobnaya","name":"Гардеробная","price":"от 60 000 ₽","description":"Целая комната, штанги, ящики, обувница"},{"slug":"detskaya","name":"В детскую","price":"от 20 000 ₽","description":"С рисунками, безопасные углы, рассчитан на рост"}];
+---
+<Base title="Услуги шкафов-купе" description="Полный список услуг по шкафу-купе с ценами 2026.">
+  <h1>Услуги шкафов-купе</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #9b59b6; }
+  .service-card strong { display: block; color: #9b59b6; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

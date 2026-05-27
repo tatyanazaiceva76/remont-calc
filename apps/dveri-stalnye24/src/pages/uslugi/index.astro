@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"ekonom","name":"Эконом-сегмент","price":"от 12 000 ₽","description":"Сталь 1.2 мм, базовая фурнитура, 2 замка"},{"slug":"sredniy","name":"Средний сегмент","price":"от 25 000 ₽","description":"Сталь 1.5-2 мм, шумоизоляция, теплоизоляция"},{"slug":"premium","name":"Премиум","price":"от 60 000 ₽","description":"Сталь 2-3 мм, MDF-отделка, защита класса 3"},{"slug":"protivovzlomnye","name":"Противовзломные","price":"от 80 000 ₽","description":"Сертификат RC2/RC3, штифты, противосъёмные петли"}];
+---
+<Base title="Услуги стальных дверей" description="Полный список услуг по стальной двери с ценами 2026.">
+  <h1>Услуги стальных дверей</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #34495e; }
+  .service-card strong { display: block; color: #34495e; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

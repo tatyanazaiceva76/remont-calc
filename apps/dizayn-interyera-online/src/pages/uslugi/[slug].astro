@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"osnovnoy-paket","name":"Базовый пакет","price":"от 1 500 ₽/м²","description":"Планировка + развёртки + спецификация (без визуализации)"},{"slug":"standartnyy-paket","name":"Стандарт","price":"от 2 500 ₽/м²","description":"Базовый + 3D-визуализация всех комнат"},{"slug":"premium-paket","name":"Премиум","price":"от 4 500 ₽/м²","description":"Стандарт + авторский надзор + подбор материалов"},{"slug":"avtor-nadzor","name":"Авторский надзор","price":"от 50 000 ₽/мес","description":"Контроль ремонта по проекту, выезды на объект"}];
+const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95}];
+
+export function getStaticPaths() {
+  const services = [{"slug":"osnovnoy-paket","name":"Базовый пакет","price":"от 1 500 ₽/м²","description":"Планировка + развёртки + спецификация (без визуализации)"},{"slug":"standartnyy-paket","name":"Стандарт","price":"от 2 500 ₽/м²","description":"Базовый + 3D-визуализация всех комнат"},{"slug":"premium-paket","name":"Премиум","price":"от 4 500 ₽/м²","description":"Стандарт + авторский надзор + подбор материалов"},{"slug":"avtor-nadzor","name":"Авторский надзор","price":"от 50 000 ₽/мес","description":"Контроль ремонта по проекту, выезды на объект"}];
+  return services.map((s) => ({ params: { slug: s.slug }, props: { service: s } }));
+}
+
+const { service } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = service.name + ' — ' + service.price + ' | Дизайн интерьера';
+const description = service.description + ' ' + 'Дизайн интерьера квартиры от 1 500 ₽/м² — авторский надзор';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Дизайн интерьера</a> › <a href="/uslugi/">Услуги</a> › <span>{service.name}</span></nav>
+
+  <h1>{service.name}</h1>
+  <p class="lead">{service.description}. Цена: <strong>{service.price}</strong>.</p>
+
+  <section class="lead-form">
+    <h2>💡 Заказать «{service.name}»</h2>
+    <p>Оставьте телефон — перезвоним в течение 30 минут:</p>
+    <form id="lead-form-svc" onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,name:this.name?.value,service:'{service.slug}',source:'dizayn-interyera-online.ru',page:location.pathname})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;font-size:18px;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button type="submit">Заказать →</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>🏙 «{service.name}» в городах</h2>
+    <div class="cities">
+      {cities.map((c) => (
+        <a href={`/uslugi/{service.slug}/v-${c.slug}/`} class="city-card">
+          <strong>{c.nameNom}</strong>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 16px; background: white; border-left: 4px solid #e74c3c; border-radius: 0 8px 8px 0; }
+  .lead-form { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+  .lead-form form { display: flex; gap: 8px; max-width: 500px; }
+  .lead-form input { flex: 1; padding: 12px; border: 1.5px solid #e6e8eb; border-radius: 8px; }
+  .lead-form button { padding: 12px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  .cities { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+  .city-card { display: block; padding: 12px; background: white; border: 1px solid #e6e8eb; border-radius: 8px; text-decoration: none; color: #1a1a1a; }
+  .city-card strong { color: #e74c3c; }
+  @media (max-width: 700px) { .cities { grid-template-columns: 1fr 1fr; } }
+</style>

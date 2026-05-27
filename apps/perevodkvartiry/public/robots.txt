@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://perevodkvartiry.ru/sitemap.xml
+Host: perevodkvartiry.ru

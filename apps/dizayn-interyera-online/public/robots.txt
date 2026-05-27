@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dizayn-interyera-online.ru/sitemap.xml
+Host: dizayn-interyera-online.ru

@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Какой дом самый тёплый?","a":"Каркасный с правильным утеплителем (минвата 200 мм). Газобетон тоже хорош. Кирпич без утепления — самый холодный."},{"q":"Что быстрее построить?","a":"Каркасный — 2-3 месяца. Газобетон — 4-6 месяцев. Кирпич — 8-12 месяцев."},{"q":"Нужен ли проект?","a":"Да, обязательно. Без проекта строить нельзя (нарушение СНиП). Готовый проект — 30-100 тыс ₽, индивидуальный — 100-300 тыс ₽."}];
+---
+<Base title="FAQ загородных домов" description="Ответы на главные вопросы по загородному дому.">
+  <h1>❓ FAQ — Загородные дома</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #27ae60; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

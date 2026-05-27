@@ -1,0 +1,55 @@
+---
+import Base from '~/layouts/Base.astro';
+
+export function getStaticPaths() {
+  const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05},{"slug":"nn","name":"Нижнем Новгороде","nameNom":"Нижний Новгород","priceMult":0.95},{"slug":"chel","name":"Челябинске","nameNom":"Челябинск","priceMult":0.85},{"slug":"ufa","name":"Уфе","nameNom":"Уфа","priceMult":0.95},{"slug":"sam","name":"Самаре","nameNom":"Самара","priceMult":0.95},{"slug":"rnd","name":"Ростове-на-Дону","nameNom":"Ростов-на-Дону","priceMult":1},{"slug":"vrn","name":"Воронеже","nameNom":"Воронеж","priceMult":0.85},{"slug":"perm","name":"Перми","nameNom":"Пермь","priceMult":0.85},{"slug":"vlg","name":"Волгограде","nameNom":"Волгоград","priceMult":0.8},{"slug":"tyumen","name":"Тюмени","nameNom":"Тюмень","priceMult":1},{"slug":"brn","name":"Барнауле","nameNom":"Барнаул","priceMult":0.8}];
+  return cities.map((c) => ({ params: { city: c.slug }, props: { city: c } }));
+}
+
+const { city } = Astro.props;
+const services = [{"slug":"kredit-na-remont","name":"Потребительский кредит","price":"от 8% годовых","description":"Без залога, на 5-7 лет, до 5 млн ₽"},{"slug":"ipoteka-na-remont","name":"Ипотека на ремонт","price":"от 6.5% годовых","description":"Под залог квартиры, на 25 лет, до 30 млн ₽"},{"slug":"kreditnaya-karta","name":"Кредитная карта","price":"0% на 365 дней","description":"Для небольшого ремонта, без переплат"},{"slug":"refinansirovanie","name":"Рефинансирование","price":"от 7% годовых","description":"Снижаем ставку по действующему кредиту"}];
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = 'Ипотека на ремонт в ' + city.name + ' 2026 — Ипотечный кредит на ремонт квартиры от 8% годовых';
+const description = 'Ипотека на ремонт в ' + city.name + '. Все услуги, цены 2026, отзывы.';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Ипотека на ремонт</a> › <a href="/goroda/">Города</a> › <span>в {city.name}</span></nav>
+
+  <h1>🏦 Ипотека на ремонт в {city.name}</h1>
+  <p class="lead">Полный спектр услуг по ипотеке на ремонт в {city.name}. Бесплатный замер, выезд мастера.</p>
+
+  <section class="lead-form">
+    <h2>💡 Получить расчёт в {city.name}</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,city:'{city.slug}',source:'ipoteka-remont.ru',page:location.pathname})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;font-size:18px;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button type="submit">Заказать →</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги в {city.name}</h2>
+    <div class="services">
+      {services.map((s) => (
+        <a href={`/uslugi/${s.slug}/v-{city.slug}/`} class="service-card">
+          <strong>{s.name}</strong>
+          <span>{s.price}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 16px; background: white; border-left: 4px solid #1abc9c; border-radius: 0 8px 8px 0; }
+  .lead-form { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+  .lead-form form { display: flex; gap: 8px; max-width: 500px; }
+  .lead-form input { flex: 1; padding: 12px; border: 1.5px solid #e6e8eb; border-radius: 8px; }
+  .lead-form button { padding: 12px 20px; background: #1abc9c; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #1abc9c; }
+  .service-card strong { color: #1abc9c; display: block; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

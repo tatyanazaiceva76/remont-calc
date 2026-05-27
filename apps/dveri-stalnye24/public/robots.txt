@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://dveri-stalnye24.ru/sitemap.xml
+Host: dveri-stalnye24.ru

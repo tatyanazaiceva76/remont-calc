@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"klassika","name":"Классические кухни","price":"от 80 000 ₽/пог.м","description":"МДФ или массив, патина, фрезеровка"},{"slug":"sovremennyy","name":"Современный стиль","price":"от 60 000 ₽/пог.м","description":"Акрил, пластик, ровные фасады"},{"slug":"loft","name":"Лофт","price":"от 70 000 ₽/пог.м","description":"Бетон, металл, дерево необработанное"},{"slug":"skandinaviya","name":"Скандинавский стиль","price":"от 65 000 ₽/пог.м","description":"Светлые тона, минимализм, дерево"}];
+---
+<Base title="Услуги кухни на заказ" description="Полный список услуг по кухне на заказ с ценами 2026.">
+  <h1>Услуги кухни на заказ</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #e67e22; }
+  .service-card strong { display: block; color: #e67e22; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

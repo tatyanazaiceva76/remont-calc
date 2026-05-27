@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Чем отличаются пакеты?","a":"Базовый — только чертежи. Стандарт — добавляются 3D-визуализации. Премиум — авторский надзор и подбор материалов."},{"q":"Сколько по времени дизайн?","a":"2-3 недели на проект 50 м². 4-6 недель на 100+ м². С согласованиями — +1-2 недели."},{"q":"Можно ли менять проект?","a":"Да, до начала работ — бесплатно. После — переделка платная (50-150% от исходной цены раздела)."}];
+---
+<Base title="FAQ дизайна интерьера" description="Ответы на главные вопросы по дизайну интерьера.">
+  <h1>❓ FAQ — Дизайн интерьера</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #e74c3c; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

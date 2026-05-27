@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"standart","name":"Стандартные окна","price":"от 8 000 ₽","description":"3-камерный профиль, 1-камерный стеклопакет, эконом"},{"slug":"premium","name":"Премиум окна","price":"от 15 000 ₽","description":"5-камерный профиль, 2-камерный стеклопакет, тёплые"},{"slug":"tonirovanie","name":"Тонированные окна","price":"от 12 000 ₽","description":"Затемнение от солнца, защита от перегрева"},{"slug":"protivovzlomnye","name":"Противовзломные","price":"от 20 000 ₽","description":"Класс защиты RC2/RC3, для 1 этажа и таунхаусов"},{"slug":"energosberegayushchie","name":"Энергосберегающие","price":"от 18 000 ₽","description":"Низкоэмиссионное стекло, экономия на отоплении 30%"}];
+---
+<Base title="Услуги окон ПВХ" description="Полный список услуг по окнам ПВХ с ценами 2026.">
+  <h1>Услуги окон ПВХ</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #2980b9; }
+  .service-card strong { display: block; color: #2980b9; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

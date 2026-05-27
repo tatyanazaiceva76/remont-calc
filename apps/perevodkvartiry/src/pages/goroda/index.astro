@@ -1,0 +1,20 @@
+---
+import Base from '~/layouts/Base.astro';
+const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95}];
+---
+<Base title="Перепланировка в городах России" description="Список городов где доступны услуги.">
+  <h1>Перепланировка в городах России</h1>
+  <div class="cities">
+    {cities.map((c) => (
+      <a href={`/goroda/${c.slug}/`} class="city-card">
+        <strong>{c.nameNom}</strong>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .cities { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+  .city-card { padding: 14px; background: white; border: 1px solid #e6e8eb; border-radius: 8px; text-decoration: none; color: #16a085; text-align: center; }
+  .city-card:hover { border-color: #16a085; }
+  @media (max-width: 700px) { .cities { grid-template-columns: 1fr 1fr; } }
+</style>

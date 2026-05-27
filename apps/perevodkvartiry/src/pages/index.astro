@@ -1,0 +1,102 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"proekt","name":"Проект перепланировки","price":"от 25 000 ₽","description":"Архитектор + чертежи + спецификация"},{"slug":"soglasovanie","name":"Согласование под ключ","price":"от 60 000 ₽","description":"Проект + БТИ + жил.инспекция + новый паспорт"},{"slug":"uzakonenie","name":"Узаконить уже сделанную","price":"от 80 000 ₽","description":"Перепланировку \"задним числом\" с уже снесёнными стенами"},{"slug":"konsultaciya","name":"Юридическая консультация","price":"от 3 000 ₽","description":"Можно ли согласовать вашу планировку"}];
+const cities = [{"slug":"moskva","name":"Москве","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"Санкт-Петербурге","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"kzn","name":"Казани","nameNom":"Казань","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95}];
+const faqs = [{"q":"Что нельзя согласовать?","a":"Снос несущих стен. Перенос мокрой зоны над сухой соседей. Перенос кухни в жилую комнату. Объединение жилой комнаты с балконом."},{"q":"Что точно согласуют?","a":"Снос ненесущих перегородок. Объединение санузла. Перенос двери в ненесущей стене. Установка ниш в стенах."},{"q":"Сколько по времени?","a":"Простая перепланировка — 1-2 месяца. Сложная — 3-6 месяцев. Узаконить задним числом — 3-9 месяцев."}];
+
+const title = 'Перепланировка 2026 — Согласование перепланировки квартиры от 30 000 ₽ под ключ';
+const description = 'Согласование перепланировки квартиры 2026: подготовка проекта, сбор документов, БТИ, жил.инспекция. Срок 1-4 месяца.';
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Перепланировка',
+  description: 'Согласование перепланировки квартиры 2026: подготовка проекта, сбор документов, БТИ, жил.инспекция. Срок 1-4 месяца.',
+  areaServed: { '@type': 'Country', name: 'Россия' },
+  provider: { '@type': 'Organization', name: 'Перепланировка' }
+};
+---
+<Base title={title} description={description} schema={schema}>
+  <h1>📐 Перепланировка</h1>
+  <p class="lead">Согласование перепланировки квартиры от 30 000 ₽ под ключ</p>
+
+  <section class="lead-form">
+    <h2>💡 Получить расчёт</h2>
+    <p>Оставьте телефон — перезвоним в течение 30 минут и пришлём предложение:</p>
+    <form id="lead-form" onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,name:this.name?.value,source:'perevodkvartiry.ru',page:location.pathname})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;font-size:18px;\'>✅ Заявка принята! Перезвоним в течение 30 минут.</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <input type="text" name="name" placeholder="Как к вам обращаться" />
+      <button type="submit">Получить расчёт →</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги</h2>
+    <div class="services">
+      {services.map((s) => (
+        <a href={`/uslugi/${s.slug}/`} class="service-card">
+          <strong>{s.name}</strong>
+          <span class="price">{s.price}</span>
+          <p>{s.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>🏙 Работаем в городах</h2>
+    <div class="cities">
+      {cities.map((c) => (
+        <a href={`/goroda/${c.slug}/`} class="city-card">
+          <strong>{c.nameNom}</strong>
+          <span>Перепланировка в {c.name}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ FAQ</h2>
+    <div class="faqs">
+      {faqs.map((f) => (
+        <details class="faq">
+          <summary>{f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .lead { font-size: 17px; padding: 16px 20px; background: white; border-left: 4px solid #16a085; border-radius: 0 8px 8px 0; }
+  .lead-form { background: white; padding: 24px; border-radius: 12px; margin: 24px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .lead-form form { display: flex; flex-direction: column; gap: 10px; max-width: 400px; }
+  .lead-form input { padding: 12px 14px; border: 1.5px solid #e6e8eb; border-radius: 8px; font-size: 16px; }
+  .lead-form input:focus { border-color: #16a085; outline: none; }
+  .lead-form button { padding: 14px; background: #16a085; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px 18px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; transition: all 0.2s; }
+  .service-card:hover { border-color: #16a085; transform: translateY(-2px); }
+  .service-card strong { display: block; font-size: 16px; color: #16a085; }
+  .price { display: inline-block; font-size: 13px; font-weight: 600; color: #2980b9; margin: 4px 0; }
+  .service-card p { font-size: 13px; color: #555; margin: 6px 0 0; }
+  .cities { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .city-card { display: block; padding: 12px; background: white; border: 1px solid #e6e8eb; border-radius: 8px; text-decoration: none; color: #1a1a1a; }
+  .city-card:hover { border-color: #16a085; }
+  .city-card strong { color: #16a085; display: block; }
+  .city-card span { font-size: 12px; color: #888; }
+  .faqs { display: flex; flex-direction: column; gap: 8px; }
+  .faq { background: white; padding: 14px 16px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq p { margin: 10px 0 0; color: #555; }
+  @media (max-width: 700px) { .services, .cities { grid-template-columns: 1fr; } }
+</style>

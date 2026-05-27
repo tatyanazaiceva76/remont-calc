@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"kredit-na-remont","name":"Потребительский кредит","price":"от 8% годовых","description":"Без залога, на 5-7 лет, до 5 млн ₽"},{"slug":"ipoteka-na-remont","name":"Ипотека на ремонт","price":"от 6.5% годовых","description":"Под залог квартиры, на 25 лет, до 30 млн ₽"},{"slug":"kreditnaya-karta","name":"Кредитная карта","price":"0% на 365 дней","description":"Для небольшого ремонта, без переплат"},{"slug":"refinansirovanie","name":"Рефинансирование","price":"от 7% годовых","description":"Снижаем ставку по действующему кредиту"}];
+---
+<Base title="Услуги ипотеки на ремонт" description="Полный список услуг по ипотеке на ремонт с ценами 2026.">
+  <h1>Услуги ипотеки на ремонт</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #1abc9c; }
+  .service-card strong { display: block; color: #1abc9c; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

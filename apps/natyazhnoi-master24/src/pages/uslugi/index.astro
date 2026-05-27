@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"glyanec","name":"Глянцевые потолки","price":"от 450 ₽/м²","description":"Отражают свет, визуально расширяют комнату"},{"slug":"mat","name":"Матовые потолки","price":"от 350 ₽/м²","description":"Классика, выглядит как окрашенный потолок"},{"slug":"satin","name":"Сатиновые потолки","price":"от 400 ₽/м²","description":"Нежный жемчужный отблеск, премиум"},{"slug":"mnogourovnevye","name":"Многоуровневые","price":"от 1200 ₽/м²","description":"2-3 уровня, с подсветкой, дизайнерские"},{"slug":"fotopechat","name":"С фотопечатью","price":"от 1500 ₽/м²","description":"Любое изображение, звёздное небо, лофт"}];
+---
+<Base title="Услуги натяжных потолков" description="Полный список услуг по натяжному потолку с ценами 2026.">
+  <h1>Услуги натяжных потолков</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #3498db; }
+  .service-card strong { display: block; color: #3498db; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

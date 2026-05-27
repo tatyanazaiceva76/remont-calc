@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Сколько ждать готовую кухню?","a":"30-45 дней с момента подписания договора. Сложные модели или импортная фурнитура — до 60 дней."},{"q":"Какая фурнитура лучше?","a":"Blum (Австрия) — премиум, 25 лет гарантии. Hettich (Германия) — средний сегмент. Boyard, GTV (Польша/Россия) — эконом."},{"q":"Можно ли встроить технику?","a":"Да, в проекте сразу учитывается ваша техника или мы подбираем под нужные параметры."}];
+---
+<Base title="FAQ кухни на заказ" description="Ответы на главные вопросы по кухне на заказ.">
+  <h1>❓ FAQ — Кухни на заказ</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #e67e22; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

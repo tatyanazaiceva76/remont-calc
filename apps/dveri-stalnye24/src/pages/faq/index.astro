@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Какой замок выбрать?","a":"Cisa, Mottura (Италия) — премиум. Kale, Mauer (Турция/Германия) — средний. Меттэм, Эльбор — Россия эконом."},{"q":"Стальная или железная?","a":"\"Железная\" = маркетинг. Все стальные. Разница в толщине стали (1.2-3 мм) и обработке."},{"q":"Можно ли поставить за день?","a":"Да, при наличии готового проёма. Демонтаж старой + установка новой = 3-5 часов."}];
+---
+<Base title="FAQ стальных дверей" description="Ответы на главные вопросы по стальной двери.">
+  <h1>❓ FAQ — Стальные двери</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #34495e; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

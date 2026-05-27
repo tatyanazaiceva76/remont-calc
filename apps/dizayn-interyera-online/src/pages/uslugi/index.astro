@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"osnovnoy-paket","name":"Базовый пакет","price":"от 1 500 ₽/м²","description":"Планировка + развёртки + спецификация (без визуализации)"},{"slug":"standartnyy-paket","name":"Стандарт","price":"от 2 500 ₽/м²","description":"Базовый + 3D-визуализация всех комнат"},{"slug":"premium-paket","name":"Премиум","price":"от 4 500 ₽/м²","description":"Стандарт + авторский надзор + подбор материалов"},{"slug":"avtor-nadzor","name":"Авторский надзор","price":"от 50 000 ₽/мес","description":"Контроль ремонта по проекту, выезды на объект"}];
+---
+<Base title="Услуги дизайна интерьера" description="Полный список услуг по дизайну интерьера с ценами 2026.">
+  <h1>Услуги дизайна интерьера</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #e74c3c; }
+  .service-card strong { display: block; color: #e74c3c; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

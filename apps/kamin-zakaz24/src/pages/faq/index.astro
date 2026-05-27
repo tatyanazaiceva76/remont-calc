@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Какой камин для квартиры?","a":"Электро или биокамин — без дыма и дымохода. Дровяной нельзя — нужен сертифицированный дымоход через крышу."},{"q":"Сколько служит чугунная топка?","a":"20-30 лет при правильной эксплуатации. Производители: Jotul (Норвегия), Invicta (Франция), Чугун-Сталь (Россия)."},{"q":"Газовый камин надо подключать?","a":"Да, к магистральному газу или баллону. Требует разрешения газовой службы."}];
+---
+<Base title="FAQ каминов и печей" description="Ответы на главные вопросы по камину и печи.">
+  <h1>❓ FAQ — Камины и печи</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #d35400; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

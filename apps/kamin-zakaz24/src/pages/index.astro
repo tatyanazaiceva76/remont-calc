@@ -1,0 +1,102 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"drovianye","name":"Дровяные камины","price":"от 80 000 ₽","description":"Чугунные топки, печи длительного горения, аромат дров"},{"slug":"gazovye","name":"Газовые камины","price":"от 60 000 ₽","description":"Без дымохода, имитация пламени, простой монтаж"},{"slug":"elektrokamin","name":"Электрокамины","price":"от 15 000 ₽","description":"Без вытяжки, для квартиры, эффект пламени"},{"slug":"biokamin","name":"Биокамины","price":"от 25 000 ₽","description":"На биоэтаноле, без дыма и дымохода"},{"slug":"dymokhody","name":"Дымоходы и монтаж","price":"от 30 000 ₽","description":"Нержавейка, сэндвич, керамика. Под ключ."}];
+const cities = [{"slug":"moskva","name":"Москве и области","nameNom":"Москва","priceMult":1.4},{"slug":"spb","name":"СПб и Ленобласти","nameNom":"СПб","priceMult":1.3},{"slug":"ekb","name":"Екатеринбурге","nameNom":"Екатеринбург","priceMult":1},{"slug":"nsk","name":"Новосибирске","nameNom":"Новосибирск","priceMult":0.95},{"slug":"krd","name":"Краснодаре","nameNom":"Краснодар","priceMult":1.05}];
+const faqs = [{"q":"Какой камин для квартиры?","a":"Электро или биокамин — без дыма и дымохода. Дровяной нельзя — нужен сертифицированный дымоход через крышу."},{"q":"Сколько служит чугунная топка?","a":"20-30 лет при правильной эксплуатации. Производители: Jotul (Норвегия), Invicta (Франция), Чугун-Сталь (Россия)."},{"q":"Газовый камин надо подключать?","a":"Да, к магистральному газу или баллону. Требует разрешения газовой службы."}];
+
+const title = 'Камины и печи 2026 — Камины и печи на дровах от 80 000 ₽ — монтаж под ключ';
+const description = 'Камины, печи, дымоходы 2026: дровяные, газовые, электрические, биокамины. Монтаж, чистка, ремонт. Гарантия 5 лет.';
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'Service',
+  name: 'Камины и печи',
+  description: 'Камины, печи, дымоходы 2026: дровяные, газовые, электрические, биокамины. Монтаж, чистка, ремонт. Гарантия 5 лет.',
+  areaServed: { '@type': 'Country', name: 'Россия' },
+  provider: { '@type': 'Organization', name: 'Камины и печи' }
+};
+---
+<Base title={title} description={description} schema={schema}>
+  <h1>🔥 Камины и печи</h1>
+  <p class="lead">Камины и печи на дровах от 80 000 ₽ — монтаж под ключ</p>
+
+  <section class="lead-form">
+    <h2>💡 Получить расчёт</h2>
+    <p>Оставьте телефон — перезвоним в течение 30 минут и пришлём предложение:</p>
+    <form id="lead-form" onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,name:this.name?.value,source:'kamin-zakaz24.ru',page:location.pathname})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;font-size:18px;\'>✅ Заявка принята! Перезвоним в течение 30 минут.</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <input type="text" name="name" placeholder="Как к вам обращаться" />
+      <button type="submit">Получить расчёт →</button>
+    </form>
+  </section>
+
+  <section>
+    <h2>🛒 Услуги</h2>
+    <div class="services">
+      {services.map((s) => (
+        <a href={`/uslugi/${s.slug}/`} class="service-card">
+          <strong>{s.name}</strong>
+          <span class="price">{s.price}</span>
+          <p>{s.description}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>🏙 Работаем в городах</h2>
+    <div class="cities">
+      {cities.map((c) => (
+        <a href={`/goroda/${c.slug}/`} class="city-card">
+          <strong>{c.nameNom}</strong>
+          <span>Камины и печи в {c.name}</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ FAQ</h2>
+    <div class="faqs">
+      {faqs.map((f) => (
+        <details class="faq">
+          <summary>{f.q}</summary>
+          <p>{f.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .lead { font-size: 17px; padding: 16px 20px; background: white; border-left: 4px solid #d35400; border-radius: 0 8px 8px 0; }
+  .lead-form { background: white; padding: 24px; border-radius: 12px; margin: 24px 0; box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+  .lead-form form { display: flex; flex-direction: column; gap: 10px; max-width: 400px; }
+  .lead-form input { padding: 12px 14px; border: 1.5px solid #e6e8eb; border-radius: 8px; font-size: 16px; }
+  .lead-form input:focus { border-color: #d35400; outline: none; }
+  .lead-form button { padding: 14px; background: #d35400; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px 18px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; transition: all 0.2s; }
+  .service-card:hover { border-color: #d35400; transform: translateY(-2px); }
+  .service-card strong { display: block; font-size: 16px; color: #d35400; }
+  .price { display: inline-block; font-size: 13px; font-weight: 600; color: #2980b9; margin: 4px 0; }
+  .service-card p { font-size: 13px; color: #555; margin: 6px 0 0; }
+  .cities { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .city-card { display: block; padding: 12px; background: white; border: 1px solid #e6e8eb; border-radius: 8px; text-decoration: none; color: #1a1a1a; }
+  .city-card:hover { border-color: #d35400; }
+  .city-card strong { color: #d35400; display: block; }
+  .city-card span { font-size: 12px; color: #888; }
+  .faqs { display: flex; flex-direction: column; gap: 8px; }
+  .faq { background: white; padding: 14px 16px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq p { margin: 10px 0 0; color: #555; }
+  @media (max-width: 700px) { .services, .cities { grid-template-columns: 1fr; } }
+</style>

@@ -1,0 +1,23 @@
+---
+import Base from '~/layouts/Base.astro';
+const services = [{"slug":"karkasnye","name":"Каркасные дома","price":"от 25 000 ₽/м²","description":"Быстрая постройка 2-3 месяца, тёплые, цена 1.5 млн на 60 м²"},{"slug":"gazobeton","name":"Дома из газобетона","price":"от 35 000 ₽/м²","description":"Тёплые, долговечные, 4-6 месяцев"},{"slug":"kirpichnye","name":"Кирпичные дома","price":"от 55 000 ₽/м²","description":"Премиум, 8-12 месяцев, срок службы 150+ лет"},{"slug":"iz-brusa","name":"Дома из бруса","price":"от 30 000 ₽/м²","description":"Экологичные, аромат дерева, требуют усадки 1 год"}];
+---
+<Base title="Услуги загородных домов" description="Полный список услуг по загородному дому с ценами 2026.">
+  <h1>Услуги загородных домов</h1>
+  <div class="services">
+    {services.map((s) => (
+      <a href={`/uslugi/${s.slug}/`} class="service-card">
+        <strong>{s.name}</strong>
+        <span>{s.price}</span>
+        <p>{s.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .service-card { display: block; padding: 16px; background: white; border: 1px solid #e6e8eb; border-radius: 10px; text-decoration: none; color: #1a1a1a; }
+  .service-card:hover { border-color: #27ae60; }
+  .service-card strong { display: block; color: #27ae60; }
+  @media (max-width: 700px) { .services { grid-template-columns: 1fr; } }
+</style>

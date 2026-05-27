@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Что нельзя согласовать?","a":"Снос несущих стен. Перенос мокрой зоны над сухой соседей. Перенос кухни в жилую комнату. Объединение жилой комнаты с балконом."},{"q":"Что точно согласуют?","a":"Снос ненесущих перегородок. Объединение санузла. Перенос двери в ненесущей стене. Установка ниш в стенах."},{"q":"Сколько по времени?","a":"Простая перепланировка — 1-2 месяца. Сложная — 3-6 месяцев. Узаконить задним числом — 3-9 месяцев."}];
+---
+<Base title="FAQ перепланировки квартиры" description="Ответы на главные вопросы по перепланировке квартиры.">
+  <h1>❓ FAQ — Перепланировка</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #16a085; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>

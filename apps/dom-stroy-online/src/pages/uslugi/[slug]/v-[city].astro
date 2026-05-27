@@ -1,0 +1,44 @@
+---
+import Base from '~/layouts/Base.astro';
+
+export function getStaticPaths() {
+  const services = [{"slug":"karkasnye","name":"Каркасные дома","price":"от 25 000 ₽/м²","description":"Быстрая постройка 2-3 месяца, тёплые, цена 1.5 млн на 60 м²"},{"slug":"gazobeton","name":"Дома из газобетона","price":"от 35 000 ₽/м²","description":"Тёплые, долговечные, 4-6 месяцев"},{"slug":"kirpichnye","name":"Кирпичные дома","price":"от 55 000 ₽/м²","description":"Премиум, 8-12 месяцев, срок службы 150+ лет"},{"slug":"iz-brusa","name":"Дома из бруса","price":"от 30 000 ₽/м²","description":"Экологичные, аромат дерева, требуют усадки 1 год"}];
+  const cities = [{"slug":"moskva","name":"Подмосковье","nameNom":"Подмосковье","priceMult":1.4},{"slug":"spb","name":"Ленобласти","nameNom":"Ленобласть","priceMult":1.3},{"slug":"ekb","name":"Свердловской области","nameNom":"Свердловская обл.","priceMult":1},{"slug":"kzn","name":"Татарстане","nameNom":"Татарстан","priceMult":1},{"slug":"nsk","name":"Новосибирской области","nameNom":"Новосибирская обл.","priceMult":0.95},{"slug":"krd","name":"Краснодарском крае","nameNom":"Краснодарский край","priceMult":1.1}];
+  const paths = [];
+  for (const s of services) {
+    for (const c of cities) {
+      paths.push({ params: { slug: s.slug, city: c.slug }, props: { service: s, city: c } });
+    }
+  }
+  return paths;
+}
+
+const { service, city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = service.name + ' в ' + city.name + ' — Загородные дома';
+const description = service.description + ' в ' + city.name + '. ' + service.price + '. Замер бесплатно, быстрый монтаж.';
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="bc"><a href="/">Загородные дома</a> › <a href="/uslugi/">Услуги</a> › <a href={`/uslugi/${service.slug}/`}>{service.name}</a> › <span>в {city.name}</span></nav>
+
+  <h1>{service.name} в {city.name}</h1>
+  <p class="lead">{service.description} в {city.name}. <strong>Цена: {service.price}</strong>.</p>
+
+  <section class="lead-form">
+    <h2>💡 Заказать в {city.name}</h2>
+    <form onsubmit="event.preventDefault();fetch('https://www.kalkremont.ru/api/lead',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:this.phone.value,city:'{city.slug}',service:'{service.slug}',source:'dom-stroy-online.ru',page:location.pathname})}).then(()=>{this.innerHTML='<p style=\'color:#27ae60;font-size:18px;\'>✅ Заявка принята!</p>'});">
+      <input type="tel" name="phone" placeholder="+7 (___) ___-__-__" required minlength="10" />
+      <button type="submit">Получить расчёт →</button>
+    </form>
+  </section>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #888; }
+  .bc a { color: #888; }
+  .lead { padding: 16px; background: white; border-left: 4px solid #27ae60; border-radius: 0 8px 8px 0; }
+  .lead-form { background: white; padding: 20px; border-radius: 10px; margin: 20px 0; }
+  .lead-form form { display: flex; gap: 8px; max-width: 500px; }
+  .lead-form input { flex: 1; padding: 12px; border: 1.5px solid #e6e8eb; border-radius: 8px; }
+  .lead-form button { padding: 12px 20px; background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+</style>

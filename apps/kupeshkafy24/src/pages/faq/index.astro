@@ -1,0 +1,32 @@
+---
+import Base from '~/layouts/Base.astro';
+const faqs = [{"q":"Из чего делают шкаф?","a":"ЛДСП Egger или Lamarty (тонкий ламинат). Фасады — ЛДСП, стекло, зеркало, ротанг, шпон."},{"q":"Какие системы раздвижения?","a":"Aristo — премиум. Versal — средний. Krauss — эконом. Все 10+ лет гарантии."},{"q":"Сколько ждать?","a":"14-21 день производство + 1 день сборка. Срочно — 7-10 дней с надбавкой 20%."}];
+---
+<Base title="FAQ шкафов-купе" description="Ответы на главные вопросы по шкафу-купе.">
+  <h1>❓ FAQ — Шкафы-купе</h1>
+  <div class="faqs">
+    {faqs.map((f, i) => (
+      <details class="faq" open={i < 2}>
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .faqs { display: flex; flex-direction: column; gap: 10px; }
+  .faq { background: white; padding: 14px 18px; border-radius: 8px; border: 1px solid #e6e8eb; }
+  .faq summary { font-weight: 600; cursor: pointer; }
+  .faq[open] { border-color: #9b59b6; }
+  .faq p { margin: 12px 0 0; color: #555; }
+</style>
