@@ -1,0 +1,34 @@
+---
+import Base from '~/layouts/Base.astro';
+import { materialCalculators } from '~/data/material-calculators';
+
+const title = `Калькуляторы материалов для ремонта — ${materialCalculators.length} типов`;
+const description = `Онлайн калькуляторы расхода материалов 2026: обои, ламинат, плитка, краска, штукатурка, гипсокартон. По 40 городам России.`;
+---
+<Base title={title} description={description}>
+  <h1>📐 Калькуляторы материалов для ремонта</h1>
+  <p class="lead">Точные онлайн расчёты расхода материалов с актуальными ценами 2026. Выберите материал и получите смету по вашему городу.</p>
+
+  <div class="grid">
+    {materialCalculators.map((c) => (
+      <a href={`/kalkulyator/${c.slug}/`} class="card">
+        <div class="emoji">{c.emoji}</div>
+        <h2>{c.name}</h2>
+        <p>{c.description}</p>
+        <span class="price">от {c.pricePerUnit[0]} ₽ / {c.unit}</span>
+      </a>
+    ))}
+  </div>
+</Base>
+<style>
+  .lead { font-size: 16px; color: #555; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  .card { display: flex; flex-direction: column; padding: 20px 22px; background: #fff; border: 1px solid #e6e8eb; border-radius: 12px; text-decoration: none; color: #1a1a1a; transition: all 0.2s; }
+  .card:hover { border-color: #f5a623; background: #fffbf3; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+  .emoji { font-size: 36px; margin-bottom: 8px; }
+  .card h2 { font-size: 18px; margin: 0 0 6px; color: #c0392b; }
+  .card p { font-size: 13px; color: #555; margin: 0 0 12px; flex: 1; line-height: 1.4; }
+  .price { font-size: 12px; color: #888; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
+</style>

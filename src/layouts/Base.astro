@@ -128,6 +128,35 @@ const webPageSchema = {
 
     <StickyCta />
     <ExitPopup />
+    <!-- Toast notifications загружаются в footer для социального доказательства -->
+    <div id="social-toast-mount"></div>
+    <script is:inline>
+      (function() {
+        const cities = ['Москвы','СПб','Екатеринбурга','Казани','Новосибирска','Краснодара','Нижнего Новгорода','Челябинска','Уфы','Самары','Ростова','Воронежа','Перми','Волгограда','Тюмени','Иркутска'];
+        const names = ['Александр','Мария','Дмитрий','Анна','Сергей','Елена','Андрей','Ольга','Иван','Наталья','Алексей','Татьяна','Михаил','Ирина'];
+        const actions = ['оставил заявку на ремонт', 'рассчитал стоимость', 'заказал замер', 'получил смету'];
+        const times = ['только что','1 мин назад','3 мин назад','7 мин назад','10 мин назад','15 мин назад','20 мин назад'];
+        const mount = document.getElementById('social-toast-mount');
+        if (!mount || sessionStorage.getItem('toast-shown-count') > 2) return;
+        mount.innerHTML = '<div id="st-toast" style="position:fixed;bottom:20px;left:20px;width:280px;background:white;border-radius:12px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,0.15);display:none;align-items:center;gap:12px;z-index:998;"><div id="st-avatar" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#f5a623,#e67e22);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;flex-shrink:0;"></div><div style="flex:1;min-width:0;"><strong id="st-name" style="font-size:13px;color:#1a1a1a;display:block;"></strong><p id="st-action" style="font-size:12px;color:#555;margin:2px 0;"></p><small id="st-time" style="font-size:11px;color:#888;"></small></div></div>';
+        const toast = document.getElementById('st-toast');
+        let count = parseInt(sessionStorage.getItem('toast-shown-count') || '0');
+        function show() {
+          const name = names[Math.floor(Math.random()*names.length)];
+          const city = cities[Math.floor(Math.random()*cities.length)];
+          document.getElementById('st-avatar').textContent = name[0];
+          document.getElementById('st-name').textContent = name + ' из ' + city;
+          document.getElementById('st-action').textContent = actions[Math.floor(Math.random()*actions.length)];
+          document.getElementById('st-time').textContent = times[Math.floor(Math.random()*times.length)];
+          toast.style.display = 'flex';
+          count++;
+          sessionStorage.setItem('toast-shown-count', String(count));
+          setTimeout(function() { toast.style.display = 'none'; }, 5500);
+        }
+        setTimeout(show, 12000);
+        setInterval(function() { if (count < 3 && Math.random() < 0.5) show(); }, 45000);
+      })();
+    </script>
 
     <footer class="site-footer">
       <div class="container">

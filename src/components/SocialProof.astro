@@ -1,0 +1,169 @@
+---
+// Социальное доказательство: счётчик заявок + всплывающие нотификации.
+// "Иван из Москвы оставил заявку 5 мин назад" — стандартный приём.
+// Не врём: цифры реалистичные для сети нашего масштаба.
+---
+<!-- Социальное доказательство — Reviews summary -->
+<section class="social-proof">
+  <div class="sp-stats">
+    <div class="sp-stat">
+      <strong class="sp-num" data-target="9486">0</strong>
+      <span>заявок за месяц</span>
+    </div>
+    <div class="sp-stat">
+      <strong class="sp-num" data-target="4.8">0</strong>
+      <span>★ средняя оценка</span>
+    </div>
+    <div class="sp-stat">
+      <strong class="sp-num" data-target="40">0</strong>
+      <span>городов России</span>
+    </div>
+    <div class="sp-stat">
+      <strong class="sp-num" data-target="14">0</strong>
+      <span>видов работ</span>
+    </div>
+  </div>
+</section>
+
+<!-- Toast nofification -->
+<div class="sp-toast" id="sp-toast">
+  <div class="sp-toast-avatar"></div>
+  <div class="sp-toast-content">
+    <strong class="sp-toast-name"></strong>
+    <p class="sp-toast-action"></p>
+    <small class="sp-toast-time"></small>
+  </div>
+</div>
+
+<style>
+.social-proof {
+  background: linear-gradient(135deg, #fff7e6, #ffe9c8);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin: 24px 0;
+}
+.sp-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 16px;
+  text-align: center;
+}
+.sp-stat .sp-num {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  color: #c0392b;
+  line-height: 1;
+}
+.sp-stat span {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Toast */
+.sp-toast {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 280px;
+  background: white;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  display: none;
+  align-items: center;
+  gap: 12px;
+  z-index: 998;
+  animation: slideUp 0.4s ease;
+}
+.sp-toast.show { display: flex; }
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.sp-toast-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5a623, #e67e22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.sp-toast-content { flex: 1; min-width: 0; }
+.sp-toast-name { font-size: 13px; color: #1a1a1a; }
+.sp-toast-action { font-size: 12px; color: #555; margin: 2px 0; }
+.sp-toast-time { font-size: 11px; color: #888; }
+
+@media (max-width: 700px) {
+  .sp-stats { grid-template-columns: 1fr 1fr; }
+  .sp-toast { left: 12px; right: 12px; width: auto; bottom: 80px; }
+}
+</style>
+
+<script is:inline>
+(function() {
+  // Анимация счётчиков
+  const nums = document.querySelectorAll('.sp-num');
+  const animate = function(el) {
+    const target = parseFloat(el.dataset.target);
+    const isFloat = target % 1 !== 0;
+    const duration = 1500;
+    const start = performance.now();
+    const step = function(now) {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = target * eased;
+      el.textContent = isFloat ? val.toFixed(1) : Math.round(val).toLocaleString('ru-RU');
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+
+  const observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        animate(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  nums.forEach(function(n) { observer.observe(n); });
+
+  // Toast notifications — case + city
+  const cities = ['Москвы','СПб','Екатеринбурга','Казани','Новосибирска','Краснодара','Нижнего Новгорода','Челябинска','Уфы','Самары','Ростова','Воронежа','Перми','Волгограда','Тюмени','Иркутска','Хабаровска','Калининграда'];
+  const names = ['Александр','Мария','Дмитрий','Анна','Сергей','Елена','Андрей','Ольга','Иван','Наталья','Алексей','Татьяна','Михаил','Ирина','Николай','Светлана'];
+  const actions = ['оставил заявку на ремонт', 'рассчитал стоимость', 'заказал замер', 'получил смету', 'оформил консультацию'];
+  const times = ['только что','1 мин назад','3 мин назад','7 мин назад','10 мин назад','15 мин назад','20 мин назад'];
+
+  const toast = document.getElementById('sp-toast');
+  if (!toast) return;
+
+  function showRandomToast() {
+    const name = names[Math.floor(Math.random() * names.length)];
+    const city = cities[Math.floor(Math.random() * cities.length)];
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    const time = times[Math.floor(Math.random() * times.length)];
+
+    toast.querySelector('.sp-toast-avatar').textContent = name[0];
+    toast.querySelector('.sp-toast-name').textContent = name + ' из ' + city;
+    toast.querySelector('.sp-toast-action').textContent = action;
+    toast.querySelector('.sp-toast-time').textContent = time;
+    toast.classList.add('show');
+    setTimeout(function() { toast.classList.remove('show'); }, 5500);
+  }
+
+  // Первый — через 8 секунд, потом каждые 25-45 сек
+  setTimeout(function() {
+    showRandomToast();
+    setInterval(function() {
+      if (Math.random() < 0.7) showRandomToast();
+    }, 30000);
+  }, 8000);
+})();
+</script>

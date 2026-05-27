@@ -1,0 +1,114 @@
+---
+import Base from '~/layouts/Base.astro';
+import { materialCalculators } from '~/data/material-calculators';
+import { nicheCities } from '~/data/niche-cities';
+
+export function getStaticPaths() {
+  return materialCalculators.map((c) => ({ params: { type: c.slug }, props: { calc: c } }));
+}
+
+const { calc } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const title = `Калькулятор ${calc.name.toLowerCase()} онлайн — расчёт 2026`;
+const description = `${calc.description} Цена ${calc.pricePerUnit[0]}-${calc.pricePerUnit[1]} ₽ за ${calc.unit}. Формула и расчёт по 40 городам.`;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: title,
+  description: description,
+  applicationCategory: 'CalculatorApplication',
+  operatingSystem: 'Any',
+  offers: { '@type': 'Offer', price: 0, priceCurrency: 'RUB' }
+};
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <h1>{calc.emoji} Калькулятор {calc.name.toLowerCase()} онлайн</h1>
+  <p class="lead">{calc.intro}</p>
+
+  <section class="formula-box">
+    <h2>📐 Формула расчёта</h2>
+    <code>{calc.formula}</code>
+  </section>
+
+  <section>
+    <h2>📝 Как правильно рассчитать</h2>
+    <ol class="steps">
+      {calc.howToCalculate.map((s) => <li>{s}</li>)}
+    </ol>
+  </section>
+
+  <section>
+    <h2>📊 От чего зависит расход</h2>
+    <ul>
+      {calc.whatAffects.map((a) => <li>{a}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2>💰 Средние цены 2026 — выберите город</h2>
+    <p>Цены отличаются по регионам. Точная стоимость и расчёт под ваш проект — по ссылке на ваш город:</p>
+    <div class="cities-grid">
+      {nicheCities.slice(0, 40).map((c) => {
+        const cityPrice = Math.round(calc.pricePerUnit[0] * c.priceMult);
+        return (
+          <a href={`/kalkulyator/${calc.slug}/v-${c.slug}/`} class="city">
+            <strong>{c.nameNom}</strong>
+            <span>от {cityPrice.toLocaleString('ru-RU')} ₽ / {calc.unit}</span>
+          </a>
+        );
+      })}
+    </div>
+  </section>
+
+  <section>
+    <h2>❓ Часто задаваемые вопросы</h2>
+    <div class="faqs">
+      {calc.faqs.map((f) => (
+        <div class="faq">
+          <h3>{f.q}</h3>
+          <p>{f.a}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>💡 Точный расчёт от профессионалов</h2>
+    <p>Получите расчёт ремонта с учётом материалов, работы и доставки в вашем городе:</p>
+    <a href="/" class="btn">→ Полный калькулятор ремонта</a>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: calc.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .lead { font-size: 17px; color: #333; padding: 18px 22px; background: #fffaf3; border-left: 4px solid #f5a623; border-radius: 0 8px 8px 0; }
+  .formula-box { background: #f0f7ff; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #3498db; margin: 24px 0; }
+  .formula-box h2 { font-size: 17px; margin: 0 0 8px; color: #2980b9; }
+  .formula-box code { display: block; font-family: 'SF Mono', monospace; font-size: 14px; background: white; padding: 12px; border-radius: 6px; color: #1a1a1a; }
+  section h2 { font-size: 20px; color: #c0392b; }
+  .steps { padding-left: 24px; }
+  .steps li { padding: 6px 0; }
+  .cities-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .city { display: flex; flex-direction: column; padding: 10px 12px; background: white; border: 1px solid #e6e8eb; border-radius: 6px; text-decoration: none; color: #1a1a1a; }
+  .city:hover { border-color: #f5a623; background: #fffbf3; }
+  .city strong { font-size: 13px; color: #c0392b; }
+  .city span { font-size: 11px; color: #666; }
+  .faqs { display: flex; flex-direction: column; gap: 12px; }
+  .faq { background: #fff; padding: 14px 16px; border: 1px solid #e6e8eb; border-radius: 8px; }
+  .faq h3 { font-size: 15px; margin: 0 0 6px; }
+  .faq p { margin: 0; font-size: 14px; color: #555; }
+  .cta { background: #fff7e6; padding: 22px 24px; border-radius: 12px; margin-top: 32px; }
+  .btn { display: inline-block; padding: 12px 24px; background: #c0392b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 8px; }
+  @media (max-width: 800px) { .cities-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 500px) { .cities-grid { grid-template-columns: 1fr; } }
+</style>

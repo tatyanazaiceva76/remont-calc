@@ -1,0 +1,154 @@
+---
+import Base from '~/layouts/Base.astro';
+import { materialCalculators } from '~/data/material-calculators';
+import { nicheCities } from '~/data/niche-cities';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const calc of materialCalculators) {
+    for (const city of nicheCities) {
+      paths.push({
+        params: { type: calc.slug, city: city.slug },
+        props: { calc, city }
+      });
+    }
+  }
+  return paths;
+}
+
+const { calc, city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const minPrice = Math.round(calc.pricePerUnit[0] * city.priceMult);
+const maxPrice = Math.round(calc.pricePerUnit[1] * city.priceMult);
+
+const title = `Калькулятор ${calc.name.toLowerCase()} в ${city.name} 2026 — от ${minPrice} ₽ / ${calc.unit}`;
+const description = `${calc.name} в ${city.name}: цена ${minPrice}-${maxPrice} ₽ за ${calc.unit}. Расчёт расхода с формулой. Население ${city.population}.`;
+
+const breadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://www.kalkremont.ru/' },
+    { '@type': 'ListItem', position: 2, name: 'Калькуляторы', item: 'https://www.kalkremont.ru/kalkulyator/' },
+    { '@type': 'ListItem', position: 3, name: calc.name, item: `https://www.kalkremont.ru/kalkulyator/${calc.slug}/` },
+    { '@type': 'ListItem', position: 4, name: `в ${city.name}`, item: url }
+  ]
+};
+---
+<Base title={title} description={description} canonical={url}>
+  <nav class="breadcrumb">
+    <a href="/">Главная</a> ›
+    <a href="/kalkulyator/">Калькуляторы</a> ›
+    <a href={`/kalkulyator/${calc.slug}/`}>{calc.name}</a> ›
+    <span>в {city.name}</span>
+  </nav>
+
+  <h1>{calc.emoji} Калькулятор {calc.name.toLowerCase()} в {city.name}</h1>
+  <p class="lead">
+    Расчёт {calc.name.toLowerCase()} в {city.name} 2026. Население {city.population}.
+    Средняя цена: <strong>{minPrice.toLocaleString('ru-RU')}-{maxPrice.toLocaleString('ru-RU')} ₽</strong> за {calc.unit}.
+  </p>
+
+  <section class="price-box">
+    <h2>💰 Цена {calc.name.toLowerCase()} в {city.name} 2026</h2>
+    <div class="prices">
+      <div class="price-cell">
+        <span class="label">Эконом</span>
+        <span class="value">от {minPrice.toLocaleString('ru-RU')} ₽</span>
+        <span class="unit">/ {calc.unit}</span>
+      </div>
+      <div class="price-cell">
+        <span class="label">Средний</span>
+        <span class="value">{Math.round((minPrice + maxPrice) / 2).toLocaleString('ru-RU')} ₽</span>
+        <span class="unit">/ {calc.unit}</span>
+      </div>
+      <div class="price-cell">
+        <span class="label">Премиум</span>
+        <span class="value">до {maxPrice.toLocaleString('ru-RU')} ₽</span>
+        <span class="unit">/ {calc.unit}</span>
+      </div>
+    </div>
+    <p class="price-note">Цены актуальны на 2026 год. Зависят от бренда, класса и сезонных скидок.</p>
+  </section>
+
+  <section class="formula-box">
+    <h2>📐 Формула расчёта</h2>
+    <code>{calc.formula}</code>
+    <p>Эта формула используется в {city.name} и других городах. Расход материала не зависит от региона — только цена.</p>
+  </section>
+
+  <section>
+    <h2>📝 Как рассчитать в {city.name}</h2>
+    <ol class="steps">
+      {calc.howToCalculate.map((s) => <li>{s}</li>)}
+    </ol>
+  </section>
+
+  <section>
+    <h2>📊 От чего зависит итоговая цена</h2>
+    <ul>
+      {calc.whatAffects.map((a) => <li>{a}</li>)}
+    </ul>
+  </section>
+
+  <section>
+    <h2>❓ FAQ — {calc.name} в {city.name}</h2>
+    <div class="faqs">
+      {calc.faqs.map((f) => (
+        <div class="faq">
+          <h3>{f.q}</h3>
+          <p>{f.a}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>💡 Заказать ремонт в {city.name}</h2>
+    <p>Точный расчёт ремонта с материалами и работой в {city.name} — на нашем сайте города:</p>
+    <a href={city.href} class="btn">→ Ремонт в {city.name}</a>
+  </section>
+
+  <section style="margin-top:32px;">
+    <a href={`/kalkulyator/${calc.slug}/`} style="color:#888;">← Калькулятор {calc.name.toLowerCase()} по всем городам</a>
+  </section>
+
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />
+  <script type="application/ld+json" set:html={JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: calc.faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a }
+    }))
+  })} />
+</Base>
+<style>
+  .breadcrumb { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .breadcrumb a { color: #888; text-decoration: none; }
+  .lead { font-size: 17px; color: #333; padding: 18px 22px; background: #fffaf3; border-left: 4px solid #f5a623; border-radius: 0 8px 8px 0; }
+  .lead strong { color: #c0392b; }
+  .price-box { background: linear-gradient(135deg, #fff7e6, #ffe9c8); padding: 24px; border-radius: 12px; margin: 24px 0; border: 2px solid #f5a623; }
+  .price-box h2 { color: #c0392b; margin-top: 0; }
+  .prices { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .price-cell { background: white; padding: 16px; border-radius: 10px; text-align: center; }
+  .price-cell .label { display: block; font-size: 12px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .price-cell .value { display: block; font-size: 22px; font-weight: 700; color: #c0392b; }
+  .price-cell .unit { display: block; font-size: 12px; color: #888; margin-top: 2px; }
+  .price-note { font-size: 12px; color: #666; margin-top: 12px; text-align: center; }
+  .formula-box { background: #f0f7ff; padding: 18px 22px; border-radius: 10px; border-left: 4px solid #3498db; margin: 24px 0; }
+  .formula-box h2 { font-size: 17px; margin: 0 0 8px; color: #2980b9; }
+  .formula-box code { display: block; font-family: 'SF Mono', monospace; font-size: 14px; background: white; padding: 12px; border-radius: 6px; }
+  section h2 { font-size: 20px; color: #c0392b; }
+  .steps { padding-left: 24px; }
+  .steps li { padding: 6px 0; }
+  .faqs { display: flex; flex-direction: column; gap: 12px; }
+  .faq { background: #fff; padding: 14px 16px; border: 1px solid #e6e8eb; border-radius: 8px; }
+  .faq h3 { font-size: 15px; margin: 0 0 6px; }
+  .faq p { margin: 0; font-size: 14px; color: #555; }
+  .cta { background: #fff7e6; padding: 22px 24px; border-radius: 12px; margin-top: 32px; }
+  .btn { display: inline-block; padding: 12px 24px; background: #c0392b; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 8px; }
+  @media (max-width: 700px) { .prices { grid-template-columns: 1fr; } }
+</style>

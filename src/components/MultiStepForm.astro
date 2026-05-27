@@ -1,0 +1,235 @@
+---
+// Многоступенчатая лид-форма — 3 шага: тип → площадь → телефон.
+// Эффект эскалации обязательств: пользователь "вложился" → завершает.
+// Целевая конверсия: 5% → 12-15%.
+interface Props {
+  city?: string;
+}
+const { city = '' } = Astro.props;
+---
+<section class="msform-wrap" id="msform-wrap">
+  <div class="msform-progress">
+    <div class="step active" data-step="1"><span>1</span> Тип</div>
+    <div class="step" data-step="2"><span>2</span> Площадь</div>
+    <div class="step" data-step="3"><span>3</span> Контакт</div>
+  </div>
+
+  <form class="msform" id="msform" autocomplete="off">
+    <input type="hidden" name="city" value={city} />
+
+    <!-- ШАГ 1: тип ремонта -->
+    <div class="msform-step active" data-step="1">
+      <h3>Какой ремонт планируете?</h3>
+      <p>Выберите тип — это влияет на цену в 3-5 раз</p>
+      <div class="msform-options">
+        <button type="button" class="msform-option" data-value="kosmetika">
+          <span class="icon">🎨</span>
+          <strong>Косметический</strong>
+          <small>Обои, краска, ламинат. От 7-15 тыс ₽/м²</small>
+        </button>
+        <button type="button" class="msform-option" data-value="kapitalka">
+          <span class="icon">🔨</span>
+          <strong>Капитальный</strong>
+          <small>Электрика, сантехника, выравнивание. От 18-35 тыс ₽/м²</small>
+        </button>
+        <button type="button" class="msform-option" data-value="dizayn">
+          <span class="icon">✨</span>
+          <strong>Дизайнерский</strong>
+          <small>Проект + премиум материалы. От 35-80 тыс ₽/м²</small>
+        </button>
+        <button type="button" class="msform-option" data-value="not-sure">
+          <span class="icon">🤔</span>
+          <strong>Не решил</strong>
+          <small>Помогу определиться по бюджету</small>
+        </button>
+      </div>
+      <input type="hidden" name="type" id="msform-type" />
+    </div>
+
+    <!-- ШАГ 2: площадь -->
+    <div class="msform-step" data-step="2">
+      <h3>Какая площадь квартиры?</h3>
+      <p>Слайдером или введите точно</p>
+      <div class="msform-slider">
+        <input type="range" name="area" id="msform-area" min="20" max="200" value="50" step="1" />
+        <div class="msform-area-value">
+          <input type="number" id="msform-area-num" min="20" max="500" value="50" /> м²
+        </div>
+        <div class="msform-area-labels">
+          <span>Студия 20 м²</span>
+          <span>3-комн 80 м²</span>
+          <span>Большая 150 м²</span>
+        </div>
+      </div>
+      <div class="msform-estimate" id="msform-estimate">
+        <strong>~ 750 000 ₽</strong>
+        <small>Предварительная оценка. Точно — на следующем шаге.</small>
+      </div>
+      <div class="msform-buttons">
+        <button type="button" class="msform-back">← Назад</button>
+        <button type="button" class="msform-next">Далее →</button>
+      </div>
+    </div>
+
+    <!-- ШАГ 3: телефон -->
+    <div class="msform-step" data-step="3">
+      <h3>Куда отправить точный расчёт?</h3>
+      <p>Перезвоним в течение 2 часов, без спама</p>
+      <input type="tel" name="phone" id="msform-phone" placeholder="+7 (___) ___-__-__" required pattern="[0-9+()\-\s]+" minlength="10" />
+      <input type="text" name="name" placeholder="Как к вам обращаться" />
+      <label class="msform-consent">
+        <input type="checkbox" required checked />
+        <span>Согласен на обработку персональных данных</span>
+      </label>
+      <button type="submit" class="msform-submit">📞 Получить расчёт →</button>
+      <p class="msform-trust">🔒 Не передаём данные третьим лицам · ⏱ Ответ за 2 часа</p>
+    </div>
+
+    <!-- ШАГ 4: success -->
+    <div class="msform-step" data-step="4">
+      <div class="msform-success">
+        <div class="success-icon">✅</div>
+        <h3>Заявка принята!</h3>
+        <p>Менеджер перезвонит в течение 2 часов и пришлёт подробный расчёт.</p>
+        <p style="font-size:14px;color:#888;margin-top:20px;">Не теряем время — пока вы ждёте, посмотрите готовые работы в нашем портфолио</p>
+        <a href="/" style="display:inline-block;margin-top:12px;padding:10px 20px;background:#f5a623;color:white;text-decoration:none;border-radius:6px;">→ К калькуляторам</a>
+      </div>
+    </div>
+  </form>
+</section>
+
+<style>
+  .msform-wrap { max-width: 600px; margin: 32px auto; background: white; border-radius: 16px; padding: 28px 32px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+  .msform-progress { display: flex; justify-content: space-between; margin-bottom: 28px; position: relative; }
+  .msform-progress::before { content: ''; position: absolute; top: 14px; left: 30px; right: 30px; height: 2px; background: #e6e8eb; z-index: 0; }
+  .step { position: relative; z-index: 1; background: white; padding: 0 8px; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #999; font-weight: 600; }
+  .step span { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; background: #e6e8eb; color: #888; font-weight: 700; }
+  .step.active { color: #c0392b; }
+  .step.active span { background: #c0392b; color: white; }
+  .step.done span { background: #27ae60; color: white; }
+
+  .msform { display: block; }
+  .msform-step { display: none; }
+  .msform-step.active { display: block; animation: slideIn 0.3s; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+  .msform h3 { margin: 0 0 6px; font-size: 22px; color: #1a1a1a; }
+  .msform p { margin: 0 0 18px; color: #666; font-size: 14px; }
+
+  .msform-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .msform-option { display: flex; flex-direction: column; align-items: flex-start; padding: 14px 16px; background: #fafafa; border: 2px solid #e6e8eb; border-radius: 10px; cursor: pointer; transition: all 0.2s; text-align: left; }
+  .msform-option:hover { border-color: #f5a623; background: #fffbf3; }
+  .msform-option .icon { font-size: 24px; margin-bottom: 4px; }
+  .msform-option strong { font-size: 14px; color: #1a1a1a; }
+  .msform-option small { font-size: 11px; color: #888; margin-top: 2px; }
+
+  .msform-slider { padding: 16px 0; }
+  .msform-slider input[type="range"] { width: 100%; }
+  .msform-area-value { text-align: center; margin: 12px 0; font-size: 28px; font-weight: 700; color: #c0392b; }
+  .msform-area-value input { width: 80px; padding: 8px; border: 2px solid #e6e8eb; border-radius: 6px; font-size: 22px; text-align: center; }
+  .msform-area-labels { display: flex; justify-content: space-between; font-size: 11px; color: #888; }
+
+  .msform-estimate { background: #fff7e6; padding: 16px; border-radius: 10px; text-align: center; margin: 16px 0; }
+  .msform-estimate strong { display: block; font-size: 24px; color: #c0392b; }
+  .msform-estimate small { color: #888; font-size: 12px; }
+
+  .msform-buttons { display: flex; gap: 12px; margin-top: 16px; }
+  .msform-back, .msform-next { flex: 1; padding: 14px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; }
+  .msform-back { background: #f5f5f5; color: #555; }
+  .msform-next { background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; }
+
+  .msform input[type="tel"], .msform input[type="text"] { width: 100%; padding: 14px 16px; border: 2px solid #e6e8eb; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-sizing: border-box; }
+  .msform input:focus { border-color: #c0392b; outline: none; }
+  .msform-consent { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: #888; margin: 12px 0; }
+  .msform-submit { width: 100%; padding: 14px; background: linear-gradient(135deg, #c0392b, #e74c3c); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; }
+  .msform-trust { text-align: center; font-size: 11px; color: #888; margin-top: 12px; }
+
+  .msform-success { text-align: center; padding: 20px; }
+  .success-icon { font-size: 60px; margin-bottom: 12px; }
+  .msform-success h3 { color: #27ae60; }
+
+  @media (max-width: 500px) {
+    .msform-options { grid-template-columns: 1fr; }
+    .msform-wrap { padding: 20px 22px; }
+  }
+</style>
+
+<script is:inline>
+(function() {
+  const form = document.getElementById('msform');
+  if (!form) return;
+  let step = 1;
+  let selectedType = '';
+  let area = 50;
+  const PRICES_PER_M2 = { kosmetika: 10000, kapitalka: 25000, dizayn: 50000, 'not-sure': 20000 };
+
+  function gotoStep(n) {
+    step = n;
+    form.querySelectorAll('.msform-step').forEach(function(s) {
+      s.classList.toggle('active', parseInt(s.dataset.step) === n);
+    });
+    form.parentElement.querySelectorAll('.step').forEach(function(s) {
+      const sN = parseInt(s.dataset.step);
+      s.classList.toggle('active', sN === n);
+      s.classList.toggle('done', sN < n);
+    });
+    if (window.ym) window.ym(99000000, 'reachGoal', 'msform-step-' + n);
+  }
+
+  function updateEstimate() {
+    const price = (PRICES_PER_M2[selectedType] || 20000) * area;
+    const el = document.querySelector('#msform-estimate strong');
+    if (el) el.textContent = '~ ' + price.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  // Step 1: выбор типа
+  form.querySelectorAll('.msform-option').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      selectedType = btn.dataset.value;
+      document.getElementById('msform-type').value = selectedType;
+      updateEstimate();
+      setTimeout(function() { gotoStep(2); }, 200);
+    });
+  });
+
+  // Step 2: slider sync
+  const rangeEl = document.getElementById('msform-area');
+  const numEl = document.getElementById('msform-area-num');
+  function syncArea(value) {
+    area = parseInt(value) || 50;
+    rangeEl.value = Math.min(200, Math.max(20, area));
+    numEl.value = area;
+    updateEstimate();
+  }
+  rangeEl.addEventListener('input', function() { syncArea(rangeEl.value); });
+  numEl.addEventListener('input', function() { syncArea(numEl.value); });
+
+  form.querySelector('.msform-back').addEventListener('click', function() { gotoStep(1); });
+  form.querySelector('.msform-next').addEventListener('click', function() { gotoStep(3); });
+
+  // Step 3: submit
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = new FormData(form);
+    const phone = data.get('phone');
+    if (!phone || phone.length < 10) { alert('Введите телефон'); return; }
+    fetch('/api/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        phone: phone,
+        name: data.get('name'),
+        type: selectedType,
+        area: area,
+        city: data.get('city'),
+        source: 'multistep',
+        page: location.pathname
+      })
+    }).then(function() {
+      gotoStep(4);
+      if (window.ym) window.ym(99000000, 'reachGoal', 'msform-submit');
+    }).catch(function() {
+      alert('Ошибка отправки. Попробуйте ещё раз.');
+    });
+  });
+})();
+</script>
