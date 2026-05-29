@@ -63,7 +63,7 @@ const {
     }).then(function(r) { return r.json(); }).then(function() {
       form.style.display = 'none';
       wrapper.querySelector('.lf-success').style.display = 'block';
-      if (window.ym) window.ym(99000000, 'reachGoal', 'lead-submit');
+      if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'lead-submit');
     }).catch(function() {
       alert('Ошибка отправки. Попробуйте ещё раз.');
     });

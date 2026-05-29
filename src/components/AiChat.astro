@@ -239,7 +239,7 @@
             page: location.pathname
           })
         }).then(function() {
-          if (window.ym) window.ym(99000000, 'reachGoal', 'ai-chat-lead');
+          if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'ai-chat-lead');
         });
         reply = '✅ Заявка принята! Менеджер перезвонит в течение часа. А пока — посмотрите наши готовые сметы по вашему городу: /price/. Если есть ещё вопросы, спрашивайте!';
       } else {
@@ -292,7 +292,7 @@
   toggle.addEventListener('click', function() {
     wrap.classList.toggle('show');
     if (badge) badge.style.display = 'none';
-    if (window.ym) window.ym(99000000, 'reachGoal', 'ai-chat-opened');
+    if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'ai-chat-opened');
   });
   close.addEventListener('click', function() { wrap.classList.remove('show'); });
 

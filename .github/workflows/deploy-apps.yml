@@ -65,6 +65,10 @@ jobs:
           bun install
           bun run build
 
+      - name: Metrika guard — деплой падает при голом ym(99000000)
+        if: steps.check.outputs.skip != 'true'
+        run: bun scripts/check-dist-metrika.ts "apps/${{ matrix.app }}/dist"
+
       - name: Deploy to CF Pages (direct npx, wrangler-action имеет баг)
         if: steps.check.outputs.skip != 'true'
         env:

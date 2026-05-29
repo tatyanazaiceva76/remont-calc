@@ -115,7 +115,7 @@
     if (sessionStorage.getItem('exit-popup-shown') === '1') return;
     popup.classList.add('show');
     sessionStorage.setItem('exit-popup-shown', '1');
-    if (window.ym) window.ym(99000000, 'reachGoal', 'exit-popup-shown');
+    if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'exit-popup-shown');
   }
 
   // Desktop: exit-intent через mouseleave из top
@@ -156,7 +156,7 @@
       })
     }).then(function() {
       popup.querySelector('.exit-popup').innerHTML = '<div style="text-align:center;padding:40px 20px;"><div style="font-size:60px;margin-bottom:12px;">✅</div><h3 style="color:#27ae60;margin:0 0 12px;">Заявка принята!</h3><p style="color:#555;">Перезвоним в течение 2 часов и зафиксируем скидку 5%.</p></div>';
-      if (window.ym) window.ym(99000000, 'reachGoal', 'exit-popup-submit');
+      if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'exit-popup-submit');
       setTimeout(function() { popup.classList.remove('show'); }, 3500);
     }).catch(function() {
       alert('Ошибка отправки. Попробуйте ещё раз.');

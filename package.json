@@ -5,7 +5,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "postbuild": "bun scripts/check-dist-metrika.ts",
+    "preview": "astro preview",
+    "verify:metrika": "bun scripts/verify-metrika-prod.ts",
+    "check:metrika-build": "bun scripts/check-dist-metrika.ts"
   },
   "dependencies": {
     "astro": "^4.16.18"

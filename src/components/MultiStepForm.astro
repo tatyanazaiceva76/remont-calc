@@ -172,7 +172,7 @@ const { city = '' } = Astro.props;
       s.classList.toggle('active', sN === n);
       s.classList.toggle('done', sN < n);
     });
-    if (window.ym) window.ym(99000000, 'reachGoal', 'msform-step-' + n);
+    if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'msform-step-' + n);
   }
 
   function updateEstimate() {
@@ -226,7 +226,7 @@ const { city = '' } = Astro.props;
       })
     }).then(function() {
       gotoStep(4);
-      if (window.ym) window.ym(99000000, 'reachGoal', 'msform-submit');
+      if (window.ym) window.ym((window.__YM_ID__||99000000), 'reachGoal', 'msform-submit');
     }).catch(function() {
       alert('Ошибка отправки. Попробуйте ещё раз.');
     });
