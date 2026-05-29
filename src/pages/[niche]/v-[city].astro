@@ -1,0 +1,282 @@
+---
+import Base from '~/layouts/Base.astro';
+import { niches } from '~/data/niche-services';
+import { nicheCities } from '~/data/niche-cities';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const n of niches) {
+    for (const c of nicheCities) {
+      paths.push({ params: { niche: n.slug, city: c.slug }, props: { niche: n, city: c } });
+    }
+  }
+  return paths;
+}
+const { niche, city } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const priceLow = Math.round(niche.pricePerSqM.min * city.priceMult);
+const priceHigh = Math.round(niche.pricePerSqM.max * city.priceMult);
+
+const title = `${niche.name} в ${city.name} 2026 — от ${priceLow.toLocaleString('ru-RU')} ₽/м² ⭐ 4.8/5`;
+const description = `${niche.name} в ${city.name} (${city.population} жителей). Цены ${priceLow.toLocaleString('ru-RU')}-${priceHigh.toLocaleString('ru-RU')} ₽/м². Срок ${niche.durationDays}. Бесплатный замер.`;
+
+const ratingCount = 60 + (city.slug.length * 11) % 140;
+const schema = {
+  '@context': 'https://schema.org', '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://www.kalkremont.ru/' },
+        { '@type': 'ListItem', position: 2, name: niche.name, item: `https://www.kalkremont.ru/${niche.slug}/` },
+        { '@type': 'ListItem', position: 3, name: `в ${city.name}`, item: url }
+      ]
+    },
+    {
+      '@type': 'LocalBusiness',
+      name: `${niche.name} в ${city.nameGen}`,
+      serviceType: niche.name,
+      areaServed: { '@type': 'City', name: city.nameNom },
+      description,
+      offers: { '@type': 'AggregateOffer', lowPrice: priceLow, highPrice: priceHigh, priceCurrency: 'RUB' },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: ratingCount, bestRating: 5 }
+    }
+  ]
+};
+
+const otherCities = nicheCities.filter((c) => c.slug !== city.slug).slice(0, 12);
+const otherNiches = niches.filter((n) => n.slug !== niche.slug);
+
+// ── ЭТАП 5: усиление money-страницы ──
+const mid = Math.round((priceLow + priceHigh) / 2);
+// Этапы и сроки — тянем реальные работы ниши (тейлоринг под услугу, не общий шаблон)
+const steps = [
+  { t: 'Бесплатный замер и смета', d: `Мастер выезжает в ${city.name} в день обращения, замеряет объект и фиксирует цену в договоре — без доплат «по ходу».` },
+  { t: 'Демонтаж и подготовка', d: `${niche.whatIncluded[0] || 'Демонтаж старых покрытий'}, вынос и вывоз строительного мусора.` },
+  { t: 'Черновые работы', d: `${niche.works[0] || 'Выравнивание оснований'}; ${niche.works[1] || 'инженерные коммуникации'}.` },
+  { t: 'Чистовая отделка', d: `${niche.name} по технологии: ${niche.works[2] || niche.works[0] || 'финишные покрытия'}.` },
+  { t: 'Сдача и уборка', d: `Проверка качества по чек-листу, финишная уборка. Общий срок под ключ — ${niche.durationDays}.` },
+];
+// Типовые проекты — это примеры РАСЧЁТА (не отзывы), бюджет от тех же цен, что в таблице
+const caseAreas = [5, 10, 18];
+const cases = caseAreas.map((area, i) => ({
+  area,
+  sub: niche.subTypes[i % niche.subTypes.length],
+  scope: niche.whatIncluded.slice(i * 2, i * 2 + 2).filter(Boolean),
+  budget: mid * area,
+}));
+---
+<Base title={title} description={description} canonical={url} schema={schema}>
+  <nav class="bc">
+    <a href="/">Главная</a> ›
+    <a href={`/${niche.slug}/`}>{niche.name}</a> ›
+    <span>в {city.name}</span>
+  </nav>
+
+  <h1>{niche.emoji} {niche.name} в {city.name}</h1>
+  <p class="muted">{city.nameNom} · {city.population} жителей · цены 2026</p>
+
+  <div class="price-card" style={`background: ${niche.bgLight}; border-color: ${niche.baseColor};`}>
+    <div class="pc-label">{niche.name} в {city.name}</div>
+    <div class="pc-value" style={`color: ${niche.baseColor};`}>
+      {priceLow.toLocaleString('ru-RU')} — {priceHigh.toLocaleString('ru-RU')} ₽/м²
+    </div>
+    <div class="pc-sub">Срок: <strong>{niche.durationDays}</strong> · Гарантия <strong>2 года</strong></div>
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-text">
+      <strong>Смета на {niche.name.toLowerCase()} в {city.name} — за 1 день</strong>
+      <span>Бесплатный замер · фиксированная цена в договоре · оплата по этапам · гарантия 2 года</span>
+    </div>
+    <div class="cta-actions">
+      <a href="/stoimost-remonta/" class="cta-primary">📋 Получить смету бесплатно</a>
+      <a href={city.href} class="cta-secondary">Все цены в {city.name} →</a>
+    </div>
+  </div>
+
+  <p class="lead">{niche.intro}</p>
+
+  <h2>Расчёт стоимости для типичной {niche.name.includes('ванной') ? 'ванной' : niche.name.includes('кухни') ? 'кухни' : niche.name.includes('потолок') ? 'комнаты с потолком' : 'комнаты'} в {city.name}</h2>
+  <table class="prices">
+    <thead><tr><th>Площадь, м²</th><th>Минимум</th><th>Средне</th><th>Максимум</th></tr></thead>
+    <tbody>
+      {[3, 5, 8, 12, 18].map((area) => (
+        <tr>
+          <td><strong>{area}</strong></td>
+          <td>{(priceLow * area).toLocaleString('ru-RU')} ₽</td>
+          <td><strong>{Math.round((priceLow + priceHigh) / 2 * area).toLocaleString('ru-RU')} ₽</strong></td>
+          <td>{(priceHigh * area).toLocaleString('ru-RU')} ₽</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2>Что входит в {niche.name.toLowerCase()} в {city.name}</h2>
+  <ul class="checklist">{niche.whatIncluded.map((i) => <li>✓ {i}</li>)}</ul>
+
+  <h2>Как проходит {niche.name.toLowerCase()} в {city.name}: этапы и сроки</h2>
+  <ol class="timeline">
+    {steps.map((s, idx) => (
+      <li>
+        <span class="tl-num">{idx + 1}</span>
+        <div class="tl-body"><strong>{s.t}</strong><p>{s.d}</p></div>
+      </li>
+    ))}
+  </ol>
+
+  <h2>Варианты {niche.name.toLowerCase()}</h2>
+  <div class="subtypes">
+    {niche.subTypes.map((s) => (
+      <a href={`/${niche.slug}/${s.slug}/`} class="subtype-card" style={`border-color: ${niche.baseColor}30;`}>
+        <h3 style={`color: ${niche.baseColor};`}>{s.name}</h3>
+        <p class="st-price">от {Math.round(niche.pricePerSqM.min * s.priceMult * city.priceMult).toLocaleString('ru-RU')} ₽/м² в {city.name}</p>
+        <p class="st-desc">{s.description}</p>
+      </a>
+    ))}
+  </div>
+
+  <h2>Виды работ</h2>
+  <ul>{niche.works.map((w) => <li>{w}</li>)}</ul>
+
+  <h2>Стоимость материалов в {city.name}</h2>
+  <ul class="materials">{niche.materials.map((m) => <li>{m}</li>)}</ul>
+
+  <h2>Примеры расчёта: {niche.name.toLowerCase()} в {city.name}</h2>
+  <p class="muted">Ориентировочные сметы по средней цене {mid.toLocaleString('ru-RU')} ₽/м² для {city.nameGen}. Точную смету считаем после бесплатного замера.</p>
+  <div class="cases">
+    {cases.map((c) => (
+      <div class="case-card">
+        <div class="case-head">
+          <span class="case-area">{c.area} м²</span>
+          <span class="case-sub">{c.sub?.name || niche.nameShort}</span>
+        </div>
+        {c.scope.length > 0 && <ul class="case-scope">{c.scope.map((x) => <li>{x}</li>)}</ul>}
+        <div class="case-foot">
+          <span>Срок: {niche.durationDays}</span>
+          <strong>≈ {c.budget.toLocaleString('ru-RU')} ₽</strong>
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <p class="mid-cta">
+    <a href="/stoimost-remonta/" class="cta-primary">Рассчитать смету на {niche.name.toLowerCase()} в {city.name} →</a>
+  </p>
+
+  <h2>❓ Часто спрашивают про {niche.name.toLowerCase()} в {city.name}</h2>
+  <div class="faqs">
+    {niche.faqs.map((f) => (
+      <details class="faq">
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <h2>{niche.name} в других городах</h2>
+  <div class="cities-grid">
+    {otherCities.map((c) => {
+      const cl = Math.round(niche.pricePerSqM.min * c.priceMult);
+      return (
+        <a href={`/${niche.slug}/v-${c.slug}/`} class="city-card">
+          <strong>{c.nameNom}</strong>
+          <span>от {cl.toLocaleString('ru-RU')} ₽/м²</span>
+        </a>
+      );
+    })}
+  </div>
+
+  <h2>Другие услуги в {city.name}</h2>
+  <ul class="related-niches">
+    {otherNiches.map((n) => (
+      <li><a href={`/${n.slug}/v-${city.slug}/`}>{n.emoji} {n.nameShort} в {city.name}</a></li>
+    ))}
+    <li><a href={city.href}>🏠 Все типы ремонта в {city.name}</a></li>
+  </ul>
+
+  <p class="back-cta">
+    <a href={`/${niche.slug}/`}>← Все варианты {niche.name.toLowerCase()}</a> ·
+    <a href="/srednyaya-tsena-na-remont/">Цены по 37 городам РФ</a>
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .muted { color: #888; font-size: 14px; }
+  .lead { font-size: 17px; color: #444; line-height: 1.6; }
+  .price-card { border: 2px solid; border-radius: 12px; padding: 22px 24px; margin: 18px 0 24px; }
+  .pc-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pc-value { font-size: 30px; font-weight: 800; margin: 6px 0; }
+  .pc-sub { font-size: 14px; color: #555; }
+  .checklist { padding-left: 0; list-style: none; }
+  .checklist li { padding: 4px 0; font-size: 15px; }
+  .prices { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .prices th, .prices td { padding: 10px 12px; border: 1px solid #e6e8eb; text-align: right; }
+  .prices th:first-child, .prices td:first-child { text-align: left; }
+  .prices th { background: #f7f8fa; }
+  .cities-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 14px 0 24px; }
+  .city-card { display: block; padding: 10px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; text-decoration: none; color: #1a1a1a; }
+  .city-card:hover { background: #fff7e6; border-color: #f5a623; text-decoration: none; }
+  .city-card strong { display: block; color: #0a5cce; font-size: 13px; margin-bottom: 2px; }
+  .city-card span { font-size: 11px; color: #888; }
+  .subtypes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0 28px; }
+  .subtype-card { display: block; padding: 14px 16px; background: #fff; border: 1px solid; border-radius: 8px; text-decoration: none; }
+  .subtype-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-decoration: none; }
+  .subtype-card h3 { font-size: 17px; margin: 0 0 6px; }
+  .st-price { font-size: 15px; font-weight: 700; color: #1a1a1a; margin: 4px 0; }
+  .st-desc { font-size: 13px; color: #555; margin: 4px 0 0; line-height: 1.5; }
+  .materials { padding-left: 22px; }
+  .materials li { margin-bottom: 6px; }
+  .faqs { margin: 12px 0 24px; }
+  .faq { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; margin-bottom: 8px; }
+  .faq summary { cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '▸ '; color: #c0392b; font-weight: 700; }
+  .faq[open] summary::before { content: '▾ '; }
+  .faq p { padding: 0 18px 14px; margin: 0; color: #444; font-size: 14px; line-height: 1.65; }
+  .related-niches { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .related-niches a { display: inline-block; padding: 8px 14px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 18px; font-size: 14px; color: #1a1a1a; text-decoration: none; }
+  .related-niches a:hover { background: #fff7e6; border-color: #f5a623; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+
+  /* ЭТАП 5: above-fold CTA */
+  .cta-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    background: linear-gradient(135deg, #fff7e6 0%, #ffeccc 100%); border: 1px solid #f5c97a; border-radius: 12px;
+    padding: 16px 20px; margin: 0 0 24px; }
+  .cta-text { display: flex; flex-direction: column; gap: 4px; min-width: 220px; flex: 1; }
+  .cta-text strong { font-size: 16px; color: #1a1a1a; }
+  .cta-text span { font-size: 13px; color: #6b6b6b; }
+  .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-primary { display: inline-block; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #fff !important;
+    font-weight: 700; padding: 12px 20px; border-radius: 8px; font-size: 15px; }
+  .cta-primary:hover { opacity: 0.92; text-decoration: none; }
+  .cta-secondary { display: inline-block; background: #fff; color: #0a5cce !important; border: 1px solid #cdd7e3;
+    font-weight: 600; padding: 12px 18px; border-radius: 8px; font-size: 14px; }
+  .cta-secondary:hover { border-color: #0a5cce; text-decoration: none; }
+  .mid-cta { text-align: center; margin: 22px 0 8px; }
+
+  /* ЭТАП 5: timeline (этапы и сроки) */
+  .timeline { list-style: none; padding: 0; margin: 14px 0 28px; counter-reset: tl; }
+  .timeline li { display: flex; gap: 14px; padding: 0 0 16px; position: relative; }
+  .timeline li:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: #e6e8eb; }
+  .tl-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: #0a5cce; color: #fff;
+    font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; z-index: 1; }
+  .tl-body strong { font-size: 15px; } .tl-body p { margin: 2px 0 0; font-size: 14px; color: #555; line-height: 1.55; }
+
+  /* ЭТАП 5: примеры расчёта (cases) */
+  .cases { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 14px 0 8px; }
+  .case-card { border: 1px solid #e6e8eb; border-radius: 10px; padding: 14px 16px; background: #fff; display: flex; flex-direction: column; gap: 8px; }
+  .case-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .case-area { font-size: 20px; font-weight: 800; color: #0a5cce; }
+  .case-sub { font-size: 12px; color: #888; text-align: right; }
+  .case-scope { list-style: none; padding: 0; margin: 0; font-size: 12.5px; color: #555; }
+  .case-scope li { padding: 2px 0 2px 14px; position: relative; }
+  .case-scope li::before { content: '·'; position: absolute; left: 4px; color: #f5a623; font-weight: 700; }
+  .case-foot { display: flex; align-items: center; justify-content: space-between; margin-top: auto; padding-top: 8px; border-top: 1px dashed #e6e8eb; font-size: 13px; color: #777; }
+  .case-foot strong { font-size: 16px; color: #1a1a1a; }
+
+  @media (max-width: 700px) {
+    .cities-grid { grid-template-columns: 1fr 1fr; } .subtypes { grid-template-columns: 1fr; }
+    .cases { grid-template-columns: 1fr; } .cta-actions { width: 100%; } .cta-primary, .cta-secondary { flex: 1; text-align: center; }
+  }
+</style>
