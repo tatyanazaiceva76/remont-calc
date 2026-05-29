@@ -1,0 +1,223 @@
+host,verdict,home_status,redirect_to,canonical,canonical_host,sitemap_locs,sitemap_host,indexnow_status,issues,recommended
+brn.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+brn.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+brn.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+brn.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+brn.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+brn.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+brn.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+chel.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+chel.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+chel.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+chel.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+chel.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+chel.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+chel.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+dom-stroy-online.ru,BAD,200,"","https://moskva.dom-stroy-online.ru/",moskva.dom-stroy-online.ru,5,moskva.dom-stroy-online.ru,422,"canonical→moskva.dom-stroy-online.ru; sitemap→moskva.dom-stroy-online.ru; indexnow-422",EXCLUDE (notify moskva.dom-stroy-online.ru)
+ekb.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+ekb.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+ekb.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+ekb.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+ekb.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+ekb.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+ekb.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+ipoteka-remont.ru,BAD,200,"","https://moskva.ipoteka-remont.ru/",moskva.ipoteka-remont.ru,5,moskva.ipoteka-remont.ru,422,"canonical→moskva.ipoteka-remont.ru; sitemap→moskva.ipoteka-remont.ru; indexnow-422",EXCLUDE (notify moskva.ipoteka-remont.ru)
+kalkremont.ru,BAD,301,"https://www.kalkremont.ru/","",,9040,www.kalkremont.ru,422,"redirect→www.kalkremont.ru; sitemap→www.kalkremont.ru; indexnow-422",EXCLUDE (notify www.kalkremont.ru)
+krd.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+krd.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+krd.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+krd.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+krd.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+krd.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+krd.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+kuhni-zakaz-online.ru,BAD,200,"","https://moskva.kuhni-zakaz-online.ru/",moskva.kuhni-zakaz-online.ru,5,moskva.kuhni-zakaz-online.ru,422,"canonical→moskva.kuhni-zakaz-online.ru; sitemap→moskva.kuhni-zakaz-online.ru; indexnow-422",EXCLUDE (notify moskva.kuhni-zakaz-online.ru)
+kzn.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+kzn.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+kzn.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+kzn.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+kzn.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+kzn.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+kzn.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+moskva.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+moskva.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+moskva.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+moskva.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+moskva.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+moskva.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+moskva.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+nn.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+nn.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+nn.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+nn.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+nn.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+nn.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+nn.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+nsk.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+nsk.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+nsk.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+nsk.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+nsk.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+nsk.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+nsk.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+perm.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+perm.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+perm.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+perm.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+perm.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+perm.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+perm.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+rnd.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+rnd.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+rnd.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+rnd.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+rnd.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+rnd.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+rnd.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+sam.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+sam.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+sam.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+sam.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+sam.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+sam.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+sam.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+spb.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+spb.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+spb.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+spb.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+spb.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+spb.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+spb.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+tyumen.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+tyumen.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+tyumen.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+tyumen.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+tyumen.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+tyumen.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+tyumen.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+ufa.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+ufa.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+ufa.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+ufa.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+ufa.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+ufa.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+ufa.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+vlg.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+vlg.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+vlg.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+vlg.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+vlg.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+vlg.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+vlg.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+vrn.dizayn-interyera-online.ru,BAD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,422,"canonical→dizayn-interyera-online.ru; sitemap→dizayn-interyera-online.ru; indexnow-422",EXCLUDE (notify dizayn-interyera-online.ru)
+vrn.dveri-stalnye24.ru,BAD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,422,"canonical→dveri-stalnye24.ru; sitemap→dveri-stalnye24.ru; indexnow-422",EXCLUDE (notify dveri-stalnye24.ru)
+vrn.kamin-zakaz24.ru,BAD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,422,"canonical→kamin-zakaz24.ru; sitemap→kamin-zakaz24.ru; indexnow-422",EXCLUDE (notify kamin-zakaz24.ru)
+vrn.kupeshkafy24.ru,BAD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,422,"canonical→kupeshkafy24.ru; sitemap→kupeshkafy24.ru; indexnow-422",EXCLUDE (notify kupeshkafy24.ru)
+vrn.natyazhnoi-master24.ru,BAD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,422,"canonical→natyazhnoi-master24.ru; sitemap→natyazhnoi-master24.ru; indexnow-422",EXCLUDE (notify natyazhnoi-master24.ru)
+vrn.okna-pvh-online.ru,BAD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,422,"canonical→okna-pvh-online.ru; sitemap→okna-pvh-online.ru; indexnow-422",EXCLUDE (notify okna-pvh-online.ru)
+vrn.perevodkvartiry.ru,BAD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,422,"canonical→perevodkvartiry.ru; sitemap→perevodkvartiry.ru; indexnow-422",EXCLUDE (notify perevodkvartiry.ru)
+astr.kalkremont.ru,GOOD,200,"","https://astr.kalkremont.ru/",astr.kalkremont.ru,21,astr.kalkremont.ru,202,"",KEEP
+balkony.kalkremont.ru,GOOD,200,"","https://balkony.kalkremont.ru/",balkony.kalkremont.ru,492,balkony.kalkremont.ru,202,"",KEEP
+brand.kalkremont.ru,GOOD,200,"","https://brand.kalkremont.ru/",brand.kalkremont.ru,9,brand.kalkremont.ru,202,"",KEEP
+brn.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+brn.ipoteka-remont.ru,GOOD,200,"","https://brn.ipoteka-remont.ru/",brn.ipoteka-remont.ru,5,brn.ipoteka-remont.ru,202,"",KEEP
+brn.kalkremont.ru,GOOD,200,"","https://brn.kalkremont.ru/",brn.kalkremont.ru,147,brn.kalkremont.ru,202,"",KEEP
+brn.kuhni-zakaz-online.ru,GOOD,200,"","https://brn.kuhni-zakaz-online.ru/",brn.kuhni-zakaz-online.ru,5,brn.kuhni-zakaz-online.ru,200,"",KEEP
+cbx.kalkremont.ru,GOOD,200,"","https://cbx.kalkremont.ru/",cbx.kalkremont.ru,16,cbx.kalkremont.ru,403,"",KEEP
+chel.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+chel.ipoteka-remont.ru,GOOD,200,"","https://chel.ipoteka-remont.ru/",chel.ipoteka-remont.ru,5,chel.ipoteka-remont.ru,202,"",KEEP
+chel.kalkremont.ru,GOOD,200,"","https://chel.kalkremont.ru/",chel.kalkremont.ru,176,chel.kalkremont.ru,202,"",KEEP
+chel.kuhni-zakaz-online.ru,GOOD,200,"","https://chel.kuhni-zakaz-online.ru/",chel.kuhni-zakaz-online.ru,5,chel.kuhni-zakaz-online.ru,202,"",KEEP
+demontazh.kalkremont.ru,GOOD,200,"","https://demontazh.kalkremont.ru/",demontazh.kalkremont.ru,451,demontazh.kalkremont.ru,202,"",KEEP
+dizayn-interyera-online.ru,GOOD,200,"","https://dizayn-interyera-online.ru/",dizayn-interyera-online.ru,209,dizayn-interyera-online.ru,202,"",KEEP
+dizayn.kalkremont.ru,GOOD,200,"","https://dizayn.kalkremont.ru/",dizayn.kalkremont.ru,615,dizayn.kalkremont.ru,202,"",KEEP
+dveri-stalnye24.ru,GOOD,200,"","https://dveri-stalnye24.ru/",dveri-stalnye24.ru,209,dveri-stalnye24.ru,202,"",KEEP
+dveri.kalkremont.ru,GOOD,200,"","https://dveri.kalkremont.ru/",dveri.kalkremont.ru,451,dveri.kalkremont.ru,202,"",KEEP
+ekb.dom-stroy-online.ru,GOOD,200,"","https://ekb.dom-stroy-online.ru/",ekb.dom-stroy-online.ru,5,ekb.dom-stroy-online.ru,202,"",KEEP
+ekb.ipoteka-remont.ru,GOOD,200,"","https://ekb.ipoteka-remont.ru/",ekb.ipoteka-remont.ru,5,ekb.ipoteka-remont.ru,202,"",KEEP
+ekb.kalkremont.ru,GOOD,200,"","https://ekb.kalkremont.ru/",ekb.kalkremont.ru,205,ekb.kalkremont.ru,202,"",KEEP
+ekb.kuhni-zakaz-online.ru,GOOD,200,"","https://ekb.kuhni-zakaz-online.ru/",ekb.kuhni-zakaz-online.ru,5,ekb.kuhni-zakaz-online.ru,202,"",KEEP
+elektro.kalkremont.ru,GOOD,200,"","https://elektro.kalkremont.ru/",elektro.kalkremont.ru,451,elektro.kalkremont.ru,202,"",KEEP
+fasad.kalkremont.ru,GOOD,200,"","https://fasad.kalkremont.ru/",fasad.kalkremont.ru,492,fasad.kalkremont.ru,202,"",KEEP
+irk.kalkremont.ru,GOOD,200,"","https://irk.kalkremont.ru/",irk.kalkremont.ru,21,irk.kalkremont.ru,202,"",KEEP
+izh.kalkremont.ru,GOOD,200,"","https://izh.kalkremont.ru/",izh.kalkremont.ru,26,izh.kalkremont.ru,202,"",KEEP
+kamin-zakaz24.ru,GOOD,200,"","https://kamin-zakaz24.ru/",kamin-zakaz24.ru,250,kamin-zakaz24.ru,200,"",KEEP
+kem.kalkremont.ru,GOOD,200,"","https://kem.kalkremont.ru/",kem.kalkremont.ru,26,kem.kalkremont.ru,403,"",KEEP
+khv.kalkremont.ru,GOOD,200,"","https://khv.kalkremont.ru/",khv.kalkremont.ru,26,khv.kalkremont.ru,202,"",KEEP
+kir.kalkremont.ru,GOOD,200,"","https://kir.kalkremont.ru/",kir.kalkremont.ru,21,kir.kalkremont.ru,202,"",KEEP
+kld.kalkremont.ru,GOOD,200,"","https://kld.kalkremont.ru/",kld.kalkremont.ru,21,kld.kalkremont.ru,202,"",KEEP
+kondicioner.kalkremont.ru,GOOD,200,"","https://kondicioner.kalkremont.ru/",kondicioner.kalkremont.ru,492,kondicioner.kalkremont.ru,202,"",KEEP
+krd.dom-stroy-online.ru,GOOD,200,"","https://krd.dom-stroy-online.ru/",krd.dom-stroy-online.ru,5,krd.dom-stroy-online.ru,202,"",KEEP
+krd.ipoteka-remont.ru,GOOD,200,"","https://krd.ipoteka-remont.ru/",krd.ipoteka-remont.ru,5,krd.ipoteka-remont.ru,202,"",KEEP
+krd.kalkremont.ru,GOOD,200,"","https://krd.kalkremont.ru/",krd.kalkremont.ru,176,krd.kalkremont.ru,202,"",KEEP
+krd.kuhni-zakaz-online.ru,GOOD,200,"","https://krd.kuhni-zakaz-online.ru/",krd.kuhni-zakaz-online.ru,5,krd.kuhni-zakaz-online.ru,202,"",KEEP
+kuhni.kalkremont.ru,GOOD,200,"","https://kuhni.kalkremont.ru/",kuhni.kalkremont.ru,451,kuhni.kalkremont.ru,202,"",KEEP
+kupeshkafy24.ru,GOOD,200,"","https://kupeshkafy24.ru/",kupeshkafy24.ru,209,kupeshkafy24.ru,202,"",KEEP
+kzn.dom-stroy-online.ru,GOOD,200,"","https://kzn.dom-stroy-online.ru/",kzn.dom-stroy-online.ru,5,kzn.dom-stroy-online.ru,202,"",KEEP
+kzn.ipoteka-remont.ru,GOOD,200,"","https://kzn.ipoteka-remont.ru/",kzn.ipoteka-remont.ru,5,kzn.ipoteka-remont.ru,202,"",KEEP
+kzn.kalkremont.ru,GOOD,200,"","https://kzn.kalkremont.ru/",kzn.kalkremont.ru,205,kzn.kalkremont.ru,202,"",KEEP
+kzn.kuhni-zakaz-online.ru,GOOD,200,"","https://kzn.kuhni-zakaz-online.ru/",kzn.kuhni-zakaz-online.ru,5,kzn.kuhni-zakaz-online.ru,200,"",KEEP
+lpk.kalkremont.ru,GOOD,200,"","https://lpk.kalkremont.ru/",lpk.kalkremont.ru,21,lpk.kalkremont.ru,202,"",KEEP
+moskva.dom-stroy-online.ru,GOOD,200,"","https://moskva.dom-stroy-online.ru/",moskva.dom-stroy-online.ru,5,moskva.dom-stroy-online.ru,202,"",KEEP
+moskva.ipoteka-remont.ru,GOOD,200,"","https://moskva.ipoteka-remont.ru/",moskva.ipoteka-remont.ru,5,moskva.ipoteka-remont.ru,202,"",KEEP
+moskva.kalkremont.ru,GOOD,200,"","https://moskva.kalkremont.ru/",moskva.kalkremont.ru,321,moskva.kalkremont.ru,200,"",KEEP
+moskva.kuhni-zakaz-online.ru,GOOD,200,"","https://moskva.kuhni-zakaz-online.ru/",moskva.kuhni-zakaz-online.ru,5,moskva.kuhni-zakaz-online.ru,202,"",KEEP
+natyazhnoi-master24.ru,GOOD,200,"","https://natyazhnoi-master24.ru/",natyazhnoi-master24.ru,250,natyazhnoi-master24.ru,202,"",KEEP
+nn.dom-stroy-online.ru,GOOD,200,"","https://nn.dom-stroy-online.ru/",nn.dom-stroy-online.ru,5,nn.dom-stroy-online.ru,202,"",KEEP
+nn.ipoteka-remont.ru,GOOD,200,"","https://nn.ipoteka-remont.ru/",nn.ipoteka-remont.ru,5,nn.ipoteka-remont.ru,202,"",KEEP
+nn.kalkremont.ru,GOOD,200,"","https://nn.kalkremont.ru/",nn.kalkremont.ru,205,nn.kalkremont.ru,202,"",KEEP
+nn.kuhni-zakaz-online.ru,GOOD,200,"","https://nn.kuhni-zakaz-online.ru/",nn.kuhni-zakaz-online.ru,5,nn.kuhni-zakaz-online.ru,202,"",KEEP
+nsk.dom-stroy-online.ru,GOOD,200,"","https://nsk.dom-stroy-online.ru/",nsk.dom-stroy-online.ru,5,nsk.dom-stroy-online.ru,202,"",KEEP
+nsk.ipoteka-remont.ru,GOOD,200,"","https://nsk.ipoteka-remont.ru/",nsk.ipoteka-remont.ru,5,nsk.ipoteka-remont.ru,202,"",KEEP
+nsk.kalkremont.ru,GOOD,200,"","https://nsk.kalkremont.ru/",nsk.kalkremont.ru,205,nsk.kalkremont.ru,202,"",KEEP
+nsk.kuhni-zakaz-online.ru,GOOD,200,"","https://nsk.kuhni-zakaz-online.ru/",nsk.kuhni-zakaz-online.ru,5,nsk.kuhni-zakaz-online.ru,202,"",KEEP
+okna-pvh-online.ru,GOOD,200,"","https://okna-pvh-online.ru/",okna-pvh-online.ru,250,okna-pvh-online.ru,202,"",KEEP
+okna.kalkremont.ru,GOOD,200,"","https://okna.kalkremont.ru/",okna.kalkremont.ru,492,okna.kalkremont.ru,202,"",KEEP
+oren.kalkremont.ru,GOOD,200,"","https://oren.kalkremont.ru/",oren.kalkremont.ru,21,oren.kalkremont.ru,202,"",KEEP
+perevodkvartiry.ru,GOOD,200,"","https://perevodkvartiry.ru/",perevodkvartiry.ru,209,perevodkvartiry.ru,202,"",KEEP
+perm.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+perm.ipoteka-remont.ru,GOOD,200,"","https://perm.ipoteka-remont.ru/",perm.ipoteka-remont.ru,5,perm.ipoteka-remont.ru,202,"",KEEP
+perm.kalkremont.ru,GOOD,200,"","https://perm.kalkremont.ru/",perm.kalkremont.ru,205,perm.kalkremont.ru,202,"",KEEP
+perm.kuhni-zakaz-online.ru,GOOD,200,"","https://perm.kuhni-zakaz-online.ru/",perm.kuhni-zakaz-online.ru,5,perm.kuhni-zakaz-online.ru,202,"",KEEP
+pnz.kalkremont.ru,GOOD,200,"","https://pnz.kalkremont.ru/",pnz.kalkremont.ru,21,pnz.kalkremont.ru,202,"",KEEP
+potolki.kalkremont.ru,GOOD,200,"","https://potolki.kalkremont.ru/",potolki.kalkremont.ru,492,potolki.kalkremont.ru,202,"",KEEP
+price.kalkremont.ru,GOOD,200,"","https://price.kalkremont.ru/",price.kalkremont.ru,155,price.kalkremont.ru,202,"",KEEP
+rnd.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+rnd.ipoteka-remont.ru,GOOD,200,"","https://rnd.ipoteka-remont.ru/",rnd.ipoteka-remont.ru,5,rnd.ipoteka-remont.ru,202,"",KEEP
+rnd.kalkremont.ru,GOOD,200,"","https://rnd.kalkremont.ru/",rnd.kalkremont.ru,205,rnd.kalkremont.ru,202,"",KEEP
+rnd.kuhni-zakaz-online.ru,GOOD,200,"","https://rnd.kuhni-zakaz-online.ru/",rnd.kuhni-zakaz-online.ru,5,rnd.kuhni-zakaz-online.ru,202,"",KEEP
+rzn.kalkremont.ru,GOOD,200,"","https://rzn.kalkremont.ru/",rzn.kalkremont.ru,21,rzn.kalkremont.ru,403,"",KEEP
+sam.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+sam.ipoteka-remont.ru,GOOD,200,"","https://sam.ipoteka-remont.ru/",sam.ipoteka-remont.ru,5,sam.ipoteka-remont.ru,202,"",KEEP
+sam.kalkremont.ru,GOOD,200,"","https://sam.kalkremont.ru/",sam.kalkremont.ru,176,sam.kalkremont.ru,202,"",KEEP
+sam.kuhni-zakaz-online.ru,GOOD,200,"","https://sam.kuhni-zakaz-online.ru/",sam.kuhni-zakaz-online.ru,5,sam.kuhni-zakaz-online.ru,202,"",KEEP
+santehnika.kalkremont.ru,GOOD,200,"","https://santehnika.kalkremont.ru/",santehnika.kalkremont.ru,492,santehnika.kalkremont.ru,202,"",KEEP
+sar.kalkremont.ru,GOOD,200,"","https://sar.kalkremont.ru/",sar.kalkremont.ru,26,sar.kalkremont.ru,202,"",KEEP
+sovety.kalkremont.ru,GOOD,200,"","https://sovety.kalkremont.ru/",sovety.kalkremont.ru,11,sovety.kalkremont.ru,202,"",KEEP
+spb.dom-stroy-online.ru,GOOD,200,"","https://spb.dom-stroy-online.ru/",spb.dom-stroy-online.ru,5,spb.dom-stroy-online.ru,202,"",KEEP
+spb.ipoteka-remont.ru,GOOD,200,"","https://spb.ipoteka-remont.ru/",spb.ipoteka-remont.ru,5,spb.ipoteka-remont.ru,202,"",KEEP
+spb.kalkremont.ru,GOOD,200,"","https://spb.kalkremont.ru/",spb.kalkremont.ru,437,spb.kalkremont.ru,202,"",KEEP
+spb.kuhni-zakaz-online.ru,GOOD,200,"","https://spb.kuhni-zakaz-online.ru/",spb.kuhni-zakaz-online.ru,5,spb.kuhni-zakaz-online.ru,202,"",KEEP
+styazhka.kalkremont.ru,GOOD,200,"","https://styazhka.kalkremont.ru/",styazhka.kalkremont.ru,451,styazhka.kalkremont.ru,202,"",KEEP
+tlt.kalkremont.ru,GOOD,200,"","https://tlt.kalkremont.ru/",tlt.kalkremont.ru,16,tlt.kalkremont.ru,202,"",KEEP
+tul.kalkremont.ru,GOOD,200,"","https://tul.kalkremont.ru/",tul.kalkremont.ru,26,tul.kalkremont.ru,202,"",KEEP
+tyumen.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+tyumen.ipoteka-remont.ru,GOOD,200,"","https://tyumen.ipoteka-remont.ru/",tyumen.ipoteka-remont.ru,5,tyumen.ipoteka-remont.ru,202,"",KEEP
+tyumen.kalkremont.ru,GOOD,200,"","https://tyumen.kalkremont.ru/",tyumen.kalkremont.ru,147,tyumen.kalkremont.ru,202,"",KEEP
+tyumen.kuhni-zakaz-online.ru,GOOD,200,"","https://tyumen.kuhni-zakaz-online.ru/",tyumen.kuhni-zakaz-online.ru,5,tyumen.kuhni-zakaz-online.ru,200,"",KEEP
+uborka.kalkremont.ru,GOOD,200,"","https://uborka.kalkremont.ru/",uborka.kalkremont.ru,451,uborka.kalkremont.ru,202,"",KEEP
+ufa.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+ufa.ipoteka-remont.ru,GOOD,200,"","https://ufa.ipoteka-remont.ru/",ufa.ipoteka-remont.ru,5,ufa.ipoteka-remont.ru,202,"",KEEP
+ufa.kalkremont.ru,GOOD,200,"","https://ufa.kalkremont.ru/",ufa.kalkremont.ru,205,ufa.kalkremont.ru,202,"",KEEP
+ufa.kuhni-zakaz-online.ru,GOOD,200,"","https://ufa.kuhni-zakaz-online.ru/",ufa.kuhni-zakaz-online.ru,5,ufa.kuhni-zakaz-online.ru,202,"",KEEP
+vannye.kalkremont.ru,GOOD,200,"","https://vannye.kalkremont.ru/",vannye.kalkremont.ru,451,vannye.kalkremont.ru,202,"",KEEP
+vlg.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+vlg.ipoteka-remont.ru,GOOD,200,"","https://vlg.ipoteka-remont.ru/",vlg.ipoteka-remont.ru,5,vlg.ipoteka-remont.ru,202,"",KEEP
+vlg.kalkremont.ru,GOOD,200,"","https://vlg.kalkremont.ru/",vlg.kalkremont.ru,205,vlg.kalkremont.ru,200,"",KEEP
+vlg.kuhni-zakaz-online.ru,GOOD,200,"","https://vlg.kuhni-zakaz-online.ru/",vlg.kuhni-zakaz-online.ru,5,vlg.kuhni-zakaz-online.ru,202,"",KEEP
+vrn.dom-stroy-online.ru,GOOD,403,"","",,0,,202,"no-sitemap",KEEP
+vrn.ipoteka-remont.ru,GOOD,200,"","https://vrn.ipoteka-remont.ru/",vrn.ipoteka-remont.ru,5,vrn.ipoteka-remont.ru,200,"",KEEP
+vrn.kalkremont.ru,GOOD,200,"","https://vrn.kalkremont.ru/",vrn.kalkremont.ru,176,vrn.kalkremont.ru,200,"",KEEP
+vrn.kuhni-zakaz-online.ru,GOOD,200,"","https://vrn.kuhni-zakaz-online.ru/",vrn.kuhni-zakaz-online.ru,5,vrn.kuhni-zakaz-online.ru,200,"",KEEP
+vvo.kalkremont.ru,GOOD,200,"","https://vvo.kalkremont.ru/",vvo.kalkremont.ru,21,vvo.kalkremont.ru,202,"",KEEP
+www.kalkremont.ru,GOOD,200,"","https://www.kalkremont.ru/",www.kalkremont.ru,9040,www.kalkremont.ru,202,"",KEEP
+yar.kalkremont.ru,GOOD,200,"","https://yar.kalkremont.ru/",yar.kalkremont.ru,31,yar.kalkremont.ru,202,"",KEEP
