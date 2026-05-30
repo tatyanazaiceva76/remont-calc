@@ -1,5 +1,6 @@
 ---
 import Base from '~/layouts/Base.astro';
+import LeadForm from '~/components/LeadForm.astro';
 import { districts, repairTypes } from '~/data/districts';
 import { SITE_CONFIG } from '~/config';
 import NicheNetwork from '~/components/NicheNetwork.astro';
@@ -64,6 +65,7 @@ const schema = {
     Практические гайды по ремонту —
     <a href={`https://sovety.${SITE_CONFIG.parentDomain}/`}>sovety.kalkremont.ru</a>.
   </p>
+  <LeadForm context={`Главная — ремонт квартир, ${SITE_CONFIG.cityName}`} />
 </Base>
 <style>
   .lead { font-size: 17px; color: #444; }
