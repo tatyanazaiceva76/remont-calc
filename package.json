@@ -11,7 +11,8 @@
     "check:metrika-build": "bun scripts/check-dist-metrika.ts",
     "seo:analyze-hosts": "bun scripts/analyze-hosts.ts",
     "seo:dashboard": "bun scripts/seo-dashboard.ts",
-    "seo:score": "bun scripts/seo-score.ts"
+    "seo:score": "bun scripts/seo-score.ts",
+    "seo:recrawl-money": "bun scripts/recrawl-money-pages.ts"
   },
   "dependencies": {
     "astro": "^4.16.18"
