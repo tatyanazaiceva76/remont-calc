@@ -12,7 +12,8 @@
     "seo:analyze-hosts": "bun scripts/analyze-hosts.ts",
     "seo:dashboard": "bun scripts/seo-dashboard.ts",
     "seo:score": "bun scripts/seo-score.ts",
-    "seo:recrawl-money": "bun scripts/recrawl-money-pages.ts"
+    "seo:recrawl-money": "bun scripts/recrawl-money-pages.ts",
+    "check:secrets": "bun scripts/check-secrets.ts"
   },
   "dependencies": {
     "astro": "^4.16.18"
