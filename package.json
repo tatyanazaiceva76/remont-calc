@@ -15,6 +15,9 @@
     "seo:recrawl-money": "bun scripts/recrawl-money-pages.ts",
     "seo:generate-money-pages": "bun scripts/generate-money-pages.ts",
     "seo:network:audit": "bun scripts/network-inventory.ts",
+    "seo:network:indexnow": "bun scripts/network-indexnow.ts",
+    "seo:network:recrawl": "bun scripts/network-recrawl.ts",
+    "seo:network:dashboard": "bun scripts/network-dashboard.ts",
     "check:secrets": "bun scripts/check-secrets.ts"
   },
   "dependencies": {
