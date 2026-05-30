@@ -13,6 +13,7 @@
     "seo:dashboard": "bun scripts/seo-dashboard.ts",
     "seo:score": "bun scripts/seo-score.ts",
     "seo:recrawl-money": "bun scripts/recrawl-money-pages.ts",
+    "seo:generate-money-pages": "bun scripts/generate-money-pages.ts",
     "check:secrets": "bun scripts/check-secrets.ts"
   },
   "dependencies": {

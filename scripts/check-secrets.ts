@@ -30,9 +30,23 @@ const SHAPES: { re: RegExp; type: string }[] = [
   { re: /\bgh[ousr]_[A-Za-z0-9]{20,}/, type: 'GitHub token (gho_/ghu_/ghs_/ghr_)' },
   { re: /\by0_[A-Za-z0-9_-]{20,}/, type: 'Yandex OAuth token (y0_)' },
 ];
-// Креды внутри URL: scheme://user:pass@host  ИЛИ  scheme://<длинный-токен>@host.
-// Намеренно НЕ ловим ssh-форму git@github.com (нет «://» и нет пароля).
-const URL_CRED = /[a-zA-Z][a-zA-Z0-9+.\-]*:\/\/(?:[^/\s:@]+:[^/\s@]+|gh[opsur]_[A-Za-z0-9]{10,}|github_pat_[A-Za-z0-9_]{10,}|[A-Za-z0-9]{20,})@[^/\s]+/;
+// Креды внутри URL вида "ЛОГИН:ПАРОЛЬ@хост" или "ТОКЕН@хост" сразу после двойного слеша.
+// Намеренно НЕ ловим ssh-форму git@github.com (нет двойного слеша и нет пароля).
+// (В этом комментарии literal-схему "scheme + слеши + userinfo@host" НЕ пишем — иначе гард
+//  ловит сам себя; решение про реальность креда принимает urlCredIsReal по userinfo.)
+// Глобальный матчер вытаскивает userinfo (то, что до '@'), чтобы отличить РЕАЛЬНЫЙ
+// секрет от иллюстративного примера в комментах/доках (user:pass, <...>, foo и т.п.).
+const URL_CRED_G = /[a-zA-Z][a-zA-Z0-9+.\-]*:\/\/([^/\s@]+)@[^/\s]+/g;
+// userinfo-плейсхолдеры из примеров/документации — НЕ реальные креды.
+const CRED_PLACEHOLDER = /^(?:users?|username|name|pass(?:word|wd)?|login|logon|token|secret|key|me|host|user_?info|<[^>]*>|x+|y+|z+|abc|foo|bar|baz|логин|пароль|токен|секрет|ключ|имя|хост)$/i;
+// true → в строке есть URL с НЕплейсхолдерным userinfo (похоже на настоящую утечку).
+function urlCredIsReal(ln: string): boolean {
+  for (const m of ln.matchAll(URL_CRED_G)) {
+    const parts = m[1].split(':');                       // 'user:pass' | '<токен>' | 'ghp_real…'
+    if (!parts.every((p) => CRED_PLACEHOLDER.test(p) || PLACEHOLDER.test(p))) return true;
+  }
+  return false;
+}
 // basic-auth в git config (так actions/checkout кладёт токен в CI; локально быть не должно)
 const GIT_AUTH = /extraheader|[Aa]uthorization:\s*[Bb]asic\s+\S+/;
 // Литеральное присваивание секрет-подобному ключу реальным значением.
@@ -51,7 +65,7 @@ function scan(file: string, text: string, out: Finding[]) {
     const ln = lines[i];
     if (!ln || ln.length > 4000) continue;
     for (const { re, type } of SHAPES) if (re.test(ln)) out.push({ file, line: i + 1, type });
-    if (URL_CRED.test(ln) && !/^\s*[#;]/.test(ln)) out.push({ file, line: i + 1, type: 'credential embedded in URL' });
+    if (urlCredIsReal(ln) && !/^\s*[#;]/.test(ln)) out.push({ file, line: i + 1, type: 'credential embedded in URL' });
     const am = ln.match(SECRET_KEY);
     if (am) {
       const val = am[3];
@@ -100,7 +114,7 @@ async function main() {
       scanned.push('.git/config');
       const lines = cfg.split('\n');
       for (let i = 0; i < lines.length; i++) {
-        if (URL_CRED.test(lines[i])) findings.push({ file: '.git/config', line: i + 1, type: 'token in remote URL' });
+        if (urlCredIsReal(lines[i])) findings.push({ file: '.git/config', line: i + 1, type: 'token in remote URL' });
         if (GIT_AUTH.test(lines[i])) findings.push({ file: '.git/config', line: i + 1, type: 'auth header / extraheader in git config' });
         for (const { re, type } of SHAPES) if (re.test(lines[i])) findings.push({ file: '.git/config', line: i + 1, type });
       }
