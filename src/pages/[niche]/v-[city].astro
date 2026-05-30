@@ -2,6 +2,7 @@
 import Base from '~/layouts/Base.astro';
 import { niches } from '~/data/niche-services';
 import { nicheCities } from '~/data/niche-cities';
+import { isApplied } from '~/data/money-pages-apply';
 
 export async function getStaticPaths() {
   const paths = [];
@@ -46,6 +47,13 @@ const schema = {
 
 const otherCities = nicheCities.filter((c) => c.slug !== city.slug).slice(0, 12);
 const otherNiches = niches.filter((n) => n.slug !== niche.slug);
+
+// ── ЭТАП 6: внутренние ссылки на money-страницы (cena / pod-klyuch) ──
+// Ставим ТОЛЬКО если money-страница реально задеплоена (isApplied) — иначе 404.
+// Это даёт каждой money-странице входящую ссылку с её самой релевантной
+// проиндексированной страницы (родитель → детальная) → ускоряет обход/индексацию.
+const hasCena = isApplied('price', niche.slug, city.slug);
+const hasTurnkey = isApplied('turnkey', niche.slug, city.slug);
 
 // ── ЭТАП 5: усиление money-страницы ──
 const mid = Math.round((priceLow + priceHigh) / 2);
@@ -94,6 +102,21 @@ const cases = caseAreas.map((area, i) => ({
       <a href={city.href} class="cta-secondary">Все цены в {city.name} →</a>
     </div>
   </div>
+
+  {(hasCena || hasTurnkey) && (
+    <div class="money-links">
+      {hasCena && (
+        <a href={`/${niche.slug}/cena/v-${city.slug}/`}>
+          💰 Цена {niche.nameShort.toLowerCase()} в {city.name}: смета по площади →
+        </a>
+      )}
+      {hasTurnkey && (
+        <a href={`/${niche.slug}/pod-klyuch/v-${city.slug}/`}>
+          🔑 {niche.nameShort} под ключ в {city.name}: что входит и цена →
+        </a>
+      )}
+    </div>
+  )}
 
   <p class="lead">{niche.intro}</p>
 
@@ -254,6 +277,13 @@ const cases = caseAreas.map((area, i) => ({
     font-weight: 600; padding: 12px 18px; border-radius: 8px; font-size: 14px; }
   .cta-secondary:hover { border-color: #0a5cce; text-decoration: none; }
   .mid-cta { text-align: center; margin: 22px 0 8px; }
+
+  /* ЭТАП 6: ссылки на money-страницы (цена / под ключ) */
+  .money-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 24px; }
+  .money-links a { display: inline-block; flex: 1; min-width: 240px; padding: 12px 16px;
+    background: #fff; border: 1px solid #f5c97a; border-left: 4px solid #f5a623; border-radius: 8px;
+    font-size: 14px; font-weight: 600; color: #1a1a1a; text-decoration: none; }
+  .money-links a:hover { background: #fff7e6; border-color: #f5a623; text-decoration: none; }
 
   /* ЭТАП 5: timeline (этапы и сроки) */
   .timeline { list-style: none; padding: 0; margin: 14px 0 28px; counter-reset: tl; }

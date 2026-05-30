@@ -81,3 +81,15 @@ function add(
 export function applyRowsByType(t: MoneyPageType): ApplyRow[] {
   return applyRows().filter((r) => r.pageType === t);
 }
+
+// ── O(1)-проверка «существует ли money-страница в применённом наборе» ───────────
+// Нужна, чтобы родительские страницы (/{niche}/v-{city}/, хабы) ставили ссылку на
+// money-страницу ТОЛЬКО когда она реально задеплоена (иначе ссылка вела бы в 404,
+// напр. для ниш-алиасов, которым money-страницы не генерируются). Кэш на модуль.
+let keySetCache: Set<string> | null = null;
+export function isApplied(pageType: MoneyPageType, nicheSlug: string, citySlug: string): boolean {
+  if (!keySetCache) {
+    keySetCache = new Set(applyRows().map((r) => `${r.pageType}:${r.nicheSlug}:${r.citySlug}`));
+  }
+  return keySetCache.has(`${pageType}:${nicheSlug}:${citySlug}`);
+}
