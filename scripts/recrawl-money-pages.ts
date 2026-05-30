@@ -21,6 +21,7 @@
  *   set -a && source .env.local && set +a && bun scripts/recrawl-money-pages.ts
  *   ... --csv reports/top-money-pages.csv  --no-recrawl  --limit 300
  */
+import { readFileSync, writeFileSync } from 'node:fs';
 
 const TOKEN = process.env.YANDEX_OAUTH_TOKEN!;
 const USER = process.env.YANDEX_WEBMASTER_USER_ID!;
@@ -29,16 +30,34 @@ const KEY = process.env.INDEXNOW_KEY!;
 const RECRAWL_PER_HOST = 150;   // дневная квота Яндекса на хост
 const INDEXNOW_PER_HOST = 1000; // безопасный батч на пинг
 
+// Ротация окна переобхода: квота 150/хост/день не позволяет за раз покрыть все
+// 1280 money-URL. Чтобы крон не долбил один и тот же топ, а ПРОГРЕССИВНО обходил
+// весь список (за ~⌈total/150⌉ дней), курсор хранит индекс следующего окна.
+const CURSOR_PATH = 'reports/recrawl-money-cursor.txt';
+function readCursor(total: number): number {
+  try {
+    const n = parseInt(readFileSync(CURSOR_PATH, 'utf8').trim(), 10);
+    return Number.isFinite(n) && total > 0 ? ((n % total) + total) % total : 0;
+  } catch { return 0; }
+}
+function writeCursor(n: number): void {
+  try { writeFileSync(CURSOR_PATH, String(n)); } catch { /* лог-курсор не критичен */ }
+}
+
 const args = process.argv.slice(2);
 let csvPath = 'reports/top-money-pages.csv';
 let doRecrawl = true;
 let dryRun = false;
 let limit = Infinity;
+let offset: number | null = null;  // явный старт окна (перебивает курсор)
+let rotate = false;                // взять старт из курсора и продвинуть его
 for (let i = 0; i < args.length; i++) {
   if (args[i] === '--csv') csvPath = args[++i];
   else if (args[i] === '--no-recrawl') doRecrawl = false;
   else if (args[i] === '--dry-run') dryRun = true;
   else if (args[i] === '--limit') limit = parseInt(args[++i], 10) || Infinity;
+  else if (args[i] === '--offset') offset = parseInt(args[++i], 10) || 0;
+  else if (args[i] === '--rotate') rotate = true;
 }
 
 if (!dryRun && (!TOKEN || !USER || !KEY)) {
@@ -104,10 +123,21 @@ async function main() {
   let csv: string;
   try { csv = await Bun.file(csvPath).text(); }
   catch { console.error(`❌ Не найден ${csvPath}`); process.exit(1); }
-  const urls = csv.split('\n').slice(1)
+  const allUrls = csv.split('\n').slice(1)
     .map((l) => l.split(',')[0].trim())
-    .filter((u) => /^https?:\/\//.test(u))
-    .slice(0, limit);
+    .filter((u) => /^https?:\/\//.test(u));
+  const total = allUrls.length;
+  // окно: при ротации/offset берём RECRAWL_PER_HOST подряд начиная со start;
+  // без них — поведение как раньше (первые limit, по умолчанию все).
+  const win = limit === Infinity ? (rotate || offset !== null ? RECRAWL_PER_HOST : total) : limit;
+  let start = 0;
+  if (offset !== null) start = total > 0 ? ((offset % total) + total) % total : 0;
+  else if (rotate) start = readCursor(total);
+  const urls = allUrls.slice(start, start + win);
+  const windowEnd = start + urls.length; // эксклюзивная граница окна
+  if (rotate || offset !== null) {
+    console.log(`🔄 Окно ротации: [${start}..${windowEnd}) из ${total} (money_score ↓)`);
+  }
 
   // 2) группировка по хосту с сохранением порядка (= приоритет money_score)
   const byHost = new Map<string, string[]>();
@@ -179,6 +209,18 @@ async function main() {
   const path = `reports/notify-log-money-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}.csv`;
   const out = ['ts,host,action,urls,result'].concat(log.map((l) => `${l.ts},${l.host},${l.action},${l.urls},"${l.result}"`)).join('\n');
   await Bun.write(path, out);
+
+  // продвигаем курсор только при --rotate (live) и ТОЛЬКО на число реально
+  // переобойдённых URL (totalRecrawl), а НЕ на размер окна — иначе при
+  // исчерпанной квоте (recrawl=0) курсор перепрыгнул бы непокрытые страницы.
+  // Так курсор честно отслеживает прогресс переобхода (дефицитный ресурс);
+  // на конце списка заворачиваемся в 0 → бесконечный прогрессивный обход.
+  if (rotate) {
+    const next = total > 0 ? (start + totalRecrawl) % total : 0;
+    writeCursor(next);
+    const moved = totalRecrawl > 0 ? `+${totalRecrawl}` : 'без сдвига (квота 0)';
+    console.log(`🔄 Курсор переобхода: ${start} → ${next}/${total} (${moved})`);
+  }
 
   console.log(`\n📊 ИТОГ: IndexNow ${totalIndexNow} URL · переобход ${totalRecrawl} URL · хостов ${byHost.size - skipped}/${byHost.size} (skip ${skipped})`);
   console.log(`💾 Лог: ${path}`);
