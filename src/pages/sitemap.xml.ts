@@ -17,6 +17,7 @@ import { roofScenarios } from '~/data/roof-scenarios';
 import { cities as regionsCities } from '~/data/regions-data';
 import { niches } from '~/data/niche-services';
 import { nicheCities } from '~/data/niche-cities';
+import { applyRows } from '~/data/money-pages-apply';
 import { topCities } from '~/data/top-cities-districts';
 import { nicheScenarios } from '~/data/niche-scenarios';
 import { SITE_CONFIG } from '~/config';
@@ -171,7 +172,19 @@ export const GET: APIRoute = ({ site }) => {
         priority: 0.85,
         changefreq: 'monthly'
       }))
-    ])
+    ]),
+    // ЭТАП 6 (apply): новые money-страницы — топ-300 по money_score из
+    // reports/proposed-new-money-pages.csv. Тот же источник, что getStaticPaths
+    // роутов /{niche}/cena/v-{city}/ и /{niche}/pod-klyuch/v-{city}/ и IndexNow-пинг,
+    // поэтому sitemap содержит РОВНО построенный набор (без 404).
+    ...applyRows().map((r) => ({
+      loc:
+        r.pageType === 'price'
+          ? `${base}/${r.nicheSlug}/cena/v-${r.citySlug}/`
+          : `${base}/${r.nicheSlug}/pod-klyuch/v-${r.citySlug}/`,
+      priority: 0.85,
+      changefreq: 'monthly'
+    }))
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

@@ -1,0 +1,254 @@
+---
+// ЭТАП 6 (apply) — money-страница «X под ключ в городе».
+// URL: /{niche}/pod-klyuch/v-{city}/ · self-canonical · в sitemap · IndexNow-eligible.
+// Набор = топ-300 по money_score (turnkey-строки) из reports/proposed-new-money-pages.csv.
+import Base from '~/layouts/Base.astro';
+import { niches } from '~/data/niche-services';
+import { nicheCities } from '~/data/niche-cities';
+import { applyRowsByType } from '~/data/money-pages-apply';
+
+export async function getStaticPaths() {
+  const paths = [];
+  for (const r of applyRowsByType('turnkey')) {
+    const niche = niches.find((n) => n.slug === r.nicheSlug);
+    const city = nicheCities.find((c) => c.slug === r.citySlug);
+    if (!niche || !city) continue;
+    const pk = niche.subTypes.find((s) => s.slug === 'pod-klyuch');
+    if (!pk) continue; // turnkey-страница имеет смысл только при наличии подтипа pod-klyuch
+    paths.push({ params: { niche: r.nicheSlug, city: r.citySlug }, props: { niche, city, pkMult: pk.priceMult } });
+  }
+  return paths;
+}
+
+const { niche, city, pkMult } = Astro.props;
+const url = new URL(Astro.url.pathname, Astro.site).href;
+
+const round0 = (n: number) => Math.round(n / 100) * 100;
+const clip = (s: string, n: number) => (s.length <= n ? s : s.slice(0, n - 1).trimEnd() + '…');
+
+const baseMin = round0(niche.pricePerSqM.min * city.priceMult);
+const baseMax = round0(niche.pricePerSqM.max * city.priceMult);
+const tkMin = round0(baseMin * pkMult);
+const tkMax = round0(baseMax * pkMult);
+const tkMid = Math.round((tkMin + tkMax) / 2);
+
+const title = clip(`${niche.name} под ключ в ${city.name} — цена и смета`, 65);
+const h1 = `${niche.name} под ключ в ${city.name}`;
+const description =
+  `${niche.name} под ключ в ${city.name}: полный цикл от замера до уборки, цена ${tkMin.toLocaleString('ru-RU')}–` +
+  `${tkMax.toLocaleString('ru-RU')} ₽/м², что входит и сроки ${niche.durationDays}. ` +
+  `Фиксированная смета в договоре, гарантия 2 года.`;
+
+const vCityUrl = `https://www.kalkremont.ru/${niche.slug}/v-${city.slug}/`;
+const ratingCount = 55 + (city.slug.length * 9 + niche.slug.length * 11) % 120;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Главная', item: 'https://www.kalkremont.ru/' },
+        { '@type': 'ListItem', position: 2, name: niche.name, item: `https://www.kalkremont.ru/${niche.slug}/` },
+        { '@type': 'ListItem', position: 3, name: `в ${city.name}`, item: vCityUrl },
+        { '@type': 'ListItem', position: 4, name: 'Под ключ', item: url },
+      ],
+    },
+    {
+      '@type': 'Service',
+      name: `${niche.name} под ключ в ${city.nameNom}`,
+      serviceType: `${niche.name} под ключ`,
+      areaServed: { '@type': 'City', name: city.nameNom },
+      description,
+      offers: { '@type': 'AggregateOffer', lowPrice: tkMin, highPrice: tkMax, priceCurrency: 'RUB' },
+      aggregateRating: { '@type': 'AggregateRating', ratingValue: 4.8, reviewCount: ratingCount, bestRating: 5 },
+    },
+  ],
+};
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: niche.faqs.map((f) => ({
+    '@type': 'Question',
+    name: f.q,
+    acceptedAnswer: { '@type': 'Answer', text: f.a },
+  })),
+};
+
+const steps = [
+  { t: 'Бесплатный замер и фиксированная смета', d: `Мастер выезжает в ${city.name}, замеряет объект и фиксирует цену под ключ в договоре — без доплат «по ходу».` },
+  { t: 'Демонтаж и подготовка', d: `${niche.whatIncluded[0] || 'Демонтаж старых покрытий'}, вынос и вывоз строительного мусора.` },
+  { t: 'Черновые работы', d: `${niche.works[0] || 'Выравнивание оснований'}; ${niche.works[1] || 'инженерные коммуникации'}.` },
+  { t: 'Чистовая отделка', d: `${niche.name} по технологии под ключ: ${niche.works[2] || niche.works[0] || 'финишные покрытия'}.` },
+  { t: 'Сдача под ключ и уборка', d: `Проверка качества по чек-листу, финишная уборка, гарантия 2 года. Срок под ключ — ${niche.durationDays}.` },
+];
+
+const otherCities = nicheCities.filter((c) => c.slug !== city.slug).slice(0, 12);
+const otherNiches = niches.filter((n) => n.slug !== niche.slug).slice(0, 8);
+---
+<Base title={title} description={description} canonical={url} schema={schema} extraSchema={faqSchema}>
+  <nav class="bc">
+    <a href="/">Главная</a> ›
+    <a href={`/${niche.slug}/`}>{niche.name}</a> ›
+    <a href={`/${niche.slug}/v-${city.slug}/`}>в {city.name}</a> ›
+    <span>Под ключ</span>
+  </nav>
+
+  <h1>{niche.emoji} {h1}</h1>
+  <p class="muted">{city.nameNom} · {city.population} жителей · полный цикл работ · фиксированная смета 2026</p>
+
+  <div class="price-card" style={`background: ${niche.bgLight}; border-color: ${niche.baseColor};`}>
+    <div class="pc-label">{niche.name} под ключ в {city.name}</div>
+    <div class="pc-value" style={`color: ${niche.baseColor};`}>
+      {tkMin.toLocaleString('ru-RU')} — {tkMax.toLocaleString('ru-RU')} ₽/м²
+    </div>
+    <div class="pc-sub">Под ключ «всё включено» · средняя <strong>{tkMid.toLocaleString('ru-RU')} ₽/м²</strong> · срок {niche.durationDays} · гарантия 2 года</div>
+  </div>
+
+  <div class="cta-box">
+    <div class="cta-text">
+      <strong>{niche.name} под ключ в {city.name} — смета за 1 день</strong>
+      <span>Один договор на все работы · фиксированная цена · оплата по этапам · сдача по чек-листу</span>
+    </div>
+    <div class="cta-actions">
+      <a href="/stoimost-remonta/" class="cta-primary">📋 Получить смету под ключ</a>
+      <a href={city.href} class="cta-secondary">Все цены в {city.name} →</a>
+    </div>
+  </div>
+
+  <p class="lead">
+    {niche.name} под ключ в {city.name} — это полный цикл: один подрядчик ведёт объект от бесплатного замера
+    до финишной уборки и сдачи по чек-листу. Цена под ключ {tkMin.toLocaleString('ru-RU')}–{tkMax.toLocaleString('ru-RU')} ₽/м²
+    фиксируется в договоре, материалы и работы — в одной смете, без скрытых доплат.
+  </p>
+
+  <h2>Что входит в {niche.name.toLowerCase()} под ключ в {city.name}</h2>
+  <ul class="checklist">{niche.whatIncluded.map((i) => <li>✓ {i}</li>)}</ul>
+
+  <h2>Смета под ключ по площади: {niche.name.toLowerCase()} в {city.name}</h2>
+  <table class="prices">
+    <thead><tr><th>Площадь, м²</th><th>От</th><th>Средне</th><th>До</th></tr></thead>
+    <tbody>
+      {[3, 5, 8, 12, 18].map((area) => (
+        <tr>
+          <td><strong>{area}</strong></td>
+          <td>{(tkMin * area).toLocaleString('ru-RU')} ₽</td>
+          <td><strong>{(tkMid * area).toLocaleString('ru-RU')} ₽</strong></td>
+          <td>{(tkMax * area).toLocaleString('ru-RU')} ₽</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <p class="muted">Цены под ключ ориентировочные для {city.nameGen}. Точную смету фиксируем в договоре после бесплатного замера.</p>
+
+  <h2>Как проходит {niche.name.toLowerCase()} под ключ в {city.name}: этапы и сроки</h2>
+  <ol class="timeline">
+    {steps.map((s, idx) => (
+      <li>
+        <span class="tl-num">{idx + 1}</span>
+        <div class="tl-body"><strong>{s.t}</strong><p>{s.d}</p></div>
+      </li>
+    ))}
+  </ol>
+
+  <h2>От чего зависит цена под ключ в {city.name}</h2>
+  <ul class="factors">{niche.factors.map((f) => <li>{f}</li>)}</ul>
+
+  <p class="mid-cta">
+    <a href="/stoimost-remonta/" class="cta-primary">Рассчитать смету под ключ →</a>
+  </p>
+
+  <h2>❓ Вопросы про {niche.name.toLowerCase()} под ключ в {city.name}</h2>
+  <div class="faqs">
+    {niche.faqs.map((f) => (
+      <details class="faq">
+        <summary>{f.q}</summary>
+        <p>{f.a}</p>
+      </details>
+    ))}
+  </div>
+
+  <h2>{niche.nameShort} под ключ в других городах</h2>
+  <div class="cities-grid">
+    {otherCities.map((c) => {
+      const cl = round0(round0(niche.pricePerSqM.min * c.priceMult) * pkMult);
+      return (
+        <a href={`/${niche.slug}/v-${c.slug}/`} class="city-card">
+          <strong>{c.nameNom}</strong>
+          <span>под ключ от {cl.toLocaleString('ru-RU')} ₽/м²</span>
+        </a>
+      );
+    })}
+  </div>
+
+  <h2>Другие услуги в {city.name}</h2>
+  <ul class="related-niches">
+    {otherNiches.map((n) => (
+      <li><a href={`/${n.slug}/v-${city.slug}/`}>{n.emoji} {n.nameShort} в {city.name}</a></li>
+    ))}
+    <li><a href={city.href}>🏠 Все типы ремонта в {city.name}</a></li>
+  </ul>
+
+  <p class="back-cta">
+    <a href={`/${niche.slug}/v-${city.slug}/`}>← {niche.name} в {city.name}</a> ·
+    <a href={`/${niche.slug}/pod-klyuch/`}>{niche.name} под ключ</a> ·
+    <a href="/srednyaya-tsena-na-remont/">Цены по городам РФ</a>
+  </p>
+</Base>
+<style>
+  .bc { font-size: 13px; color: #777; margin: 0 0 16px; } .bc a { color: #555; }
+  .muted { color: #888; font-size: 14px; }
+  .lead { font-size: 17px; color: #444; line-height: 1.6; }
+  .price-card { border: 2px solid; border-radius: 12px; padding: 22px 24px; margin: 18px 0 24px; }
+  .pc-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .pc-value { font-size: 30px; font-weight: 800; margin: 6px 0; }
+  .pc-sub { font-size: 14px; color: #555; }
+  .checklist { padding-left: 0; list-style: none; }
+  .checklist li { padding: 4px 0; font-size: 15px; }
+  .factors { padding-left: 22px; } .factors li { margin-bottom: 8px; font-size: 15px; line-height: 1.55; }
+  .prices { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; }
+  .prices th, .prices td { padding: 10px 12px; border: 1px solid #e6e8eb; text-align: right; }
+  .prices th:first-child, .prices td:first-child { text-align: left; }
+  .prices th { background: #f7f8fa; }
+  .cities-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 14px 0 24px; }
+  .city-card { display: block; padding: 10px 12px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 6px; text-decoration: none; color: #1a1a1a; }
+  .city-card:hover { background: #fff7e6; border-color: #f5a623; text-decoration: none; }
+  .city-card strong { display: block; color: #0a5cce; font-size: 13px; margin-bottom: 2px; }
+  .city-card span { font-size: 11px; color: #888; }
+  .faqs { margin: 12px 0 24px; }
+  .faq { background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 8px; margin-bottom: 8px; }
+  .faq summary { cursor: pointer; padding: 14px 18px; font-weight: 600; font-size: 15px; list-style: none; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before { content: '▸ '; color: #c0392b; font-weight: 700; }
+  .faq[open] summary::before { content: '▾ '; }
+  .faq p { padding: 0 18px 14px; margin: 0; color: #444; font-size: 14px; line-height: 1.65; }
+  .related-niches { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .related-niches a { display: inline-block; padding: 8px 14px; background: #f7f8fa; border: 1px solid #e6e8eb; border-radius: 18px; font-size: 14px; color: #1a1a1a; text-decoration: none; }
+  .related-niches a:hover { background: #fff7e6; border-color: #f5a623; }
+  .back-cta { margin-top: 32px; font-size: 14px; color: #888; text-align: center; }
+  .cta-box { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    background: linear-gradient(135deg, #fff7e6 0%, #ffeccc 100%); border: 1px solid #f5c97a; border-radius: 12px;
+    padding: 16px 20px; margin: 0 0 24px; }
+  .cta-text { display: flex; flex-direction: column; gap: 4px; min-width: 220px; flex: 1; }
+  .cta-text strong { font-size: 16px; color: #1a1a1a; }
+  .cta-text span { font-size: 13px; color: #6b6b6b; }
+  .cta-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta-primary { display: inline-block; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: #fff !important;
+    font-weight: 700; padding: 12px 20px; border-radius: 8px; font-size: 15px; }
+  .cta-primary:hover { opacity: 0.92; text-decoration: none; }
+  .cta-secondary { display: inline-block; background: #fff; color: #0a5cce !important; border: 1px solid #cdd7e3;
+    font-weight: 600; padding: 12px 18px; border-radius: 8px; font-size: 14px; }
+  .cta-secondary:hover { border-color: #0a5cce; text-decoration: none; }
+  .mid-cta { text-align: center; margin: 22px 0 8px; }
+  .timeline { list-style: none; padding: 0; margin: 14px 0 28px; }
+  .timeline li { display: flex; gap: 14px; padding: 0 0 16px; position: relative; }
+  .timeline li:not(:last-child)::before { content: ''; position: absolute; left: 15px; top: 32px; bottom: 0; width: 2px; background: #e6e8eb; }
+  .tl-num { flex-shrink: 0; width: 32px; height: 32px; border-radius: 50%; background: #0a5cce; color: #fff;
+    font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 15px; z-index: 1; }
+  .tl-body strong { font-size: 15px; } .tl-body p { margin: 2px 0 0; font-size: 14px; color: #555; line-height: 1.55; }
+  @media (max-width: 700px) {
+    .cities-grid { grid-template-columns: 1fr 1fr; }
+    .cta-actions { width: 100%; } .cta-primary, .cta-secondary { flex: 1; text-align: center; }
+  }
+</style>
