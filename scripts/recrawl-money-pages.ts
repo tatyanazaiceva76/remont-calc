@@ -13,8 +13,10 @@
  *   1) хосты-дубли из reports/bad-hosts.csv пропускаются (их IndexNow всегда 422);
  *   2) для каждого хоста шлём только URL, принадлежащие именно ему (hostOf === host).
  *
- * IndexNow (Яндекс) — на все money-URL валидного хоста (≤1000).
- * Переобход Я.Вебмастера — топ money-URL хоста в пределах квоты 150/хост/день.
+ * IndexNow (Яндекс) — на ВСЕ money-URL валидного хоста (канал безлимитный, шлём
+ *   батчами по INDEXNOW_PER_HOST; не ограничен окном ротации --limit/--rotate).
+ * Переобход Я.Вебмастера — топ money-URL хоста в пределах квоты 150/хост/день
+ *   (вот ЭТО окно и ротируется курсором, т.к. квота переобхода дефицитна).
  *
  * Запуск:
  *   set -a && source .env.local && set +a && bun scripts/recrawl-money-pages.ts --dry-run
@@ -66,12 +68,18 @@ if (!dryRun && (!TOKEN || !USER || !KEY)) {
 }
 
 async function ya(method: string, path: string, body?: unknown) {
-  const r = await fetch(`https://api.webmaster.yandex.net/v4${path}`, {
-    method, headers: { Authorization: `OAuth ${TOKEN}`, 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const t = await r.text();
-  try { return { status: r.status, ...JSON.parse(t) }; } catch { return { status: r.status, raw: t }; }
+  try {
+    const r = await fetch(`https://api.webmaster.yandex.net/v4${path}`, {
+      method, headers: { Authorization: `OAuth ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const t = await r.text();
+    try { return { status: r.status, ...JSON.parse(t) }; } catch { return { status: r.status, raw: t }; }
+  } catch (e) {
+    // Транзиентный сбой сети не должен ронять ночной money-проход (см. notify-indexnow-recrawl.ts).
+    // status:0 → recrawl() считает вызов «не 202/не 429» → blocked++ и идёт дальше.
+    return { status: 0, raw: String(e) };
+  }
 }
 
 async function getHosts(): Promise<Map<string, string>> {
@@ -96,12 +104,14 @@ async function loadExcluded(): Promise<Set<string>> {
 
 async function indexNow(host: string, urls: string[]): Promise<number> {
   if (!urls.length) return 0;
-  const r = await fetch('https://yandex.com/indexnow', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    body: JSON.stringify({ host, key: KEY, keyLocation: `https://${host}/indexnow_${KEY}.txt`, urlList: urls }),
-  });
-  return r.status;
+  try {
+    const r = await fetch('https://yandex.com/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host, key: KEY, keyLocation: `https://${host}/indexnow_${KEY}.txt`, urlList: urls }),
+    });
+    return r.status;
+  } catch { return 0; } // транзиентный сбой → 0 (не ok), батч пропускаем, не роняем проход
 }
 
 async function recrawl(hostId: string, urls: string[]): Promise<{ ok: number; quota: number; blocked: number; exhausted: boolean }> {
@@ -139,13 +149,17 @@ async function main() {
     console.log(`🔄 Окно ротации: [${start}..${windowEnd}) из ${total} (money_score ↓)`);
   }
 
-  // 2) группировка по хосту с сохранением порядка (= приоритет money_score)
-  const byHost = new Map<string, string[]>();
-  for (const u of urls) {
-    const h = hostOf(u);
-    if (!h) continue;
-    (byHost.get(h) ?? byHost.set(h, []).get(h)!).push(u);
-  }
+  // 2) Две группировки по хосту (порядок сохраняем = приоритет money_score):
+  //    • byHostAll — ВСЕ money-URL хоста → IndexNow (канал безлимитный: шлём всё
+  //      батчами; иначе при --limit 150 индекс-пинг получал лишь окно ротации);
+  //    • byHost    — только URL окна ротации → переобход Вебмастера (квота 150/хост).
+  const group = (list: string[]) => {
+    const m = new Map<string, string[]>();
+    for (const u of list) { const h = hostOf(u); if (!h) continue; (m.get(h) ?? m.set(h, []).get(h)!).push(u); }
+    return m;
+  };
+  const byHostAll = group(allUrls);
+  const byHost = group(urls);
 
   const excluded = await loadExcluded();
   // getHosts() — read-only GET, безопасен и в dry-run: даёт честный прогноз,
@@ -159,32 +173,40 @@ async function main() {
   const ts = () => new Date().toISOString().slice(0, 19);
   let totalIndexNow = 0, totalRecrawl = 0, skipped = 0;
 
-  for (const [host, hUrls] of [...byHost.entries()].sort((a, b) => b[1].length - a[1].length)) {
+  for (const [host, allHostUrls] of [...byHostAll.entries()].sort((a, b) => b[1].length - a[1].length)) {
     if (excluded.has(host)) {
       skipped++;
-      log.push({ ts: ts(), host, action: 'skip', urls: hUrls.length, result: 'excluded (bad-hosts.csv)' });
+      log.push({ ts: ts(), host, action: 'skip', urls: allHostUrls.length, result: 'excluded (bad-hosts.csv)' });
       console.log(`  ${host.padEnd(34)} — SKIP (дубль-призрак, bad-hosts.csv)`);
       continue;
     }
     const hostId = hostIds.get(host);
+    const winHostUrls = byHost.get(host) ?? []; // окно ротации этого хоста → только переобход
 
     if (dryRun) {
       const rcPlan = !doRecrawl ? '0 (--no-recrawl)'
         : !webmasterKnown ? '? (нет creds — Вебмастер не проверен)'
-        : hostId ? String(Math.min(hUrls.length, RECRAWL_PER_HOST))
+        : hostId ? String(Math.min(winHostUrls.length, RECRAWL_PER_HOST))
         : '0 (хост не в Вебмастере → только IndexNow)';
-      console.log(`  ${host.padEnd(34)} IndexNow ${Math.min(hUrls.length, INDEXNOW_PER_HOST)} · recrawl ${rcPlan}`);
+      console.log(`  ${host.padEnd(34)} IndexNow ${allHostUrls.length} · recrawl ${rcPlan}`);
       continue;
     }
 
-    const inStatus = await indexNow(host, hUrls.slice(0, INDEXNOW_PER_HOST));
-    const inOk = inStatus === 200 || inStatus === 202;
-    if (inOk) totalIndexNow += Math.min(hUrls.length, INDEXNOW_PER_HOST);
-    log.push({ ts: ts(), host, action: 'indexnow', urls: hUrls.length, result: `HTTP ${inStatus}` });
+    // IndexNow: ВСЕ money-URL хоста, батчами по INDEXNOW_PER_HOST (канал безлимитный)
+    let inSent = 0, inStatus = 0;
+    for (let i = 0; i < allHostUrls.length; i += INDEXNOW_PER_HOST) {
+      const batch = allHostUrls.slice(i, i + INDEXNOW_PER_HOST);
+      inStatus = await indexNow(host, batch);
+      if (inStatus === 200 || inStatus === 202) inSent += batch.length;
+      if (i + INDEXNOW_PER_HOST < allHostUrls.length) await new Promise((r) => setTimeout(r, 150));
+    }
+    if (inSent) totalIndexNow += inSent;
+    log.push({ ts: ts(), host, action: 'indexnow', urls: inSent, result: `HTTP ${inStatus}` });
 
+    // Переобход: только окно ротации (дефицитная квота 150/хост/сутки)
     let rcStr = '—';
     if (doRecrawl && hostId) {
-      const rc = await recrawl(hostId, hUrls);
+      const rc = await recrawl(hostId, winHostUrls);
       totalRecrawl += rc.ok;
       const qStr = rc.exhausted ? 'квота на сегодня исчерпана' : rc.quota >= 0 ? `quota ${rc.quota}` : 'quota n/a';
       rcStr = `${rc.ok} (${qStr}${rc.blocked ? `, blocked ${rc.blocked}` : ''})`;
@@ -195,7 +217,7 @@ async function main() {
       rcStr = '0 (нет в Вебмастере)';
     }
 
-    console.log(`  ${host.padEnd(34)} IndexNow[${inStatus}] ${hUrls.length} · recrawl ${rcStr}`);
+    console.log(`  ${host.padEnd(34)} IndexNow[${inStatus}] ${inSent}/${allHostUrls.length} · recrawl ${rcStr}`);
     await new Promise((r) => setTimeout(r, 120));
   }
 
