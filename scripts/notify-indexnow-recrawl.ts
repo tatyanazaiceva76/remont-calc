@@ -24,12 +24,19 @@ const RECRAWL_PER_HOST = 150;   // дневная квота Яндекса на
 const INDEXNOW_PER_HOST = 1000; // безопасный батч на пинг
 
 async function ya(method: string, path: string, body?: unknown) {
-  const r = await fetch(`https://api.webmaster.yandex.net/v4${path}`, {
-    method, headers: { Authorization: `OAuth ${TOKEN}`, 'Content-Type': 'application/json' },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const t = await r.text();
-  try { return { status: r.status, ...JSON.parse(t) }; } catch { return { status: r.status, raw: t }; }
+  try {
+    const r = await fetch(`https://api.webmaster.yandex.net/v4${path}`, {
+      method, headers: { Authorization: `OAuth ${TOKEN}`, 'Content-Type': 'application/json' },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    const t = await r.text();
+    try { return { status: r.status, ...JSON.parse(t) }; } catch { return { status: r.status, raw: t }; }
+  } catch (e) {
+    // Транзиентный сбой сети/таймаут НЕ должен ронять весь ночной проход по 222 хостам
+    // (при свежей квоте это ~15 900 recrawl-вызовов — один DOMException = крах всего).
+    // status:0 → вызывающий код считает вызов «не 202/не 429» и спокойно идёт дальше.
+    return { status: 0, raw: String(e) };
+  }
 }
 
 async function getHosts(): Promise<Array<{ host: string; hostId: string }>> {
@@ -66,12 +73,18 @@ async function sitemapUrls(host: string): Promise<string[]> {
 // IndexNow → Яндекс (до 10 000 URL за запрос; шлём батчами)
 async function indexNow(host: string, urls: string[]): Promise<{ sent: number; status: number }> {
   if (!urls.length) return { sent: 0, status: 0 };
-  const r = await fetch('https://yandex.com/indexnow', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    body: JSON.stringify({ host, key: KEY, keyLocation: `https://${host}/indexnow_${KEY}.txt`, urlList: urls }),
-  });
-  return { sent: urls.length, status: r.status };
+  try {
+    const r = await fetch('https://yandex.com/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host, key: KEY, keyLocation: `https://${host}/indexnow_${KEY}.txt`, urlList: urls }),
+    });
+    return { sent: urls.length, status: r.status };
+  } catch (e) {
+    // Транзиентный сбой сети не должен ронять ночной проход (см. коммент в ya()).
+    // status:0 → inOk=false, URL не зачтены в totalIndexNow, идём к recrawl.
+    return { sent: 0, status: 0 };
+  }
 }
 
 // Переобход Я.Вебмастера — по одному URL, до исчерпания квоты
